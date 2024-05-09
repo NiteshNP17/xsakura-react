@@ -6,23 +6,26 @@ import { useRef, useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { AddCircleOutline, Delete, Edit } from "@mui/icons-material";
-import { Pagination } from "@mui/material";
+import { Alert, Pagination, Snackbar } from "@mui/material";
 import MovieForm from "../Dialogs/MovieForm";
 
 interface MovieListProps {
   movies: { code: string; title: string; cast: string[] }[];
   currentPage: number;
   totalPages: number;
+  refetch: () => void;
 }
 
 const MovieList: React.FC<MovieListProps> = ({
   movies,
   currentPage,
   totalPages,
+  refetch,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const refCodeToEdit = useRef<string | null>(null);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
+  const [openSnack, setOpenSnack] = useState<boolean>(false);
   const navigate = useNavigate();
 
   return (
@@ -43,7 +46,7 @@ const MovieList: React.FC<MovieListProps> = ({
         {movies.map((movie) => (
           <article
             key={movie.code}
-            className="group dark:bg-zinc-800 dark:border-zinc-600 grid gap-1 overflow-hidden bg-white border rounded-lg shadow-lg"
+            className="group dark:bg-zinc-800 dark:border-zinc-600 grid gap-1 overflow-hidden bg-white border border-gray-200 rounded-lg shadow-md"
           >
             <Link to={`/movie/${movie.code}`}>
               <MovieCover code={movie.code} />
@@ -72,7 +75,7 @@ const MovieList: React.FC<MovieListProps> = ({
               {movie.cast.map((actor) => (
                 <button
                   key={actor}
-                  className="max-h-7 whitespace-nowrap dark:text-pink-400 dark:border-zinc-500 hover:text-pink-400 dark:hover:text-pink-300 hover:border-pink-400 dark:hover:border-pink-300 border-zinc-300 px-2 text-sm text-pink-700 capitalize transition-colors border border-solid rounded-full"
+                  className="max-h-7 whitespace-nowrap dark:text-pink-500 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 bg-zinc-200 px-2 py-0.5 text-sm text-pink-600 capitalize transition-colors rounded-full"
                 >
                   <Link to={`/actor/${actor.replace(/ /g, "-").toLowerCase()}`}>
                     {actor}
@@ -125,7 +128,29 @@ const MovieList: React.FC<MovieListProps> = ({
         codeToEdit={refCodeToEdit.current}
         openEditDialog={openEditDialog}
         setOpenEditDialog={setOpenEditDialog}
+        setOpenSnack={setOpenSnack}
+        refetch={refetch}
       />
+      <Snackbar
+        open={openSnack}
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{ bottom: "12px" }}
+        onClose={(_e, reason?) => {
+          if (reason === "clickaway") return;
+          setOpenSnack(false);
+        }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          sx={{ fontSize: "1.1rem", padding: "0.5rem 3.5rem" }}
+        >
+          {!refCodeToEdit.current
+            ? "Movie Added Successfully!"
+            : "Movie Updated Successfully!"}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

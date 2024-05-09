@@ -33,7 +33,7 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
             <Button
               component={Link}
               to="/movies"
-              color={path === "/movies" ? "primary" : "secondary"}
+              color={path.includes("/movies") ? "primary" : "secondary"}
               size="large"
               disableRipple
             >
@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
             <Button
               component={Link}
               to="/actors"
-              color={path === "/actors" ? "primary" : "secondary"}
+              color={path.includes("/actors") ? "primary" : "secondary"}
               size="large"
               disableRipple
             >

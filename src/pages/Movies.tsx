@@ -15,11 +15,11 @@ const Movies = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const page = parseInt(useParams().page ?? "1");
   const [isLoaded, setLoaded] = useState<boolean>(false);
-  //const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
+  const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
 
-  /*const refetchMovies = () => {
+  const refetchMovies = () => {
     setRefetchTrigger((prev) => !prev);
-  };*/
+  };
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -36,13 +36,14 @@ const Movies = () => {
     };
 
     fetchMovies();
-  }, [page, /*refetchTrigger,*/ isLoaded]);
+  }, [page, refetchTrigger, isLoaded]);
 
   return isLoaded ? (
     <MovieList
       movies={movies}
       currentPage={page}
       totalPages={totalPagesRef.current}
+      refetch={refetchMovies}
     />
   ) : (
     <div className="place-content-center h-96 grid w-full">
