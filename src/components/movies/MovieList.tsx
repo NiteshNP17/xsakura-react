@@ -1,24 +1,23 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import MovieCover from "./MovieCover";
 import IconButton from "@mui/material/IconButton";
 import MoreVert from "@mui/icons-material/MoreVert";
-import { useRef, useState } from "react";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import { AddCircleOutline, Delete, Edit } from "@mui/icons-material";
+import { useCallback, useRef, useState } from "react";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import { Alert, Pagination, Snackbar } from "@mui/material";
 import MovieForm from "../Dialogs/MovieForm";
+import MovieCastList from "./MovieCastList";
+import MutateMenu from "../Dialogs/MutateMenu";
+import useKeyboardNavigation from "../../utils/useKeyboardNavigation";
 
 interface MovieListProps {
-  movies: { code: string; title: string; cast: string[] }[];
-  currentPage: number;
+  movies: { code: string; title: string; cast: string[]; maleCast: string[] }[];
   totalPages: number;
   refetch: () => void;
 }
 
 const MovieList: React.FC<MovieListProps> = ({
   movies,
-  currentPage,
   totalPages,
   refetch,
 }) => {
@@ -26,7 +25,28 @@ const MovieList: React.FC<MovieListProps> = ({
   const refCodeToEdit = useRef<string | null>(null);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [openSnack, setOpenSnack] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = parseInt(searchParams.get("p") ?? "1");
+
+  const handlePageChange = useCallback(
+    (
+      _e: React.ChangeEvent<unknown> | KeyboardEvent | null,
+      newPage: number
+    ) => {
+      if (newPage === 1) {
+        searchParams.delete("p");
+        setSearchParams(searchParams);
+      } else {
+        setSearchParams({ p: newPage.toString() });
+      }
+    },
+    [searchParams, setSearchParams]
+  );
+
+  useKeyboardNavigation({
+    onNext: () => handlePageChange(null, Math.min(page + 1, totalPages)),
+    onPrevious: () => handlePageChange(null, Math.max(page - 1, 1)),
+  });
 
   return (
     <div className="px-[3vw]">
@@ -71,57 +91,22 @@ const MovieList: React.FC<MovieListProps> = ({
                 <MoreVert />
               </IconButton>
             </div>
-            <div className="flex gap-1 px-2 mt-auto mb-2 overflow-x-scroll">
-              {movie.cast.map((actor) => (
-                <button
-                  key={actor}
-                  className="max-h-7 whitespace-nowrap dark:text-pink-500 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 bg-zinc-200 px-2 py-0.5 text-sm text-pink-600 capitalize transition-colors rounded-full"
-                >
-                  <Link to={`/actor/${actor.replace(/ /g, "-").toLowerCase()}`}>
-                    {actor}
-                  </Link>
-                </button>
-              ))}
-            </div>
+            <MovieCastList movieCast={movie.cast} maleCast={movie.maleCast} />
           </article>
         ))}
-        <Menu
+        <MutateMenu
           anchorEl={anchorEl}
-          open={anchorEl !== null}
-          onClose={() => setAnchorEl(null)}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-        >
-          <MenuItem
-            onClick={() => {
-              setAnchorEl(null);
-              setOpenEditDialog(true);
-            }}
-          >
-            <Edit className="opacity-50" />
-            &nbsp;Edit
-          </MenuItem>
-          <MenuItem>
-            <Delete className="opacity-50" />
-            &nbsp;Delete
-          </MenuItem>
-        </Menu>
+          setAnchorEl={setAnchorEl}
+          setOpenEditDialog={setOpenEditDialog}
+        />
       </div>
       <div className="flex justify-center w-full mb-12">
         <Pagination
           color="primary"
           count={totalPages}
           size="large"
-          page={currentPage}
-          onChange={(_e, val) =>
-            navigate(val === 1 ? "/movies" : `/movies/${val}`)
-          }
+          page={page}
+          onChange={handlePageChange}
         />
       </div>
       <MovieForm

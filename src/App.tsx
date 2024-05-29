@@ -37,8 +37,8 @@ const App = () => {
         <Route path="/" Component={pages.Home} />
         <Route path="/actors" Component={pages.Actors} />
         <Route path="/actor/:name" Component={pages.ActorPage} />
+        <Route path="/actor-m/:name" Component={pages.ActorPage} />
         <Route path="/movies" Component={pages.Movies} />
-        <Route path="/movies/:page" Component={pages.Movies} />
         <Route path="/movie/:code" Component={pages.MoviePage} />
       </Routes>
     </ThemeProvider>

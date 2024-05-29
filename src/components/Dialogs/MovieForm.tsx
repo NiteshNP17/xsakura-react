@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import MovieCover from "../movies/MovieCover";
 import { LoadingButton } from "@mui/lab";
 import { useLocation, useNavigate } from "react-router-dom";
+import { formatCode, formatNames } from "../../utils/utils";
 
 interface MovieFormProps {
   codeToEdit: string | null;
@@ -38,19 +39,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const path = useLocation().pathname;
-
-  function formatNames(namesArray: string[]) {
-    // Capitalize the first letter of each name
-    const formattedNames = namesArray.map((name) => {
-      const words = name.split(" ");
-      const capitalizedWords = words.map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      });
-      return capitalizedWords.join(" ");
-    });
-
-    return formattedNames.join(", ");
-  }
 
   const fetchMovieData = async (movieCode: string, shouldSetData: boolean) => {
     try {
@@ -97,10 +85,15 @@ const MovieForm: React.FC<MovieFormProps> = ({
   useEffect(() => {
     if (codeToEdit) {
       fetchMovieData(codeToEdit, true);
-    } else {
-      setMovieData({});
     }
   }, [codeToEdit]);
+
+  const handleClose = () => {
+    setLoading(false);
+    setOpenEditDialog(false);
+    setMovieData({});
+    setPreviewCode(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -109,6 +102,8 @@ const MovieForm: React.FC<MovieFormProps> = ({
     const formData = new FormData(e.target as HTMLFormElement);
     const dataToPost = Object.fromEntries(formData);
 
+    dataToPost.code = previewCode || dataToPost.code;
+
     const isValid = await validateData(dataToPost as MovieData);
 
     if (!isValid) return;
@@ -116,8 +111,8 @@ const MovieForm: React.FC<MovieFormProps> = ({
       if (!codeToEdit) {
         try {
           await axios.post("http://localhost:5000/movies", dataToPost);
-          setOpenEditDialog(false);
-          path === "/movies" ? refetch() : navigate("/movies");
+          handleClose();
+          path === "/movies" || codeToEdit ? refetch() : navigate("/movies");
           setOpenSnack(true);
         } catch (err) {
           alert("Error adding movie: " + err);
@@ -129,8 +124,8 @@ const MovieForm: React.FC<MovieFormProps> = ({
             `http://localhost:5000/movies/${codeToEdit}`,
             dataToPost
           );
-          setOpenEditDialog(false);
-          path === "/movies" ? refetch() : navigate("/movies");
+          handleClose();
+          path === "/movies" || codeToEdit ? refetch() : navigate("/movies");
           setOpenSnack(true);
         } catch (err) {
           alert("Error updating movie: " + err);
@@ -143,7 +138,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
   return (
     <Dialog
       open={!openEditDialog ? false : true}
-      onClose={() => setOpenEditDialog(false)}
+      onClose={handleClose}
       sx={{
         "& .MuiPaper-root": {
           m: 2,
@@ -177,7 +172,8 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 autoFocus={!codeToEdit}
                 defaultValue={codeToEdit}
                 onChange={(e) => {
-                  setPreviewCode(e.target.value.toLowerCase());
+                  e.target.value.length > 5 &&
+                    setPreviewCode(formatCode(e.target.value.toLowerCase()));
                 }}
                 label="Code"
                 variant="outlined"
@@ -189,7 +185,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   readOnly: codeToEdit && true,
                   className: "uppercase",
                 }}
-                size="small"
               />
               <TextField
                 type="search"
@@ -201,7 +196,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 inputProps={{
                   autoCapitalize: "words",
                 }}
-                size="small"
               />
               <TextField
                 type="text"
@@ -212,7 +206,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 fullWidth
                 sx={{ margin: "1rem 0" }}
                 inputProps={{ autoCapitalize: "words" }}
-                size="small"
               />
               <TextField
                 type="text"
@@ -225,7 +218,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 fullWidth
                 sx={{ margin: "1rem 0" }}
                 inputProps={{ autoCapitalize: "words" }}
-                size="small"
               />
               <TextField
                 type="text"
@@ -235,7 +227,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 defaultValue={movieData.release?.toString().split("T")[0]}
                 variant="outlined"
                 autoComplete="off"
-                size="small"
               />
               <TextField
                 type="number"
@@ -245,7 +236,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 defaultValue={movieData.runtime}
                 variant="outlined"
                 autoComplete="off"
-                size="small"
               />
               <TextField
                 type="text"
@@ -255,7 +245,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 variant="outlined"
                 fullWidth
                 sx={{ margin: "1rem 0", gridColumn: "span 2" }}
-                size="small"
               />
               <TextField
                 type="text"
@@ -264,7 +253,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 defaultValue={movieData.opt}
                 variant="outlined"
                 inputProps={{ autoCapitalize: "none" }}
-                size="small"
               />
               <TextField
                 type="text"
@@ -272,7 +260,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 label="Series"
                 defaultValue={movieData.series}
                 variant="outlined"
-                size="small"
               />
             </div>
           </div>
@@ -281,7 +268,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
               variant="contained"
               color="secondary"
               size="large"
-              onClick={() => setOpenEditDialog(false)}
+              onClick={handleClose}
               disableElevation
             >
               Cancel
@@ -291,7 +278,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
               variant="contained"
               color="success"
               size="large"
-              onClick={() => setOpenEditDialog(false)}
+              type="submit"
               disableElevation
             >
               {codeToEdit ? "Save" : "Add Movie"}

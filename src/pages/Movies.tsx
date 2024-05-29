@@ -1,21 +1,23 @@
 import MovieList from "../components/movies/MovieList";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 
 const Movies = () => {
   interface Movie {
     code: string;
     cast: string[];
+    maleCast: string[];
     title: string;
   }
 
   const totalPagesRef = useRef<number>(0);
   const [movies, setMovies] = useState<Movie[]>([]);
-  const page = parseInt(useParams().page ?? "1");
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
+  const [searchParams] = useSearchParams();
+  const page = parseInt(searchParams.get("p") || "1");
 
   const refetchMovies = () => {
     setRefetchTrigger((prev) => !prev);
@@ -25,7 +27,7 @@ const Movies = () => {
     const fetchMovies = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/movies?sort=latest&page=${page}`
+          `http://localhost:5000/movies?page=${page}`
         );
         setMovies(res.data.movies);
         totalPagesRef.current = res.data.totalPages;
@@ -41,7 +43,6 @@ const Movies = () => {
   return isLoaded ? (
     <MovieList
       movies={movies}
-      currentPage={page}
       totalPages={totalPagesRef.current}
       refetch={refetchMovies}
     />
