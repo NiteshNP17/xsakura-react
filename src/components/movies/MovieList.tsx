@@ -2,7 +2,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import MovieCover from "./MovieCover";
 import IconButton from "@mui/material/IconButton";
 import MoreVert from "@mui/icons-material/MoreVert";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import { Alert, Pagination, Snackbar } from "@mui/material";
 import MovieForm from "../Dialogs/MovieForm";
@@ -28,20 +28,17 @@ const MovieList: React.FC<MovieListProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") ?? "1");
 
-  const handlePageChange = useCallback(
-    (
-      _e: React.ChangeEvent<unknown> | KeyboardEvent | null,
-      newPage: number
-    ) => {
-      if (newPage === 1) {
-        searchParams.delete("p");
-        setSearchParams(searchParams);
-      } else {
-        setSearchParams({ p: newPage.toString() });
-      }
-    },
-    [searchParams, setSearchParams]
-  );
+  const handlePageChange = (
+    _e: React.ChangeEvent<unknown> | KeyboardEvent | null,
+    newPage: number
+  ) => {
+    if (newPage === 1) {
+      searchParams.delete("p");
+      setSearchParams(searchParams);
+    } else {
+      setSearchParams({ p: newPage.toString() });
+    }
+  };
 
   useKeyboardNavigation({
     onNext: () => handlePageChange(null, Math.min(page + 1, totalPages)),

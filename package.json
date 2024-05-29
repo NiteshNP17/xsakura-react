@@ -16,6 +16,8 @@
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.16",
     "axios": "^1.6.8",
+    "babel-plugin-react-compiler": "^0.0.0-experimental-487cb0e-20240529",
+    "eslint-plugin-react-compiler": "^0.0.0-experimental-a97cca1-20240529",
     "react": "^19.0.0-rc-6f23540c7d-20240528",
     "react-dom": "^19.0.0-rc-6f23540c7d-20240528",
     "react-router-dom": "^6.23.0"
