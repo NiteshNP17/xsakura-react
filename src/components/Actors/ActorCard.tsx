@@ -12,12 +12,13 @@ interface ActorCardProps {
     img500?: string;
   };
   children?: React.ReactNode;
+  noLink?: boolean;
 }
 
-const ActorCard: React.FC<ActorCardProps> = ({ actor, children }) => {
+const ActorCard: React.FC<ActorCardProps> = ({ actor, children, noLink }) => {
   const myAge = new Date("1997-11-02T00:00:00Z");
   const today = new Date();
-  actor.dob = actor.dob ? new Date(actor.dob) : undefined;
+  const dobDate = actor.dob ? new Date(actor.dob) : undefined;
   const blankImg =
     "https://upload.wikimedia.org/wikipedia/commons/5/53/Blank_woman_placeholder.svg";
   const [showBlank, setShowBlank] = useState<boolean>(false);
@@ -32,13 +33,13 @@ const ActorCard: React.FC<ActorCardProps> = ({ actor, children }) => {
     }
   }, [actor.img500]);
 
+  const ActorLink = ({ children }: { children: React.ReactNode }) =>
+    !noLink ? <Link to={actorLink}>{children}</Link> : <>{children}</>;
+
   return (
     <div className="border-zinc-300 dark:bg-zinc-800 dark:border-zinc-600 cq group overflow-hidden bg-white border rounded-lg shadow-md">
-      {/* <button className="right-1 top-1 aspect-square opacity-80 hover:bg-zinc-200 text-zinc-600 absolute p-1 transition-colors duration-150 scale-90 bg-white rounded-full">
-        <Edit />
-      </button> */}
       {!showBlank ? (
-        <Link to={actorLink}>
+        <ActorLink>
           <img
             src={actor.img500}
             alt={actor.name}
@@ -46,7 +47,7 @@ const ActorCard: React.FC<ActorCardProps> = ({ actor, children }) => {
             className="object-cover aspect-[3/4] bg-zinc-200"
             onError={() => setShowBlank(true)}
           />
-        </Link>
+        </ActorLink>
       ) : (
         <img
           src={blankImg}
@@ -57,28 +58,27 @@ const ActorCard: React.FC<ActorCardProps> = ({ actor, children }) => {
       )}
       <div className="relative grid px-2">
         <div>
-          <Link to={actorLink}>
+          <ActorLink>
             <p className="w-full text-lg font-semibold text-center capitalize">
               {actor.name}
             </p>
-          </Link>
+          </ActorLink>
           {children}
         </div>
-        <Link to={actorLink}>
+        <ActorLink>
           <div className="flex justify-between">
-            {actor.dob && (
+            {dobDate && (
               <p>
                 <span className="opacity-80 font-semibold">
-                  {calculateAge(actor.dob, today)}
-                </span>
-                &nbsp;
+                  {calculateAge(dobDate, today)}
+                </span>{" "}
                 <span className="text-sm opacity-50">
-                  {actor.dob.getDate()}-
-                  {actor.dob.toLocaleString("default", { month: "short" })}-
-                  {actor.dob.getFullYear().toString().slice(-2)}
+                  {dobDate.getDate()}-
+                  {dobDate.toLocaleString("default", { month: "short" })}-
+                  {dobDate.getFullYear().toString().slice(-2)}
                   {!actor.isMale && (
                     <span className="my-age">
-                      &nbsp;({ageCompare(actor.dob, myAge)})
+                      &nbsp;({ageCompare(dobDate, myAge)})
                     </span>
                   )}
                 </span>
@@ -93,7 +93,7 @@ const ActorCard: React.FC<ActorCardProps> = ({ actor, children }) => {
               </p>
             )}
           </div>
-        </Link>
+        </ActorLink>
       </div>
     </div>
   );

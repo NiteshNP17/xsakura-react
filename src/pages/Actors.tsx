@@ -1,5 +1,5 @@
 import { AddCircleOutline } from "@mui/icons-material";
-import { IconButton } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
 import ActorForm from "../components/Dialogs/ActorForm";
@@ -19,6 +19,7 @@ const Actors = () => {
     img500?: string;
   }
 
+  const [isLoaded, setIsLoaded] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [actors, setActors] = useState<ActorData[]>([]);
@@ -42,12 +43,13 @@ const Actors = () => {
 
   useEffect(() => {
     const fetchActors = async () => {
+      setIsLoaded(false);
       try {
         const res = await axios.get(
           `http://localhost:5000/actors${isMale ? "?male" : ""}`
         );
         setActors(res.data.actors);
-        console.log("actors: ", res.data.actors);
+        setIsLoaded(true);
       } catch (err) {
         console.error("error fetching actors: ", err);
       }
@@ -56,7 +58,7 @@ const Actors = () => {
     fetchActors();
   }, [refetch, isMale]);
 
-  return (
+  return isLoaded ? (
     <div className="px-[3vw] mb-12">
       <div className="flex px-1 mt-1 mb-4">
         <h1 className="text-3xl font-semibold">Actors</h1>
@@ -106,8 +108,15 @@ const Actors = () => {
         openEditDialog={openEditDialog}
         setOpenEditDialog={setOpenEditDialog}
         refetch={refetchActors}
-        actorToEdit={actorToEditRef.current}
+        actorToEdit={{
+          name: actorToEditRef.current,
+          id: Math.random().toString(),
+        }}
       />
+    </div>
+  ) : (
+    <div className="place-content-center h-96 grid w-full">
+      <CircularProgress size="4rem" />
     </div>
   );
 };

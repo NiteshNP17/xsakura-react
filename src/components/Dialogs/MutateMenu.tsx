@@ -29,6 +29,7 @@ const MutateMenu: React.FC<MutateMenuProps> = ({
       }}
     >
       <MenuItem
+        key="edit"
         onClick={() => {
           setAnchorEl(null);
           setOpenEditDialog(true);
@@ -37,7 +38,7 @@ const MutateMenu: React.FC<MutateMenuProps> = ({
         <Edit className="opacity-50" />
         &nbsp;Edit
       </MenuItem>
-      <MenuItem>
+      <MenuItem key="delete">
         <Delete className="opacity-50" />
         &nbsp;Delete
       </MenuItem>

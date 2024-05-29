@@ -15,7 +15,7 @@ interface ActorFormProps {
   setOpenEditDialog: (open: boolean) => void;
   refetch: () => void;
   setOpenSnack?: (open: boolean) => void;
-  actorToEdit: string | null;
+  actorToEdit: { name: string | null; id: string } | null;
 }
 
 const ActorForm: React.FC<ActorFormProps> = ({
@@ -51,7 +51,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
     const fetchActor = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/actors/${actorToEdit}`
+          `http://localhost:5000/actors/${actorToEdit && actorToEdit.name}`
         );
         setFormFields(res.data);
       } catch (err) {
@@ -76,7 +76,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
         await axios.post("http://localhost:5000/actors", formFields);
       } else {
         await axios.put(
-          `http://localhost:5000/actors/${actorToEdit}`,
+          `http://localhost:5000/actors/${actorToEdit && actorToEdit.name}`,
           formFields
         );
       }
@@ -110,7 +110,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
           <form onSubmit={handleSubmit}>
             <div className="md:grid-cols-2 md:grid flex flex-col items-center justify-center gap-6">
               <div className="grid w-[69%] mx-auto">
-                <ActorCard actor={formFields} />
+                <ActorCard actor={formFields} noLink />
               </div>
               <div className="flex flex-col w-full gap-4">
                 <TextField

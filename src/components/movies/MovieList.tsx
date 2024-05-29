@@ -27,6 +27,7 @@ const MovieList: React.FC<MovieListProps> = ({
   const [openSnack, setOpenSnack] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") ?? "1");
+  const [id, setId] = useState("");
 
   const handlePageChange = (
     _e: React.ChangeEvent<unknown> | KeyboardEvent | null,
@@ -53,6 +54,7 @@ const MovieList: React.FC<MovieListProps> = ({
           color="primary"
           onClick={() => {
             refCodeToEdit.current = null;
+            setId(Math.random().toString(36).substring(6));
             setOpenEditDialog(true);
           }}
         >
@@ -82,6 +84,7 @@ const MovieList: React.FC<MovieListProps> = ({
                 className="sm:opacity-0 group-hover:opacity-100"
                 onClick={(e) => {
                   refCodeToEdit.current = movie.code;
+                  setId(Math.random().toString(36).substring(6));
                   setAnchorEl(e.currentTarget);
                 }}
               >
@@ -112,6 +115,7 @@ const MovieList: React.FC<MovieListProps> = ({
         setOpenEditDialog={setOpenEditDialog}
         setOpenSnack={setOpenSnack}
         refetch={refetch}
+        id={id}
       />
       <Snackbar
         open={openSnack}
