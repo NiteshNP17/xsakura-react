@@ -39,7 +39,7 @@ const MovieCover = ({ code }: { code: string }) => {
         </video>
       )}
       <img
-        className="bg-slate-200"
+        className="bg-slate-200 dark:bg-zinc-600"
         src={`https://fivetiu.com/${code}/cover-t.jpg`}
         alt={code.toUpperCase()}
         width="100%"
@@ -48,7 +48,7 @@ const MovieCover = ({ code }: { code: string }) => {
       />
     </div>
   ) : (
-    <div className="bg-slate-200 w-full aspect-[16/10] grid place-content-center text-2xl font-semibold text-slate-400 text-center">
+    <div className="bg-slate-200 dark:bg-zinc-600 w-full aspect-[16/10] grid place-content-center text-2xl font-semibold text-slate-400 text-center">
       IMAGE NOT FOUND
       <br />
       {code.toUpperCase()}

@@ -164,7 +164,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   {codeToEdit || (previewCode && previewCode.length > 6) ? (
                     <MovieCover code={codeToEdit || previewCode || ""} />
                   ) : (
-                    <div className="bg-slate-200 w-full aspect-[16/10] grid place-content-center text-2xl font-semibold text-slate-400 text-center">
+                    <div className="bg-slate-200 dark:bg-zinc-600 w-full aspect-[16/10] grid place-content-center text-2xl font-semibold text-slate-400 text-center">
                       ENTER CODE
                       <br />
                       TO SEE PREVIEW
