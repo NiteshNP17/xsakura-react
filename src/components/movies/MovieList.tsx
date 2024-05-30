@@ -9,6 +9,7 @@ import MovieForm from "../Dialogs/MovieForm";
 import MovieCastList from "./MovieCastList";
 import MutateMenu from "../Dialogs/MutateMenu";
 import useKeyboardNavigation from "../../utils/useKeyboardNavigation";
+import DeleteDialog from "../Dialogs/DeleteDialog";
 
 interface MovieListProps {
   movies: { code: string; title: string; cast: string[]; maleCast: string[] }[];
@@ -24,6 +25,7 @@ const MovieList: React.FC<MovieListProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const refCodeToEdit = useRef<string | null>(null);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openSnack, setOpenSnack] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") ?? "1");
@@ -98,6 +100,7 @@ const MovieList: React.FC<MovieListProps> = ({
           anchorEl={anchorEl}
           setAnchorEl={setAnchorEl}
           setOpenEditDialog={setOpenEditDialog}
+          setOpenDeleteDialog={setOpenDeleteDialog}
         />
       </div>
       <div className="flex justify-center w-full mb-12">
@@ -116,6 +119,13 @@ const MovieList: React.FC<MovieListProps> = ({
         setOpenSnack={setOpenSnack}
         refetch={refetch}
         id={id}
+      />
+      <DeleteDialog
+        type="movies"
+        open={openDeleteDialog}
+        setOpen={setOpenDeleteDialog}
+        deleteId={{ id: refCodeToEdit.current || "", uId: id }}
+        refetch={refetch}
       />
       <Snackbar
         open={openSnack}

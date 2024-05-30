@@ -7,12 +7,14 @@ interface MutateMenuProps {
   anchorEl: HTMLElement | null;
   setAnchorEl: (el: HTMLElement | null) => void;
   setOpenEditDialog: (open: boolean) => void;
+  setOpenDeleteDialog?: (open: boolean) => void;
 }
 
 const MutateMenu: React.FC<MutateMenuProps> = ({
   anchorEl,
   setAnchorEl,
   setOpenEditDialog,
+  setOpenDeleteDialog,
 }) => {
   return (
     <Menu
@@ -38,7 +40,13 @@ const MutateMenu: React.FC<MutateMenuProps> = ({
         <Edit className="opacity-50" />
         &nbsp;Edit
       </MenuItem>
-      <MenuItem key="delete">
+      <MenuItem
+        key="delete"
+        onClick={() => {
+          setAnchorEl(null);
+          setOpenDeleteDialog && setOpenDeleteDialog(true);
+        }}
+      >
         <Delete className="opacity-50" />
         &nbsp;Delete
       </MenuItem>

@@ -72,7 +72,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
     setLoading(true);
 
     try {
-      if (!actorToEdit) {
+      if (!actorToEdit?.name) {
         await axios.post("http://localhost:5000/actors", formFields);
       } else {
         await axios.put(

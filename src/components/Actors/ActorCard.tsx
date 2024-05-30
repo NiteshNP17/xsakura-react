@@ -22,10 +22,9 @@ const ActorCard: React.FC<ActorCardProps> = ({ actor, children, noLink }) => {
   const blankImg =
     "https://upload.wikimedia.org/wikipedia/commons/5/53/Blank_woman_placeholder.svg";
   const [showBlank, setShowBlank] = useState<boolean>(false);
-  const actorLink = `/actor${actor.isMale ? "-m" : ""}/${actor.name.replace(
-    / /g,
-    "-"
-  )}`;
+  const actorLink = `/actor${actor.isMale ? "-m" : ""}/${
+    actor.name && actor.name.replace(/ /g, "-")
+  }`;
 
   useEffect(() => {
     if (actor.img500) {
@@ -38,7 +37,7 @@ const ActorCard: React.FC<ActorCardProps> = ({ actor, children, noLink }) => {
 
   return (
     <div className="border-zinc-300 dark:bg-zinc-800 dark:border-zinc-600 cq group overflow-hidden bg-white border rounded-lg shadow-md">
-      {!showBlank ? (
+      {!showBlank && actor.name ? (
         <ActorLink>
           <img
             src={actor.img500}

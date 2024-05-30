@@ -1,5 +1,12 @@
 import { AddCircleOutline } from "@mui/icons-material";
-import { CircularProgress, IconButton } from "@mui/material";
+import {
+  CircularProgress,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
 import ActorForm from "../components/Dialogs/ActorForm";
@@ -8,6 +15,7 @@ import axios from "axios";
 import { ActorListSwitch } from "../components/Actors/ActorListSwitch";
 import MutateMenu from "../components/Dialogs/MutateMenu";
 import MoreVert from "@mui/icons-material/MoreVert";
+import DeleteDialog from "../components/Dialogs/DeleteDialog";
 
 const Actors = () => {
   interface ActorData {
@@ -22,10 +30,13 @@ const Actors = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [actors, setActors] = useState<ActorData[]>([]);
   const [refetch, setRefetch] = useState(false);
   const [urlParams, setUrlParams] = useSearchParams();
   const isMale = urlParams.get("list") === "male";
+  const sort =
+    urlParams.get("sort") || localStorage.getItem("actorSort") || "added";
   const actorToEditRef = useRef(null as string | null);
 
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,10 +54,10 @@ const Actors = () => {
 
   useEffect(() => {
     const fetchActors = async () => {
-      setIsLoaded(false);
+      // setIsLoaded(false);
       try {
         const res = await axios.get(
-          `http://localhost:5000/actors${isMale ? "?male" : ""}`
+          `http://localhost:5000/actors?sort=${sort}${isMale ? "&male" : ""}`
         );
         setActors(res.data.actors);
         setIsLoaded(true);
@@ -55,8 +66,14 @@ const Actors = () => {
       }
     };
 
+    const actorSortLocal = localStorage.getItem("actorSort");
+
+    if (actorSortLocal) {
+      setUrlParams({ sort: actorSortLocal });
+    }
+
     fetchActors();
-  }, [refetch, isMale]);
+  }, [refetch, isMale, sort, setUrlParams]);
 
   return isLoaded ? (
     <div className="px-[3vw] mb-12">
@@ -71,7 +88,26 @@ const Actors = () => {
         >
           <AddCircleOutline />
         </IconButton>
-        <div className="ml-auto">
+        <div className="flex gap-2 ml-auto">
+          <FormControl fullWidth>
+            <InputLabel id="sort-select-label">Sort</InputLabel>
+            <Select
+              labelId="sort-select-label"
+              id="sort-select"
+              value={sort}
+              label="Age"
+              size="small"
+              sx={{ minWidth: "100px" }}
+              onChange={(e) => {
+                setUrlParams({ sort: e.target.value as string });
+                localStorage.setItem("actorSort", e.target.value as string);
+              }}
+            >
+              <MenuItem value={"added"}>Added</MenuItem>
+              <MenuItem value={"ageAsc"}>Age</MenuItem>
+              <MenuItem value={"shortest"}>Height</MenuItem>
+            </Select>
+          </FormControl>
           <ActorListSwitch checked={isMale} onChange={handleSwitchChange} />
         </div>
       </div>
@@ -103,6 +139,7 @@ const Actors = () => {
         anchorEl={anchorEl}
         setAnchorEl={setAnchorEl}
         setOpenEditDialog={setOpenEditDialog}
+        setOpenDeleteDialog={setOpenDeleteDialog}
       />
       <ActorForm
         openEditDialog={openEditDialog}
@@ -112,6 +149,16 @@ const Actors = () => {
           name: actorToEditRef.current,
           id: Math.random().toString(),
         }}
+      />
+      <DeleteDialog
+        type="actors"
+        open={openDeleteDialog}
+        setOpen={setOpenDeleteDialog}
+        deleteId={{
+          id: actorToEditRef.current || "",
+          uId: Math.random().toString(),
+        }}
+        refetch={refetchActors}
       />
     </div>
   ) : (

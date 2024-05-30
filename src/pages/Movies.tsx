@@ -2,7 +2,8 @@ import MovieList from "../components/movies/MovieList";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
+import { Autocomplete, CircularProgress, TextField } from "@mui/material";
+// import MovieCastList from "../components/movies/MovieCastList";
 
 const Movies = () => {
   interface Movie {
@@ -19,7 +20,15 @@ const Movies = () => {
   const [searchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") || "1");
 
+  const searchCast = [
+    "Akari Minase",
+    "Ruru Arisu",
+    "Remu Suzumori",
+    "Ai Hoshina",
+  ];
+
   const refetchMovies = () => {
+    setLoaded(true);
     setRefetchTrigger((prev) => !prev);
   };
 
@@ -40,16 +49,44 @@ const Movies = () => {
     fetchMovies();
   }, [page, refetchTrigger, isLoaded]);
 
-  return isLoaded ? (
-    <MovieList
-      movies={movies}
-      totalPages={totalPagesRef.current}
-      refetch={refetchMovies}
-    />
-  ) : (
-    <div className="place-content-center h-96 grid w-full">
-      <CircularProgress size="4rem" />
-    </div>
+  return (
+    <>
+      <div className="w-full max-w-[1660px] mb-3 grid place-items-center">
+        {/* <MovieCastList
+            movieCast={movies[0]?.cast}
+            maleCast={movies[0]?.maleCast}
+          /> */}
+      </div>
+      <div className="place-items-center grid w-full px-[3vw]">
+        <Autocomplete
+          id="search-tags"
+          options={searchCast}
+          sx={{ width: 300 }}
+          freeSolo
+          clearOnEscape
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search"
+              variant="outlined"
+              size="small"
+              className="w-full max-w-xl"
+            />
+          )}
+        />
+      </div>
+      {isLoaded ? (
+        <MovieList
+          movies={movies}
+          totalPages={totalPagesRef.current}
+          refetch={refetchMovies}
+        />
+      ) : (
+        <div className="place-content-center h-96 grid w-full">
+          <CircularProgress size="4rem" />
+        </div>
+      )}
+    </>
   );
 };
 

@@ -161,7 +161,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
             <form onSubmit={handleSubmit}>
               <div className="md:grid-cols-2 grid items-center gap-6">
                 <div className="md:mb-0 mb-2 overflow-hidden rounded-lg">
-                  {codeToEdit || (previewCode && previewCode.length > 6) ? (
+                  {codeToEdit || (previewCode && previewCode.length > 5) ? (
                     <MovieCover code={codeToEdit || previewCode || ""} />
                   ) : (
                     <div className="bg-slate-200 dark:bg-zinc-600 w-full aspect-[16/10] grid place-content-center text-2xl font-semibold text-slate-400 text-center">
