@@ -6,6 +6,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
 } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
@@ -40,12 +41,20 @@ const Actors = () => {
   const actorToEditRef = useRef(null as string | null);
 
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const params = new URLSearchParams(urlParams);
     if (event.target.checked) {
-      setUrlParams({ list: "male" });
+      params.set("list", "male");
     } else {
-      urlParams.delete("list");
-      setUrlParams(urlParams);
+      params.delete("list");
     }
+    setUrlParams(params);
+  };
+
+  const handleSortChange = (e: SelectChangeEvent) => {
+    const params = new URLSearchParams(urlParams);
+    params.set("sort", e.target.value as string);
+    setUrlParams(params);
+    localStorage.setItem("actorSort", e.target.value as string);
   };
 
   const refetchActors = () => {
@@ -69,11 +78,13 @@ const Actors = () => {
     const actorSortLocal = localStorage.getItem("actorSort");
 
     if (actorSortLocal) {
-      setUrlParams({ sort: actorSortLocal });
+      const params = new URLSearchParams(urlParams);
+      params.set("sort", actorSortLocal);
+      setUrlParams(params);
     }
 
     fetchActors();
-  }, [refetch, isMale, sort, setUrlParams]);
+  }, [refetch, isMale, sort, urlParams, setUrlParams]);
 
   return isLoaded ? (
     <div className="px-[3vw] mb-12">
@@ -98,10 +109,7 @@ const Actors = () => {
               label="Age"
               size="small"
               sx={{ minWidth: "100px" }}
-              onChange={(e) => {
-                setUrlParams({ sort: e.target.value as string });
-                localStorage.setItem("actorSort", e.target.value as string);
-              }}
+              onChange={handleSortChange}
             >
               <MenuItem value={"added"}>Added</MenuItem>
               <MenuItem value={"ageAsc"}>Age</MenuItem>

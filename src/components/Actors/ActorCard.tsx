@@ -43,7 +43,7 @@ const ActorCard: React.FC<ActorCardProps> = ({ actor, children, noLink }) => {
             src={actor.img500}
             alt={actor.name}
             width="100%"
-            className="object-cover aspect-[3/4] bg-zinc-200"
+            className="object-cover object-top aspect-[3/4] bg-zinc-200"
             onError={() => setShowBlank(true)}
           />
         </ActorLink>

@@ -6,6 +6,7 @@ import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
 import { getTheme } from "./utils/theme";
 import * as pages from "./pages";
+import { ActorNamesProvider } from "./components/Actors/ActorNamesProvider";
 
 const App = () => {
   const [themeMode, setThemeMode] = useState<"light" | "dark">(
@@ -33,14 +34,16 @@ const App = () => {
     <ThemeProvider theme={getTheme(themeMode)}>
       <CssBaseline />
       <Navbar setMode={toggleMode} themeMode={themeMode} />
-      <Routes>
-        <Route path="/" Component={pages.Home} />
-        <Route path="/actors" Component={pages.Actors} />
-        <Route path="/actor/:name" Component={pages.ActorPage} />
-        <Route path="/actor-m/:name" Component={pages.ActorPage} />
-        <Route path="/movies" Component={pages.Movies} />
-        <Route path="/movie/:code" Component={pages.MoviePage} />
-      </Routes>
+      <ActorNamesProvider>
+        <Routes>
+          <Route path="/" Component={pages.Home} />
+          <Route path="/actors" Component={pages.Actors} />
+          <Route path="/actor/:name" Component={pages.ActorPage} />
+          <Route path="/actor-m/:name" Component={pages.ActorPage} />
+          <Route path="/movies" Component={pages.Movies} />
+          <Route path="/movie/:code" Component={pages.MoviePage} />
+        </Routes>
+      </ActorNamesProvider>
     </ThemeProvider>
   );
 };

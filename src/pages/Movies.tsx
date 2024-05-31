@@ -13,8 +13,14 @@ const Movies = () => {
     title: string;
   }
 
+  // interface ActorNames {
+  //   _id: string;
+  //   name: string;
+  // }
+
   const totalPagesRef = useRef<number>(0);
   const [movies, setMovies] = useState<Movie[]>([]);
+  // const [actorsInDb, setActorsInDb] = useState<ActorNames[]>([]);
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
   const [searchParams] = useSearchParams();

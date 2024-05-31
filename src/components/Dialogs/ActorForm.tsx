@@ -5,10 +5,11 @@ import {
   Switch,
   TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ActorCard from "../Actors/ActorCard";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
+import { ActorNamesContext } from "../Actors/ActorNamesProvider";
 
 interface ActorFormProps {
   openEditDialog: boolean;
@@ -27,6 +28,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [loadingActorData, setLoadingActorData] = useState(false);
+  const { refetchActors } = useContext(ActorNamesContext);
   const [formFields, setFormFields] = useState({
     name: "",
     dob: "",
@@ -74,6 +76,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
     try {
       if (!actorToEdit?.name) {
         await axios.post("http://localhost:5000/actors", formFields);
+        refetchActors();
       } else {
         await axios.put(
           `http://localhost:5000/actors/${actorToEdit && actorToEdit.name}`,
