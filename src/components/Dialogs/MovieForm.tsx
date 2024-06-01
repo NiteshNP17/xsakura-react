@@ -1,11 +1,18 @@
-import { Button, CircularProgress, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Button,
+  CircularProgress,
+  TextField,
+} from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import MovieCover from "../movies/MovieCover";
 import { LoadingButton } from "@mui/lab";
 import { useLocation, useNavigate } from "react-router-dom";
 import { formatCode, formatNames } from "../../utils/utils";
+import { ActorNamesContext } from "../Actors/ActorNamesProvider";
+import MovieCastList from "../movies/MovieCastList";
 
 interface MovieFormProps {
   codeToEdit: string | null;
@@ -29,7 +36,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
     title?: string;
     cast?: string[];
     maleCast?: string[];
-    release?: Date;
+    release?: string;
     runtime?: number;
     tags?: string[];
     opt?: string[];
@@ -39,18 +46,32 @@ const MovieForm: React.FC<MovieFormProps> = ({
   const [previewCode, setPreviewCode] = useState<string | null>(null);
   const [movieData, setMovieData] = useState<MovieData>({});
   const [loading, setLoading] = useState(false);
+  const isClearRef = useRef(false);
   const navigate = useNavigate();
   const path = useLocation().pathname;
+
+  const { actorsInDb } = useContext(ActorNamesContext);
+  const fActorNames = actorsInDb
+    .filter((actor) => !actor.isMale)
+    .map((actor) => actor.name);
+
+  const [selectedActorsF, setSelectedActorsF] = useState<string[]>([]);
+  const [release, setRelease] = useState(movieData.release || "");
 
   const fetchMovieData = async (movieCode: string, shouldSetData: boolean) => {
     try {
       const res = await axios.get(
         `http://localhost:5000/movies/${movieCode.toLowerCase()}`
       );
-      shouldSetData && setMovieData(res.data);
+      if (shouldSetData) {
+        setMovieData(res.data);
+        setRelease(res.data.release);
+        setSelectedActorsF(res.data.cast);
+      } else alert("movie already exists");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (err.response.status === 404) {
+        isClearRef.current = true;
         return "clear";
       } else {
         console.log("Error: ", err);
@@ -71,12 +92,10 @@ const MovieForm: React.FC<MovieFormProps> = ({
       return false;
     }
 
-    const checkIfExists = await fetchMovieData(
-      dataToPost.code.toString(),
-      false
-    );
+    if (!isClearRef.current && !codeToEdit)
+      await fetchMovieData(dataToPost.code.toString(), false);
 
-    if (!codeToEdit && checkIfExists !== "clear") {
+    if (!codeToEdit && !isClearRef.current) {
       setLoading(false);
       alert("Movie already exists!");
       return false;
@@ -88,12 +107,19 @@ const MovieForm: React.FC<MovieFormProps> = ({
     if (codeToEdit) {
       fetchMovieData(codeToEdit, true);
     }
-  }, [codeToEdit, id]);
+    if (!codeToEdit && openEditDialog) {
+      setTimeout(() => {
+        document.getElementById("code-input")?.focus();
+      }, 50);
+    }
+  }, [codeToEdit, id, openEditDialog]);
 
   const handleClose = () => {
     setLoading(false);
     setOpenEditDialog(false);
     setPreviewCode(null);
+    setRelease("");
+    setSelectedActorsF([]);
     setTimeout(() => {
       setMovieData({});
     }, 400);
@@ -107,6 +133,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
     const dataToPost = Object.fromEntries(formData);
 
     dataToPost.code = previewCode || dataToPost.code;
+    dataToPost.cast = JSON.stringify(selectedActorsF).toLowerCase();
 
     const isValid = await validateData(dataToPost as MovieData);
 
@@ -183,6 +210,10 @@ const MovieForm: React.FC<MovieFormProps> = ({
                           formatCode(e.target.value.toLowerCase())
                         );
                     }}
+                    onBlur={(e) =>
+                      e.target.value.length > 4 &&
+                      fetchMovieData(formatCode(e.target.value), false)
+                    }
                     label="Code"
                     variant="outlined"
                     autoComplete="off"
@@ -192,6 +223,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                       autoCapitalize: "characters",
                       readOnly: codeToEdit && true,
                       className: "uppercase",
+                      id: "code-input",
                     }}
                   />
                   <TextField
@@ -205,7 +237,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                       autoCapitalize: "words",
                     }}
                   />
-                  <TextField
+                  {/* <TextField
                     type="text"
                     name="cast"
                     label="Actor(s)"
@@ -214,6 +246,46 @@ const MovieForm: React.FC<MovieFormProps> = ({
                     fullWidth
                     sx={{ margin: "1rem 0" }}
                     inputProps={{ autoCapitalize: "words" }}
+                  /> */}
+                  <div className="min-h-9 flex items-center w-full col-span-2 gap-1 overflow-x-scroll">
+                    {selectedActorsF.length > 0 ? (
+                      <MovieCastList
+                        movieCast={selectedActorsF}
+                        maleCast={[]}
+                        release={release}
+                      />
+                    ) : (
+                      <span className="w-full pt-4 text-lg text-center opacity-50">
+                        Actors
+                      </span>
+                    )}
+                  </div>
+                  <Autocomplete
+                    id="f-actor-opts"
+                    options={fActorNames}
+                    freeSolo
+                    multiple
+                    autoHighlight
+                    limitTags={1}
+                    value={selectedActorsF}
+                    onChange={(_e, newValue) => {
+                      setSelectedActorsF(newValue);
+                    }}
+                    disableCloseOnSelect // Add this prop
+                    renderOption={(props, option) => (
+                      <li {...props}>
+                        <span className="capitalize">{option}</span>
+                      </li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Actor(s)"
+                        variant="outlined"
+                        placeholder="Girls"
+                      />
+                    )}
+                    renderTags={() => <></>}
                   />
                   <TextField
                     type="text"
@@ -232,7 +304,8 @@ const MovieForm: React.FC<MovieFormProps> = ({
                     name="release"
                     label="Release Date"
                     placeholder="YYYY-MM-DD"
-                    defaultValue={movieData.release?.toString().split("T")[0]}
+                    defaultValue={movieData.release}
+                    onBlur={(e) => setRelease(e.target.value)}
                     variant="outlined"
                     autoComplete="off"
                   />

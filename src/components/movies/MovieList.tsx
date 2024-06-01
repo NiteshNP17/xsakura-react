@@ -8,11 +8,16 @@ import { Alert, Pagination, Snackbar } from "@mui/material";
 import MovieForm from "../Dialogs/MovieForm";
 import MovieCastList from "./MovieCastList";
 import MutateMenu from "../Dialogs/MutateMenu";
-import useKeyboardNavigation from "../../utils/useKeyboardNavigation";
 import DeleteDialog from "../Dialogs/DeleteDialog";
 
 interface MovieListProps {
-  movies: { code: string; title: string; cast: string[]; maleCast: string[] }[];
+  movies: {
+    code: string;
+    title: string;
+    cast: string[];
+    maleCast: string[];
+    release: string;
+  }[];
   totalPages: number;
   refetch: () => void;
 }
@@ -42,11 +47,6 @@ const MovieList: React.FC<MovieListProps> = ({
       setSearchParams({ p: newPage.toString() });
     }
   };
-
-  useKeyboardNavigation({
-    onNext: () => handlePageChange(null, Math.min(page + 1, totalPages)),
-    onPrevious: () => handlePageChange(null, Math.max(page - 1, 1)),
-  });
 
   return (
     <div className="px-[3vw]">
@@ -93,7 +93,12 @@ const MovieList: React.FC<MovieListProps> = ({
                 <MoreVert />
               </IconButton>
             </div>
-            <MovieCastList movieCast={movie.cast} maleCast={movie.maleCast} />
+            <MovieCastList
+              movieCast={movie.cast}
+              maleCast={movie.maleCast}
+              release={movie.release}
+              mb
+            />
           </article>
         ))}
         <MutateMenu

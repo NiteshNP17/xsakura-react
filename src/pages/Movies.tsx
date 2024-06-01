@@ -3,7 +3,6 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Autocomplete, CircularProgress, TextField } from "@mui/material";
-// import MovieCastList from "../components/movies/MovieCastList";
 
 const Movies = () => {
   interface Movie {
@@ -11,16 +10,11 @@ const Movies = () => {
     cast: string[];
     maleCast: string[];
     title: string;
+    release: string;
   }
-
-  // interface ActorNames {
-  //   _id: string;
-  //   name: string;
-  // }
 
   const totalPagesRef = useRef<number>(0);
   const [movies, setMovies] = useState<Movie[]>([]);
-  // const [actorsInDb, setActorsInDb] = useState<ActorNames[]>([]);
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
@@ -57,7 +51,7 @@ const Movies = () => {
 
   return (
     <>
-      <div className="w-full max-w-[1660px] mb-3 grid place-items-center">
+      <div className="w-full max-w-[1660px] mb-3 grid gap-1 place-items-center">
         {/* <MovieCastList
             movieCast={movies[0]?.cast}
             maleCast={movies[0]?.maleCast}
@@ -69,6 +63,8 @@ const Movies = () => {
           options={searchCast}
           sx={{ width: 300 }}
           freeSolo
+          multiple
+          limitTags={2}
           clearOnEscape
           renderInput={(params) => (
             <TextField

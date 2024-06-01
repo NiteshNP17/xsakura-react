@@ -3,6 +3,8 @@ import { createContext, useState, useEffect } from "react";
 interface ActorNames {
   _id: string;
   name: string;
+  dob?: string | Date;
+  isMale: boolean;
 }
 
 interface ActorsContextValue {

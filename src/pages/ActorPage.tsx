@@ -20,6 +20,7 @@ const ActorPage = () => {
     cast: string[];
     maleCast: string[];
     title: string;
+    release: string;
   }
 
   const { name } = useParams<{ name: string }>();
@@ -77,13 +78,11 @@ const ActorPage = () => {
         <div className="flex px-1 mt-1 mb-4">
           <h1 className="text-3xl font-semibold capitalize">{actorName}</h1>
         </div>
-        <div className="md:justify-start flex justify-center w-full mb-4">
-          {actorData.img500 && (
-            <div className="max-w-80">
-              <ActorCard actor={actorData} />
-            </div>
-          )}
-        </div>
+        {actorData.img500 && (
+          <div className="max-w-80 md:mx-12 mx-auto">
+            <ActorCard actor={actorData} noLink />
+          </div>
+        )}
       </div>
       {isLoaded ? (
         <MovieList
