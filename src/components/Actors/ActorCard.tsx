@@ -59,7 +59,7 @@ const ActorCard: React.FC<ActorCardProps> = ({ actor, children, noLink }) => {
         <div>
           <ActorLink>
             <p className="w-full text-lg font-semibold text-center capitalize">
-              {actor.name}
+              {actor.name || "⠀"}
             </p>
           </ActorLink>
           {children}

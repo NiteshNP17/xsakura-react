@@ -27,6 +27,10 @@
   }
 }
 
+.overflow-x-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .cq {
   container-type: inline-size;
 }

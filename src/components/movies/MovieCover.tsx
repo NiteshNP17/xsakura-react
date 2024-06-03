@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 
-const MovieCover = ({ code }: { code: string }) => {
+interface MovieCoverProps {
+  code: string;
+  overrides?: {
+    cover?: string;
+    preview?: string;
+  };
+}
+
+const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides }) => {
   const [hoverCode, setHoverCode] = useState<string | null>(null);
   const [imgLoaded, setImgLoaded] = useState<boolean>(true);
 
@@ -14,7 +22,7 @@ const MovieCover = ({ code }: { code: string }) => {
 
   useEffect(() => {
     setImgLoaded(true);
-  }, [code]);
+  }, [code, overrides]);
 
   return imgLoaded ? (
     <div
@@ -33,14 +41,16 @@ const MovieCover = ({ code }: { code: string }) => {
           height="100%"
         >
           <source
-            src={`https://fivetiu.com/${code}/preview.mp4`}
+            src={
+              overrides?.preview || `https://fivetiu.com/${code}/preview.mp4`
+            }
             type="video/mp4"
           />
         </video>
       )}
       <img
         className="bg-slate-200 dark:bg-zinc-600"
-        src={`https://fivetiu.com/${code}/cover-t.jpg`}
+        src={overrides?.cover || `https://fivetiu.com/${code}/cover-t.jpg`}
         alt={code.toUpperCase()}
         width="100%"
         loading="lazy"

@@ -9,6 +9,7 @@ import MovieForm from "../Dialogs/MovieForm";
 import MovieCastList from "./MovieCastList";
 import MutateMenu from "../Dialogs/MutateMenu";
 import DeleteDialog from "../Dialogs/DeleteDialog";
+import useKeyboardShortcut from "../../utils/useKeyboardShortcut";
 
 interface MovieListProps {
   movies: {
@@ -17,6 +18,10 @@ interface MovieListProps {
     cast: string[];
     maleCast: string[];
     release: string;
+    overrides: {
+      cover: string;
+      preview: string;
+    };
   }[];
   totalPages: number;
   refetch: () => void;
@@ -48,18 +53,21 @@ const MovieList: React.FC<MovieListProps> = ({
     }
   };
 
+  const handleAdd = () => {
+    if (!openEditDialog) {
+      refCodeToEdit.current = null;
+      setId(Math.random().toString(36).substring(6));
+      setOpenEditDialog(true);
+    }
+  };
+
+  useKeyboardShortcut({ modifier: "alt", key: "i", callback: handleAdd });
+
   return (
     <div className="px-[3vw]">
       <div className="flex px-1 mt-1 mb-4">
         <h1 className="text-3xl font-semibold">Movies</h1>
-        <IconButton
-          color="primary"
-          onClick={() => {
-            refCodeToEdit.current = null;
-            setId(Math.random().toString(36).substring(6));
-            setOpenEditDialog(true);
-          }}
-        >
+        <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
       </div>
@@ -70,7 +78,7 @@ const MovieList: React.FC<MovieListProps> = ({
             className="group dark:bg-zinc-800 dark:border-zinc-600 grid gap-1 overflow-hidden bg-white border border-gray-200 rounded-lg shadow-md"
           >
             <Link to={`/movie/${movie.code}`}>
-              <MovieCover code={movie.code} />
+              <MovieCover code={movie.code} overrides={movie.overrides} />
             </Link>
             <div className="flex pl-3">
               <p className="line-clamp-2">

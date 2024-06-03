@@ -2,30 +2,17 @@ import MovieList from "../components/movies/MovieList";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Autocomplete, CircularProgress, TextField } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import { MovieData } from "../utils/customTypes";
+// import { Autocomplete, TextField } from "@mui/material";
 
 const Movies = () => {
-  interface Movie {
-    code: string;
-    cast: string[];
-    maleCast: string[];
-    title: string;
-    release: string;
-  }
-
   const totalPagesRef = useRef<number>(0);
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [movies, setMovies] = useState<MovieData[]>([]);
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") || "1");
-
-  const searchCast = [
-    "Akari Minase",
-    "Ruru Arisu",
-    "Remu Suzumori",
-    "Ai Hoshina",
-  ];
 
   const refetchMovies = () => {
     setLoaded(true);
@@ -51,13 +38,8 @@ const Movies = () => {
 
   return (
     <>
-      <div className="w-full max-w-[1660px] mb-3 grid gap-1 place-items-center">
-        {/* <MovieCastList
-            movieCast={movies[0]?.cast}
-            maleCast={movies[0]?.maleCast}
-          /> */}
-      </div>
-      <div className="place-items-center grid w-full px-[3vw]">
+      {/* <div className="w-full max-w-[1660px] mb-3 grid gap-1 place-items-center"></div>
+        <div className="place-items-center grid w-full px-[3vw]">
         <Autocomplete
           id="search-tags"
           options={searchCast}
@@ -76,7 +58,7 @@ const Movies = () => {
             />
           )}
         />
-      </div>
+      </div>*/}
       {isLoaded ? (
         <MovieList
           movies={movies}

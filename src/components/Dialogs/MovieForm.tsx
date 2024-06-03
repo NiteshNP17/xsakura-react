@@ -2,17 +2,20 @@ import {
   Autocomplete,
   Button,
   CircularProgress,
+  DialogActions,
+  DialogTitle,
   TextField,
+  useMediaQuery,
 } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import axios from "axios";
 import { useContext, useEffect, useRef, useState } from "react";
 import MovieCover from "../movies/MovieCover";
 import { LoadingButton } from "@mui/lab";
-import { useLocation, useNavigate } from "react-router-dom";
 import { formatCode, formatNames } from "../../utils/utils";
 import { ActorNamesContext } from "../Actors/ActorNamesProvider";
 import MovieCastList from "../movies/MovieCastList";
+import { MovieData } from "../../utils/customTypes";
 
 interface MovieFormProps {
   codeToEdit: string | null;
@@ -31,25 +34,12 @@ const MovieForm: React.FC<MovieFormProps> = ({
   refetch,
   id,
 }) => {
-  interface MovieData {
-    code?: string;
-    title?: string;
-    cast?: string[];
-    maleCast?: string[];
-    release?: string;
-    runtime?: number;
-    tags?: string[];
-    opt?: string[];
-    series?: string;
-  }
-
   const [previewCode, setPreviewCode] = useState<string | null>(null);
-  const [movieData, setMovieData] = useState<MovieData>({});
+  const [movieData, setMovieData] = useState<MovieData>({} as MovieData);
   const [loading, setLoading] = useState(false);
   const isClearRef = useRef(false);
-  const navigate = useNavigate();
-  const path = useLocation().pathname;
-
+  const isMobile = useMediaQuery("(max-width:660px)");
+  const [overrides, setOverrides] = useState<{ [key: string]: string }>({});
   const { actorsInDb } = useContext(ActorNamesContext);
   const fActorNames = actorsInDb
     .filter((actor) => !actor.isMale)
@@ -79,7 +69,9 @@ const MovieForm: React.FC<MovieFormProps> = ({
     }
   };
 
-  const validateData = async (dataToPost: MovieData) => {
+  const validateData = async (dataToPost: {
+    [x: string]: FormDataEntryValue;
+  }) => {
     if (!dataToPost.code) {
       setLoading(false);
       alert("Code is required!");
@@ -118,11 +110,12 @@ const MovieForm: React.FC<MovieFormProps> = ({
     setLoading(false);
     setOpenEditDialog(false);
     setPreviewCode(null);
-    setRelease("");
-    setSelectedActorsF([]);
     setTimeout(() => {
-      setMovieData({});
-    }, 400);
+      setRelease("");
+      setSelectedActorsF([]);
+      setOverrides({});
+      setMovieData({} as MovieData);
+    }, 300);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -135,7 +128,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
     dataToPost.code = previewCode || dataToPost.code;
     dataToPost.cast = JSON.stringify(selectedActorsF).toLowerCase();
 
-    const isValid = await validateData(dataToPost as MovieData);
+    const isValid = await validateData(dataToPost);
 
     if (!isValid) return;
     else {
@@ -143,7 +136,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
         try {
           await axios.post("http://localhost:5000/movies", dataToPost);
           handleClose();
-          path === "/movies" || codeToEdit ? refetch() : navigate("/movies");
+          refetch();
           setOpenSnack(true);
         } catch (err) {
           alert("Error adding movie: " + err);
@@ -156,7 +149,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
             dataToPost
           );
           handleClose();
-          path === "/movies" || codeToEdit ? refetch() : navigate("/movies");
+          refetch();
           setOpenSnack(true);
         } catch (err) {
           alert("Error updating movie: " + err);
@@ -166,206 +159,239 @@ const MovieForm: React.FC<MovieFormProps> = ({
     }
   };
 
+  const handleOverrides = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+    property: string
+  ) => {
+    setOverrides((prevOverrides) => ({
+      ...prevOverrides,
+      [property]: e.target.value,
+    }));
+  };
+
   return (
     <Dialog
       open={!openEditDialog ? false : true}
       onClose={handleClose}
-      sx={{
-        "& .MuiPaper-root": {
-          m: 2,
-          borderRadius: "1.3rem",
-          maxWidth: "100vw",
-          width: "clamp(330px, 95vw, 992px)",
-        },
+      fullScreen={isMobile}
+      // TransitionComponent={SlideUp}
+      PaperProps={{
+        component: "form",
+        onSubmit: handleSubmit,
       }}
+      sx={
+        !isMobile
+          ? {
+              "& .MuiPaper-root": {
+                m: 2,
+                borderRadius: "1.3rem",
+                maxWidth: "100vw",
+                width: "clamp(330px, 95vw, 992px)",
+              },
+            }
+          : {}
+      }
     >
       <div className="p-5">
         {!codeToEdit || movieData.code ? (
           <>
-            <h1 className="w-full mb-3 text-2xl font-semibold">
-              {codeToEdit ? "Edit" : "Add"} Movie
-            </h1>
-            <form onSubmit={handleSubmit}>
-              <div className="md:grid-cols-2 grid items-center gap-6">
-                <div className="md:mb-0 mb-2 overflow-hidden rounded-lg">
-                  {codeToEdit || (previewCode && previewCode.length > 5) ? (
-                    <MovieCover code={codeToEdit || previewCode || ""} />
+            <DialogTitle>{codeToEdit ? "Edit" : "Add"} Movie</DialogTitle>
+            <div className="md:grid-cols-2 grid items-center gap-6">
+              <div className="md:mb-0 mb-2 overflow-hidden rounded-lg">
+                {codeToEdit || (previewCode && previewCode.length > 5) ? (
+                  <MovieCover
+                    code={codeToEdit || previewCode || ""}
+                    overrides={{
+                      cover: overrides.cover
+                        ? overrides.cover
+                        : movieData.overrides?.cover,
+                      preview: overrides.preview
+                        ? overrides.preview
+                        : movieData.overrides?.preview,
+                    }}
+                  />
+                ) : (
+                  <div className="bg-slate-200 dark:bg-zinc-600 w-full aspect-[16/10] grid place-content-center text-2xl font-semibold text-slate-400 text-center">
+                    ENTER CODE
+                    <br />
+                    TO SEE PREVIEW
+                  </div>
+                )}
+              </div>
+              <div className="gap-x-3 grid items-center grid-cols-2">
+                <TextField
+                  type="search"
+                  name="code"
+                  autoFocus={!codeToEdit}
+                  defaultValue={codeToEdit}
+                  onChange={(e) => {
+                    e.target.value.length > 4 &&
+                      setPreviewCode(formatCode(e.target.value.toLowerCase()));
+                  }}
+                  onBlur={(e) =>
+                    e.target.value.length > 4 &&
+                    fetchMovieData(formatCode(e.target.value), false)
+                  }
+                  label="Code"
+                  variant="outlined"
+                  autoComplete="off"
+                  placeholder="ABC-123"
+                  required
+                  inputProps={{
+                    autoCapitalize: "characters",
+                    readOnly: codeToEdit && true,
+                    className: "uppercase",
+                    id: "code-input",
+                  }}
+                />
+                <TextField
+                  type="text"
+                  name="release"
+                  label="Release Date"
+                  placeholder="YYYY-MM-DD"
+                  defaultValue={movieData.release}
+                  onBlur={(e) => setRelease(e.target.value)}
+                  variant="outlined"
+                  autoComplete="off"
+                />
+                <div className="h-9 flex items-center w-full col-span-2 gap-1 overflow-x-scroll">
+                  {selectedActorsF.length > 0 ? (
+                    <MovieCastList
+                      movieCast={selectedActorsF}
+                      maleCast={[]}
+                      release={release}
+                    />
                   ) : (
-                    <div className="bg-slate-200 dark:bg-zinc-600 w-full aspect-[16/10] grid place-content-center text-2xl font-semibold text-slate-400 text-center">
-                      ENTER CODE
-                      <br />
-                      TO SEE PREVIEW
-                    </div>
+                    <span className="w-full pt-4 text-lg text-center opacity-50">
+                      Actors
+                    </span>
                   )}
                 </div>
-                <div className="gap-x-3 grid items-center grid-cols-2">
-                  <TextField
-                    type="search"
-                    name="code"
-                    autoFocus={!codeToEdit}
-                    defaultValue={codeToEdit}
-                    onChange={(e) => {
-                      e.target.value.length > 5 &&
-                        setPreviewCode(
-                          formatCode(e.target.value.toLowerCase())
-                        );
-                    }}
-                    onBlur={(e) =>
-                      e.target.value.length > 4 &&
-                      fetchMovieData(formatCode(e.target.value), false)
-                    }
-                    label="Code"
-                    variant="outlined"
-                    autoComplete="off"
-                    placeholder="ABC-123"
-                    required
-                    inputProps={{
-                      autoCapitalize: "characters",
-                      readOnly: codeToEdit && true,
-                      className: "uppercase",
-                      id: "code-input",
-                    }}
-                  />
-                  <TextField
-                    type="search"
-                    name="title"
-                    defaultValue={movieData.title}
-                    label="Title"
-                    variant="outlined"
-                    autoComplete="off"
-                    inputProps={{
-                      autoCapitalize: "words",
-                    }}
-                  />
-                  {/* <TextField
-                    type="text"
-                    name="cast"
-                    label="Actor(s)"
-                    defaultValue={movieData.cast && formatNames(movieData.cast)}
-                    variant="outlined"
-                    fullWidth
-                    sx={{ margin: "1rem 0" }}
-                    inputProps={{ autoCapitalize: "words" }}
-                  /> */}
-                  <div className="min-h-9 flex items-center w-full col-span-2 gap-1 overflow-x-scroll">
-                    {selectedActorsF.length > 0 ? (
-                      <MovieCastList
-                        movieCast={selectedActorsF}
-                        maleCast={[]}
-                        release={release}
-                      />
-                    ) : (
-                      <span className="w-full pt-4 text-lg text-center opacity-50">
-                        Actors
-                      </span>
-                    )}
-                  </div>
-                  <Autocomplete
-                    id="f-actor-opts"
-                    options={fActorNames}
-                    freeSolo
-                    multiple
-                    autoHighlight
-                    limitTags={1}
-                    value={selectedActorsF}
-                    onChange={(_e, newValue) => {
-                      setSelectedActorsF(newValue);
-                    }}
-                    disableCloseOnSelect // Add this prop
-                    renderOption={(props, option) => (
-                      <li {...props}>
-                        <span className="capitalize">{option}</span>
-                      </li>
-                    )}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Actor(s)"
-                        variant="outlined"
-                        placeholder="Girls"
-                      />
-                    )}
-                    renderTags={() => <></>}
-                  />
-                  <TextField
-                    type="text"
-                    name="maleCast"
-                    label="Male Actor(s)"
-                    defaultValue={
-                      movieData.maleCast && formatNames(movieData.maleCast)
-                    }
-                    variant="outlined"
-                    fullWidth
-                    sx={{ margin: "1rem 0" }}
-                    inputProps={{ autoCapitalize: "words" }}
-                  />
-                  <TextField
-                    type="text"
-                    name="release"
-                    label="Release Date"
-                    placeholder="YYYY-MM-DD"
-                    defaultValue={movieData.release}
-                    onBlur={(e) => setRelease(e.target.value)}
-                    variant="outlined"
-                    autoComplete="off"
-                  />
-                  <TextField
-                    type="number"
-                    name="runtime"
-                    label="Runtime"
-                    placeholder="Runtime (minutes)"
-                    defaultValue={movieData.runtime}
-                    variant="outlined"
-                    autoComplete="off"
-                  />
-                  <TextField
-                    type="text"
-                    name="tags"
-                    label="Tags"
-                    defaultValue={movieData.tags && formatNames(movieData.tags)}
-                    variant="outlined"
-                    fullWidth
-                    sx={{ margin: "1rem 0", gridColumn: "span 2" }}
-                  />
-                  <TextField
-                    type="text"
-                    name="opt"
-                    label="Opt"
-                    defaultValue={movieData.opt}
-                    variant="outlined"
-                    inputProps={{ autoCapitalize: "none" }}
-                  />
-                  <TextField
-                    type="text"
-                    name="series"
-                    label="Series"
-                    defaultValue={movieData.series}
-                    variant="outlined"
-                  />
-                </div>
+                <Autocomplete
+                  id="f-actor-opts"
+                  options={fActorNames}
+                  freeSolo
+                  multiple
+                  autoHighlight
+                  limitTags={1}
+                  value={selectedActorsF}
+                  onChange={(_e, newValue) => {
+                    setSelectedActorsF(newValue);
+                  }}
+                  disableCloseOnSelect // Add this prop
+                  renderOption={(props, option) => (
+                    <li {...props}>
+                      <span className="capitalize">{option}</span>
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Actor(s)"
+                      variant="outlined"
+                      placeholder="Girls"
+                    />
+                  )}
+                  renderTags={() => <></>}
+                />
+                <TextField
+                  type="text"
+                  name="maleCast"
+                  label="Male Actor(s)"
+                  defaultValue={
+                    movieData.maleCast && formatNames(movieData.maleCast)
+                  }
+                  variant="outlined"
+                  fullWidth
+                  sx={{ margin: "1rem 0" }}
+                  inputProps={{ autoCapitalize: "words" }}
+                />
+                <TextField
+                  type="search"
+                  name="title"
+                  defaultValue={movieData.title}
+                  label="Title"
+                  variant="outlined"
+                  autoComplete="off"
+                  inputProps={{
+                    autoCapitalize: "words",
+                  }}
+                />
+                <TextField
+                  type="number"
+                  name="runtime"
+                  label="Runtime"
+                  placeholder="Runtime (minutes)"
+                  defaultValue={movieData.runtime}
+                  variant="outlined"
+                  autoComplete="off"
+                />
+                <TextField
+                  type="text"
+                  name="tags"
+                  label="Tags"
+                  defaultValue={movieData.tags && formatNames(movieData.tags)}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ margin: "1rem 0", gridColumn: "span 2" }}
+                />
+                <TextField
+                  type="text"
+                  name="opt"
+                  label="Opt"
+                  defaultValue={movieData.opt}
+                  variant="outlined"
+                  inputProps={{ autoCapitalize: "none" }}
+                />
+                <TextField
+                  type="text"
+                  name="series"
+                  label="Series"
+                  defaultValue={movieData.series}
+                  variant="outlined"
+                />
+                <TextField
+                  type="text"
+                  name="cover"
+                  label="Cover"
+                  defaultValue={movieData.overrides?.cover}
+                  variant="outlined"
+                  sx={{ my: "1rem" }}
+                  onBlur={(e) => handleOverrides(e, "cover")}
+                />
+                <TextField
+                  type="text"
+                  name="preview"
+                  label="Preview"
+                  defaultValue={movieData.overrides?.preview}
+                  variant="outlined"
+                  sx={{ my: "1rem" }}
+                  onBlur={(e) => handleOverrides(e, "preview")}
+                />
               </div>
-              <div className="md:mb-0 justify-self-end grid grid-cols-2 col-span-2 gap-2 mt-6 md:w-[calc(50%-0.75rem)] ml-auto">
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  size="large"
-                  onClick={handleClose}
-                  disableElevation
-                >
-                  Cancel
-                </Button>
-                <LoadingButton
-                  loading={loading}
-                  variant="contained"
-                  color="success"
-                  size="large"
-                  type="submit"
-                  disableElevation
-                >
-                  {codeToEdit ? "Save" : "Add Movie"}
-                </LoadingButton>
-              </div>
-            </form>
+            </div>
+            {/* <div className="md:mb-0 justify-self-end grid grid-cols-2 col-span-2 gap-2 mt-6 md:w-[calc(50%-0.75rem)] ml-auto"> */}
+            <DialogActions>
+              <Button
+                variant="contained"
+                color="secondary"
+                size="large"
+                onClick={handleClose}
+                disableElevation
+              >
+                Cancel
+              </Button>
+              <LoadingButton
+                loading={loading}
+                variant="contained"
+                color="success"
+                size="large"
+                type="submit"
+                disableElevation
+              >
+                {codeToEdit ? "Save" : "Add Movie"}
+              </LoadingButton>
+            </DialogActions>
           </>
         ) : (
           <div className="place-content-center h-96 grid w-full">

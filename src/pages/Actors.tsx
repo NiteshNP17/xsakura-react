@@ -21,6 +21,7 @@ import { ActorListSwitch } from "../components/Actors/ActorListSwitch";
 import MutateMenu from "../components/Dialogs/MutateMenu";
 import MoreVert from "@mui/icons-material/MoreVert";
 import DeleteDialog from "../components/Dialogs/DeleteDialog";
+import useKeyboardShortcut from "../utils/useKeyboardShortcut";
 
 const Actors = () => {
   interface ActorData {
@@ -42,7 +43,7 @@ const Actors = () => {
   const [urlParams, setUrlParams] = useSearchParams();
   const isMale = urlParams.get("list") === "male";
   const sort =
-    urlParams.get("sort") || localStorage.getItem("actorSort") || "addedasc";
+    urlParams.get("sort") || localStorage.getItem("actorSort") || "added";
   const page = parseInt(urlParams.get("p") || "1");
   const actorToEditRef = useRef(null as string | null);
   const totalPagesRef = useRef<number>(0);
@@ -81,6 +82,13 @@ const Actors = () => {
     setUrlParams(params.toString(), { replace: true });
   };
 
+  const handleAdd = () => {
+    actorToEditRef.current = null;
+    setOpenEditDialog(true);
+  };
+
+  useKeyboardShortcut({ modifier: "alt", key: "i", callback: handleAdd });
+
   useEffect(() => {
     const fetchActors = async () => {
       // setIsLoaded(false);
@@ -113,13 +121,7 @@ const Actors = () => {
     <div className="px-[3vw] mb-12">
       <div className="flex px-1 mt-1 mb-4">
         <h1 className="text-3xl font-semibold">Actors</h1>
-        <IconButton
-          color="primary"
-          onClick={() => {
-            actorToEditRef.current = null;
-            setOpenEditDialog(true);
-          }}
-        >
+        <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
         <div className="flex gap-2 ml-auto">
@@ -130,6 +132,7 @@ const Actors = () => {
               id="sort-select"
               value={sort}
               size="small"
+              label="Sort"
               sx={{ minWidth: "100px" }}
               onChange={handleSortChange}
             >
@@ -153,7 +156,7 @@ const Actors = () => {
           <ActorListSwitch checked={isMale} onChange={handleSwitchChange} />
         </div>
       </div>
-      <div className="grid-fit-1 sm:grid-fit-015 max-w-[1720px] mx-auto md:gap-6 grid gap-4">
+      <div className="grid-fit-1 sm:grid-fit-015 max-w-[1660px] mx-auto md:gap-6 grid gap-4">
         {actors.map((actor) => (
           <ActorCard key={actor._id} actor={actor}>
             <IconButton

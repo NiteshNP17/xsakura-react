@@ -131,6 +131,18 @@ const ActorForm: React.FC<ActorFormProps> = ({
                     })
                   }
                 />
+                <TextField
+                  type="url"
+                  name="img500"
+                  label="Image URL"
+                  defaultValue={formFields.img500}
+                  onBlur={(e) =>
+                    setFormFields({
+                      ...formFields,
+                      img500: e.target.value.toLowerCase().trim(),
+                    })
+                  }
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <TextField
                     type="text"
@@ -159,18 +171,6 @@ const ActorForm: React.FC<ActorFormProps> = ({
                     }
                   />
                 </div>
-                <TextField
-                  type="url"
-                  name="img500"
-                  label="Image URL"
-                  defaultValue={formFields.img500}
-                  onBlur={(e) =>
-                    setFormFields({
-                      ...formFields,
-                      img500: e.target.value.toLowerCase().trim(),
-                    })
-                  }
-                />
                 <FormControlLabel
                   control={
                     <Switch

@@ -1,8 +1,9 @@
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Button from "@mui/material/Button";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import DarkModeSwitch from "./DarkModeSwitch";
 import NavMenu from "./NavMenu";
+import useKeyboardShortcut from "../../utils/useKeyboardShortcut";
 
 interface NavbarProps {
   setMode: () => void;
@@ -12,6 +13,18 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
   const isMobile = useMediaQuery("(max-width:660px)");
   const path = useLocation().pathname;
+  const navigate = useNavigate();
+
+  useKeyboardShortcut({
+    modifier: "alt",
+    key: "m",
+    callback: () => navigate("/movies"),
+  });
+  useKeyboardShortcut({
+    modifier: "alt",
+    key: "a",
+    callback: () => navigate("/actors"),
+  });
 
   return (
     <header className="flex items-center gap-2 px-[2.5vw]">

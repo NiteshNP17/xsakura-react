@@ -4,32 +4,16 @@ import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
 import MovieList from "../components/movies/MovieList";
 import { CircularProgress } from "@mui/material";
+import { ActorData, MovieData } from "../utils/customTypes";
 
 const ActorPage = () => {
-  interface ActorData {
-    _id: string;
-    name: string;
-    dob?: string | Date;
-    height?: number;
-    isMale?: boolean;
-    img500?: string;
-  }
-
-  interface Movie {
-    code: string;
-    cast: string[];
-    maleCast: string[];
-    title: string;
-    release: string;
-  }
-
   const { name } = useParams<{ name: string }>();
   const actorName = name?.replace(/-/g, " ");
   const path = useLocation().pathname;
   const isMale = path.startsWith("/actor-m");
 
   const [actorData, setActorData] = useState<ActorData>({} as ActorData);
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [movies, setMovies] = useState<MovieData[]>([]);
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
   const totalPagesRef = useRef<number>(0);
@@ -58,7 +42,7 @@ const ActorPage = () => {
         const res = await axios.get(
           `http://localhost:5000/movies?${
             !isMale ? "cast=" + actorName : "mcast=" + actorName
-          }&page=${page}`
+          }&sort=release&page=${page}`
         );
         setMovies(res.data.movies);
         totalPagesRef.current = res.data.totalPages;
