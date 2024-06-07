@@ -17,6 +17,7 @@ const ActorPage = () => {
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
   const totalPagesRef = useRef<number>(0);
+  const totalMoviesRef = useRef<number>(0);
   const [searchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") || "1");
 
@@ -46,6 +47,7 @@ const ActorPage = () => {
         );
         setMovies(res.data.movies);
         totalPagesRef.current = res.data.totalPages;
+        totalMoviesRef.current = res.data.totalMovies;
         setLoaded(true);
       } catch (err) {
         console.error("error fetching movies: ", err);
@@ -64,7 +66,11 @@ const ActorPage = () => {
         </div>
         {actorData.img500 && (
           <div className="max-w-80 md:mx-12 mx-auto">
-            <ActorCard actor={actorData} noLink />
+            <ActorCard
+              actor={actorData}
+              noLink
+              movieCount={totalMoviesRef.current}
+            />
           </div>
         )}
       </div>

@@ -21,4 +21,5 @@ export interface ActorData {
   height: number;
   isMale: boolean;
   img500: string;
+  numMovies: number;
 }

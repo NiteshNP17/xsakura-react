@@ -70,7 +70,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formFields);
+    if (formFields.name.length < 4) return;
     setLoading(true);
 
     try {

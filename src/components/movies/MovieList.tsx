@@ -5,7 +5,7 @@ import MoreVert from "@mui/icons-material/MoreVert";
 import { useRef, useState } from "react";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import { Alert, Pagination, Snackbar } from "@mui/material";
-import MovieForm from "../Dialogs/MovieForm";
+import MovieForm from "../Dialogs/MovieForm/MovieForm";
 import MovieCastList from "./MovieCastList";
 import MutateMenu from "../Dialogs/MutateMenu";
 import DeleteDialog from "../Dialogs/DeleteDialog";

@@ -1,5 +1,4 @@
 import {
-  Autocomplete,
   Button,
   CircularProgress,
   DialogActions,
@@ -9,13 +8,14 @@ import {
 } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import axios from "axios";
-import { useContext, useEffect, useRef, useState } from "react";
-import MovieCover from "../movies/MovieCover";
+import { useEffect, useRef, useState } from "react";
 import { LoadingButton } from "@mui/lab";
-import { formatCode, formatNames } from "../../utils/utils";
-import { ActorNamesContext } from "../Actors/ActorNamesProvider";
-import MovieCastList from "../movies/MovieCastList";
-import { MovieData } from "../../utils/customTypes";
+import { formatCode, formatNames } from "../../../utils/utils";
+import MovieCastList from "../../movies/MovieCastList";
+import { MovieData } from "../../../utils/customTypes";
+import ActorsInput from "./ActorsInput";
+import MoviePreview from "./MoviePreview";
+import SeriesInput from "./SeriesInput";
 
 interface MovieFormProps {
   codeToEdit: string | null;
@@ -40,11 +40,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
   const isClearRef = useRef(false);
   const isMobile = useMediaQuery("(max-width:660px)");
   const [overrides, setOverrides] = useState<{ [key: string]: string }>({});
-  const { actorsInDb } = useContext(ActorNamesContext);
-  const fActorNames = actorsInDb
-    .filter((actor) => !actor.isMale)
-    .map((actor) => actor.name);
-
   const [selectedActorsF, setSelectedActorsF] = useState<string[]>([]);
   const [release, setRelease] = useState(movieData.release || "");
 
@@ -174,86 +169,84 @@ const MovieForm: React.FC<MovieFormProps> = ({
       open={!openEditDialog ? false : true}
       onClose={handleClose}
       fullScreen={isMobile}
-      // TransitionComponent={SlideUp}
       PaperProps={{
         component: "form",
         onSubmit: handleSubmit,
       }}
-      sx={
-        !isMobile
-          ? {
-              "& .MuiPaper-root": {
-                m: 2,
-                borderRadius: "1.3rem",
-                maxWidth: "100vw",
-                width: "clamp(330px, 95vw, 992px)",
-              },
-            }
-          : {}
-      }
+      sx={{
+        "@media (min-width: 661px)": {
+          "& .MuiPaper-root": {
+            m: 2,
+            borderRadius: "1.3rem",
+            maxWidth: "100vw",
+            width: "clamp(330px, 95vw, 1000px)",
+          },
+        },
+      }}
     >
       <div className="p-5">
         {!codeToEdit || movieData.code ? (
           <>
-            <DialogTitle>{codeToEdit ? "Edit" : "Add"} Movie</DialogTitle>
-            <div className="md:grid-cols-2 grid items-center gap-6">
-              <div className="md:mb-0 mb-2 overflow-hidden rounded-lg">
-                {codeToEdit || (previewCode && previewCode.length > 5) ? (
-                  <MovieCover
-                    code={codeToEdit || previewCode || ""}
-                    overrides={{
-                      cover: overrides.cover
-                        ? overrides.cover
-                        : movieData.overrides?.cover,
-                      preview: overrides.preview
-                        ? overrides.preview
-                        : movieData.overrides?.preview,
+            <DialogTitle sx={{ pb: 0 }}>
+              <span className="text-2xl font-semibold">
+                {codeToEdit ? "Edit" : "Add"} Movie
+              </span>
+            </DialogTitle>
+            <div className="md:grid-cols-2 md:gap-6 grid justify-center">
+              <div className="grid gap-4">
+                <MoviePreview
+                  codeToPv={codeToEdit || previewCode || ""}
+                  overrides={{
+                    cover: overrides.cover
+                      ? overrides.cover
+                      : movieData.overrides?.cover,
+                    preview: overrides.preview
+                      ? overrides.preview
+                      : movieData.overrides?.preview,
+                  }}
+                />
+                <div className="gap-x-3 grid items-center grid-cols-2">
+                  <TextField
+                    type="search"
+                    name="code"
+                    autoFocus={!codeToEdit}
+                    defaultValue={codeToEdit}
+                    onChange={(e) => {
+                      e.target.value.length > 4 &&
+                        setPreviewCode(
+                          formatCode(e.target.value.toLowerCase())
+                        );
+                    }}
+                    onBlur={(e) =>
+                      e.target.value.length > 4 &&
+                      fetchMovieData(formatCode(e.target.value), false)
+                    }
+                    label="Code"
+                    variant="outlined"
+                    autoComplete="off"
+                    placeholder="ABC-123"
+                    required
+                    inputProps={{
+                      autoCapitalize: "characters",
+                      readOnly: codeToEdit && true,
+                      className: "uppercase",
+                      id: "code-input",
                     }}
                   />
-                ) : (
-                  <div className="bg-slate-200 dark:bg-zinc-600 w-full aspect-[16/10] grid place-content-center text-2xl font-semibold text-slate-400 text-center">
-                    ENTER CODE
-                    <br />
-                    TO SEE PREVIEW
-                  </div>
-                )}
+                  <TextField
+                    type="search"
+                    name="title"
+                    defaultValue={movieData.title}
+                    label="Title"
+                    variant="outlined"
+                    autoComplete="off"
+                    inputProps={{
+                      autoCapitalize: "words",
+                    }}
+                  />
+                </div>
               </div>
               <div className="gap-x-3 grid items-center grid-cols-2">
-                <TextField
-                  type="search"
-                  name="code"
-                  autoFocus={!codeToEdit}
-                  defaultValue={codeToEdit}
-                  onChange={(e) => {
-                    e.target.value.length > 4 &&
-                      setPreviewCode(formatCode(e.target.value.toLowerCase()));
-                  }}
-                  onBlur={(e) =>
-                    e.target.value.length > 4 &&
-                    fetchMovieData(formatCode(e.target.value), false)
-                  }
-                  label="Code"
-                  variant="outlined"
-                  autoComplete="off"
-                  placeholder="ABC-123"
-                  required
-                  inputProps={{
-                    autoCapitalize: "characters",
-                    readOnly: codeToEdit && true,
-                    className: "uppercase",
-                    id: "code-input",
-                  }}
-                />
-                <TextField
-                  type="text"
-                  name="release"
-                  label="Release Date"
-                  placeholder="YYYY-MM-DD"
-                  defaultValue={movieData.release}
-                  onBlur={(e) => setRelease(e.target.value)}
-                  variant="outlined"
-                  autoComplete="off"
-                />
                 <div className="h-9 flex items-center w-full col-span-2 gap-1 overflow-x-scroll">
                   {selectedActorsF.length > 0 ? (
                     <MovieCastList
@@ -262,37 +255,14 @@ const MovieForm: React.FC<MovieFormProps> = ({
                       release={release}
                     />
                   ) : (
-                    <span className="w-full pt-4 text-lg text-center opacity-50">
+                    <span className="md:pt-0 w-full pt-4 text-lg text-center opacity-50">
                       Actors
                     </span>
                   )}
                 </div>
-                <Autocomplete
-                  id="f-actor-opts"
-                  options={fActorNames}
-                  freeSolo
-                  multiple
-                  autoHighlight
-                  limitTags={1}
-                  value={selectedActorsF}
-                  onChange={(_e, newValue) => {
-                    setSelectedActorsF(newValue);
-                  }}
-                  disableCloseOnSelect // Add this prop
-                  renderOption={(props, option) => (
-                    <li {...props}>
-                      <span className="capitalize">{option}</span>
-                    </li>
-                  )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Actor(s)"
-                      variant="outlined"
-                      placeholder="Girls"
-                    />
-                  )}
-                  renderTags={() => <></>}
+                <ActorsInput
+                  selectedActorsF={selectedActorsF}
+                  setSelectedActorsF={setSelectedActorsF}
                 />
                 <TextField
                   type="text"
@@ -307,15 +277,14 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   inputProps={{ autoCapitalize: "words" }}
                 />
                 <TextField
-                  type="search"
-                  name="title"
-                  defaultValue={movieData.title}
-                  label="Title"
+                  type="text"
+                  name="release"
+                  label="Release Date"
+                  placeholder="YYYY-MM-DD"
+                  defaultValue={movieData.release}
+                  onBlur={(e) => setRelease(e.target.value)}
                   variant="outlined"
                   autoComplete="off"
-                  inputProps={{
-                    autoCapitalize: "words",
-                  }}
                 />
                 <TextField
                   type="number"
@@ -343,13 +312,14 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   variant="outlined"
                   inputProps={{ autoCapitalize: "none" }}
                 />
-                <TextField
+                <SeriesInput defaultValue={movieData.series} />
+                {/* <TextField
                   type="text"
                   name="series"
                   label="Series"
                   defaultValue={movieData.series}
                   variant="outlined"
-                />
+                /> */}
                 <TextField
                   type="text"
                   name="cover"
@@ -370,14 +340,12 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 />
               </div>
             </div>
-            {/* <div className="md:mb-0 justify-self-end grid grid-cols-2 col-span-2 gap-2 mt-6 md:w-[calc(50%-0.75rem)] ml-auto"> */}
             <DialogActions>
               <Button
                 variant="contained"
                 color="secondary"
                 size="large"
                 onClick={handleClose}
-                disableElevation
               >
                 Cancel
               </Button>
@@ -387,7 +355,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 color="success"
                 size="large"
                 type="submit"
-                disableElevation
+                sx={codeToEdit ? { px: 4 } : {}}
               >
                 {codeToEdit ? "Save" : "Add Movie"}
               </LoadingButton>

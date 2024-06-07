@@ -4,7 +4,6 @@ interface ActorNames {
   _id: string;
   name: string;
   dob?: string | Date;
-  isMale: boolean;
 }
 
 interface ActorsContextValue {
@@ -28,7 +27,9 @@ export const ActorNamesProvider = ({
   useEffect(() => {
     const fetchAllActors = async () => {
       try {
-        const response = await fetch("http://localhost:5000/actors?nameonly");
+        const response = await fetch(
+          "http://localhost:5000/lookups/actor-names"
+        );
         const data = await response.json();
         setActorsInDb(data);
       } catch (err) {

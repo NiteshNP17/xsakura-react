@@ -1,4 +1,5 @@
-import { North, South } from "@mui/icons-material";
+import North from "@mui/icons-material/North";
+import South from "@mui/icons-material/South";
 import {
   Button,
   FormControl,
@@ -7,18 +8,18 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 interface SortSelectProps {
-  type: string;
+  type: "actors" | "movies";
 }
 
 const SortSelect: React.FC<SortSelectProps> = ({ type }) => {
   const [urlParams, setUrlParams] = useSearchParams();
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const sort =
     urlParams.get("sort") || localStorage.getItem("actorSort") || "added";
+  const sortDirection =
+    urlParams.get("sortd") || localStorage.getItem("actorSortD") || "asc";
 
   const handleSortChange = (e: SelectChangeEvent) => {
     const params = new URLSearchParams(urlParams);
@@ -27,6 +28,19 @@ const SortSelect: React.FC<SortSelectProps> = ({ type }) => {
     if (type === "actors")
       localStorage.setItem("actorSort", e.target.value as string);
   };
+
+  const handleDirectionChange = () => {
+    const params = new URLSearchParams(urlParams);
+    if (params.get("sortd") !== "desc") {
+      params.set("sortd", "desc");
+      type === "actors" && localStorage.setItem("actorSortD", "desc");
+    } else {
+      params.delete("sortd");
+      localStorage.removeItem("actorSortD");
+    }
+    setUrlParams(params);
+  };
+
   return (
     <>
       <FormControl>
@@ -41,6 +55,7 @@ const SortSelect: React.FC<SortSelectProps> = ({ type }) => {
           onChange={handleSortChange}
         >
           <MenuItem value={"added"}>Added</MenuItem>
+          <MenuItem value={"moviecount"}>Movie Count</MenuItem>
           <MenuItem value={"age"}>Age</MenuItem>
           <MenuItem value={"height"}>Height</MenuItem>
         </Select>
@@ -48,11 +63,7 @@ const SortSelect: React.FC<SortSelectProps> = ({ type }) => {
       <Button
         variant="outlined"
         color="inherit"
-        onClick={() => {
-          sortDirection === "asc"
-            ? setSortDirection("desc")
-            : setSortDirection("asc");
-        }}
+        onClick={handleDirectionChange}
         sx={{ px: 0, color: "gray" }}
       >
         {sortDirection === "asc" ? <South /> : <North />}

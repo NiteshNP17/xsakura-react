@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { ageCompare, calculateAge, formatHeight } from "../../utils/utils";
 import { Link } from "react-router-dom";
+import { ActorData } from "../../utils/customTypes";
 
 interface ActorCardProps {
-  actor: {
-    _id?: string;
-    name: string;
-    dob?: string | Date;
-    height?: number;
-    isMale?: boolean;
-    img500?: string;
-  };
+  actor: ActorData;
   children?: React.ReactNode;
   noLink?: boolean;
+  movieCount?: number;
 }
 
-const ActorCard: React.FC<ActorCardProps> = ({ actor, children, noLink }) => {
+const ActorCard: React.FC<ActorCardProps> = ({
+  actor,
+  children,
+  noLink,
+  movieCount,
+}) => {
   const myAge = new Date("1997-11-02T00:00:00Z");
   const today = new Date();
   const dobDate = actor.dob ? new Date(actor.dob) : undefined;
@@ -46,6 +46,11 @@ const ActorCard: React.FC<ActorCardProps> = ({ actor, children, noLink }) => {
             className="object-cover object-top aspect-[3/4] bg-zinc-200"
             onError={() => setShowBlank(true)}
           />
+          <div className="right-1 place-content-center top-1 backdrop-filter backdrop-blur-sm aspect-square absolute px-2 bg-gray-800 bg-opacity-50 rounded-full">
+            <span className="font-semibold text-white">
+              {movieCount || actor.numMovies}
+            </span>
+          </div>
         </ActorLink>
       ) : (
         <img

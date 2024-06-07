@@ -1,17 +1,5 @@
-import { AddCircleOutline, North, South } from "@mui/icons-material";
-import {
-  Button,
-  CircularProgress,
-  FormControl,
-  // FormControl,
-  IconButton,
-  InputLabel,
-  // InputLabel,
-  MenuItem,
-  Pagination,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
+import { CircularProgress, IconButton, Pagination } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
 import ActorForm from "../components/Dialogs/ActorForm";
@@ -22,28 +10,22 @@ import MutateMenu from "../components/Dialogs/MutateMenu";
 import MoreVert from "@mui/icons-material/MoreVert";
 import DeleteDialog from "../components/Dialogs/DeleteDialog";
 import useKeyboardShortcut from "../utils/useKeyboardShortcut";
+import { ActorData } from "../utils/customTypes";
+import SortSelect from "../components/SortSelect";
 
 const Actors = () => {
-  interface ActorData {
-    _id: string;
-    name: string;
-    dob?: Date;
-    height?: number;
-    isMale?: boolean;
-    img500?: string;
-  }
-
   const [isLoaded, setIsLoaded] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [actors, setActors] = useState<ActorData[]>([]);
   const [refetch, setRefetch] = useState(false);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [urlParams, setUrlParams] = useSearchParams();
   const isMale = urlParams.get("list") === "male";
   const sort =
     urlParams.get("sort") || localStorage.getItem("actorSort") || "added";
+  const sortDirection =
+    urlParams.get("sortd") || localStorage.getItem("actorSortD") || "asc";
   const page = parseInt(urlParams.get("p") || "1");
   const actorToEditRef = useRef(null as string | null);
   const totalPagesRef = useRef<number>(0);
@@ -56,13 +38,6 @@ const Actors = () => {
       params.delete("list");
     }
     setUrlParams(params);
-  };
-
-  const handleSortChange = (e: SelectChangeEvent) => {
-    const params = new URLSearchParams(urlParams);
-    params.set("sort", e.target.value as string);
-    setUrlParams(params);
-    localStorage.setItem("actorSort", e.target.value as string);
   };
 
   const refetchActors = () => {
@@ -91,7 +66,6 @@ const Actors = () => {
 
   useEffect(() => {
     const fetchActors = async () => {
-      // setIsLoaded(false);
       try {
         const res = await axios.get(
           `http://localhost:5000/actors?sort=${sort + sortDirection}${
@@ -125,34 +99,7 @@ const Actors = () => {
           <AddCircleOutline />
         </IconButton>
         <div className="flex gap-2 ml-auto">
-          <FormControl>
-            <InputLabel>Sort</InputLabel>
-            <Select
-              labelId="sort-select-label"
-              id="sort-select"
-              value={sort}
-              size="small"
-              label="Sort"
-              sx={{ minWidth: "100px" }}
-              onChange={handleSortChange}
-            >
-              <MenuItem value={"added"}>Added</MenuItem>
-              <MenuItem value={"age"}>Age</MenuItem>
-              <MenuItem value={"height"}>Height</MenuItem>
-            </Select>
-          </FormControl>
-          <Button
-            variant="outlined"
-            color="inherit"
-            onClick={() => {
-              sortDirection === "asc"
-                ? setSortDirection("desc")
-                : setSortDirection("asc");
-            }}
-            sx={{ px: 0, color: "gray" }}
-          >
-            {sortDirection === "asc" ? <South /> : <North />}
-          </Button>
+          <SortSelect type="actors" />
           <ActorListSwitch checked={isMale} onChange={handleSwitchChange} />
         </div>
       </div>
