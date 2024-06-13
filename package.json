@@ -1,7 +1,7 @@
 {
-  "name": "xs-06",
+  "name": "xsakura",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.6.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,16 +17,15 @@
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.16",
     "axios": "^1.6.8",
-    "babel-plugin-react-compiler": "^0.0.0-experimental-487cb0e-20240529",
     "eslint-plugin-react-compiler": "^0.0.0-experimental-a97cca1-20240529",
-    "react": "^19.0.0-rc-6f23540c7d-20240528",
-    "react-dom": "^19.0.0-rc-6f23540c7d-20240528",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",
-    "@types/react": "npm:types-react@rc",
-    "@types/react-dom": "npm:types-react-dom@rc",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -40,9 +39,5 @@
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
     "vite-plugin-pwa": "^0.20.0"
-  },
-  "overrides": {
-    "@types/react": "npm:types-react@rc",
-    "@types/react-dom": "npm:types-react-dom@rc"
   }
 }
