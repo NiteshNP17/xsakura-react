@@ -1,5 +1,6 @@
 import { Autocomplete, CircularProgress, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
+import config from "../../../utils/config";
 
 const SeriesInput = ({ defaultValue }: { defaultValue: string }) => {
   const [options, setOptions] = useState([]);
@@ -9,7 +10,7 @@ const SeriesInput = ({ defaultValue }: { defaultValue: string }) => {
   const fetchOptions = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/lookups/series");
+      const res = await fetch(`${config.apiUrl}/lookups/series`);
       const resData = await res.json();
       setOptions(resData);
     } catch (err) {

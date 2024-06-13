@@ -10,6 +10,8 @@ import ActorCard from "../Actors/ActorCard";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
 import { ActorNamesContext } from "../Actors/ActorNamesProvider";
+import config from "../../utils/config";
+import { ActorData } from "../../utils/customTypes";
 
 interface ActorFormProps {
   openEditDialog: boolean;
@@ -35,7 +37,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
     height: undefined as number | undefined,
     img500: "",
     isMale: false,
-  });
+  } as ActorData);
 
   const handleClose = () => {
     setOpenEditDialog(false);
@@ -53,7 +55,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
     const fetchActor = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/actors/${actorToEdit && actorToEdit.name}`
+          `${config.apiUrl}/actors/${actorToEdit && actorToEdit.name}`,
         );
         setFormFields(res.data);
       } catch (err) {
@@ -75,12 +77,12 @@ const ActorForm: React.FC<ActorFormProps> = ({
 
     try {
       if (!actorToEdit?.name) {
-        await axios.post("http://localhost:5000/actors", formFields);
+        await axios.post(`${config.apiUrl}}/actors`, formFields);
         refetchActors();
       } else {
         await axios.put(
-          `http://localhost:5000/actors/${actorToEdit && actorToEdit.name}`,
-          formFields
+          `${config.apiUrl}/actors/${actorToEdit && actorToEdit.name}`,
+          formFields,
         );
       }
       console.log("Success!");
@@ -109,13 +111,13 @@ const ActorForm: React.FC<ActorFormProps> = ({
         <p>Loading...</p>
       ) : (
         <div className="p-6">
-          <h1 className="w-full mb-3 text-2xl font-semibold">Add Actor</h1>
+          <h1 className="mb-3 w-full text-2xl font-semibold">Add Actor</h1>
           <form onSubmit={handleSubmit}>
-            <div className="md:grid-cols-2 md:grid flex flex-col items-center justify-center gap-6">
-              <div className="grid w-[69%] mx-auto">
+            <div className="flex flex-col items-center justify-center gap-6 md:grid md:grid-cols-2">
+              <div className="mx-auto grid w-[69%]">
                 <ActorCard actor={formFields} noLink />
               </div>
-              <div className="flex flex-col w-full gap-4">
+              <div className="flex w-full flex-col gap-4">
                 <TextField
                   type="text"
                   name="name"
@@ -187,7 +189,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
                 />
               </div>
             </div>
-            <div className="md:mb-0 justify-self-end grid grid-cols-2 col-span-2 gap-2 mt-6 md:w-[calc(50%-0.75rem)] ml-auto">
+            <div className="col-span-2 ml-auto mt-6 grid grid-cols-2 gap-2 justify-self-end md:mb-0 md:w-[calc(50%-0.75rem)]">
               <Button
                 variant="contained"
                 color="secondary"

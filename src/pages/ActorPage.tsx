@@ -5,6 +5,7 @@ import ActorCard from "../components/Actors/ActorCard";
 import MovieList from "../components/movies/MovieList";
 import { CircularProgress } from "@mui/material";
 import { ActorData, MovieData } from "../utils/customTypes";
+import config from "../utils/config";
 
 const ActorPage = () => {
   const { name } = useParams<{ name: string }>();
@@ -29,9 +30,7 @@ const ActorPage = () => {
     const fetchActorData = async () => {
       // Fetch actor data
       try {
-        const res = await axios.get(
-          `http://localhost:5000/actors/${actorName}`
-        );
+        const res = await axios.get(`${config.apiUrl}/actors/${actorName}`);
         setActorData(res.data);
       } catch (err) {
         console.log("Error: ", err);
@@ -41,9 +40,9 @@ const ActorPage = () => {
     const fetchMovies = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/movies?${
+          `${config.apiUrl}/movies?${
             !isMale ? "cast=" + actorName : "mcast=" + actorName
-          }&sort=release&page=${page}`
+          }&sort=release&page=${page}`,
         );
         setMovies(res.data.movies);
         totalPagesRef.current = res.data.totalPages;
@@ -60,12 +59,12 @@ const ActorPage = () => {
 
   return (
     <>
-      <div className="px-[3vw] mb-12">
-        <div className="flex px-1 mt-1 mb-4">
+      <div className="mb-12 px-[3vw]">
+        <div className="mb-4 mt-1 flex px-1">
           <h1 className="text-3xl font-semibold capitalize">{actorName}</h1>
         </div>
         {actorData.img500 && (
-          <div className="max-w-80 md:mx-12 mx-auto">
+          <div className="mx-auto max-w-80 md:mx-12">
             <ActorCard
               actor={actorData}
               noLink
@@ -81,7 +80,7 @@ const ActorPage = () => {
           refetch={refetchMovies}
         />
       ) : (
-        <div className="place-content-center grid w-full h-32">
+        <div className="grid h-32 w-full place-content-center">
           <CircularProgress size="4rem" />
         </div>
       )}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { MovieData } from "../utils/customTypes";
+import config from "../utils/config";
 // import { Autocomplete, TextField } from "@mui/material";
 
 const Movies = () => {
@@ -22,9 +23,7 @@ const Movies = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/movies?page=${page}`
-        );
+        const res = await axios.get(`${config.apiUrl}/movies?page=${page}`);
         setMovies(res.data.movies);
         totalPagesRef.current = res.data.totalPages;
         setLoaded(true);
@@ -66,7 +65,7 @@ const Movies = () => {
           refetch={refetchMovies}
         />
       ) : (
-        <div className="place-content-center h-96 grid w-full">
+        <div className="grid h-96 w-full place-content-center">
           <CircularProgress size="4rem" />
         </div>
       )}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import config from "../../utils/config";
 
 interface TrailerProps {
   code: string;
@@ -19,7 +20,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
     const getPrefixData = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/lookups/pre/${codePrefix}?codenum=${codeNum}`
+          `${config.apiUrl}/lookups/pre/${codePrefix}?codenum=${codeNum}`,
         );
         const data = await res.json();
 
@@ -30,7 +31,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
 
         const newVideoSrc = `${baseUrl}${longCode[0]}/${longCode.slice(
           0,
-          3
+          3,
         )}/${longCode}/${longCode}${data.isDmb ? "_dmb_w" : "mhb"}.mp4`;
 
         setVideoSrc(newVideoSrc);
@@ -51,7 +52,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
       poster={posterSrc}
       className={`${
         posterSm ? "aspect-[16/10]" : "aspect-video"
-      } object-contain w-full bg-black`}
+      } w-full bg-black object-contain`}
       // md:h-[60cqh]
       onError={() =>
         console.log("🎥 A trailer was not found for", code.toUpperCase())

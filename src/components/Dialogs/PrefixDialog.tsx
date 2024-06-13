@@ -9,6 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import axios from "axios";
+import config from "../../utils/config";
 
 interface PrefixDialogProps {
   prefix: string;
@@ -36,7 +37,7 @@ const PrefixDialog: React.FC<PrefixDialogProps> = ({
     console.log(dataToSubmit);
 
     try {
-      await axios.post("http://localhost:5000/lookups/pre", dataToSubmit);
+      await axios.post(`${config.apiUrl}/lookups/pre`, dataToSubmit);
       handleClose();
       reload();
     } catch (err) {
@@ -55,7 +56,7 @@ const PrefixDialog: React.FC<PrefixDialogProps> = ({
         <span className="font-semibold uppercase">{prefix}</span>
       </DialogTitle>
       <DialogContent>
-        <div className="max-w-80 grid grid-cols-2 gap-4 mx-auto my-2">
+        <div className="mx-auto my-2 grid max-w-80 grid-cols-2 gap-4">
           <TextField
             name="prePre"
             type="text"
@@ -71,7 +72,7 @@ const PrefixDialog: React.FC<PrefixDialogProps> = ({
             size="small"
           />
         </div>
-        <div className="place-items-center grid w-full grid-cols-3 mx-auto">
+        <div className="mx-auto grid w-full grid-cols-3 place-items-center">
           <FormControlLabel
             control={<Checkbox name="is3Digits" />}
             label="3 Digits"

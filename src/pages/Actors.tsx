@@ -12,6 +12,7 @@ import DeleteDialog from "../components/Dialogs/DeleteDialog";
 import useKeyboardShortcut from "../utils/useKeyboardShortcut";
 import { ActorData } from "../utils/customTypes";
 import SortSelect from "../components/SortSelect";
+import config from "../utils/config";
 
 const Actors = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -46,7 +47,7 @@ const Actors = () => {
 
   const handlePageChange = (
     _e: React.ChangeEvent<unknown> | KeyboardEvent | null,
-    newPage: number
+    newPage: number,
   ) => {
     const params = new URLSearchParams(urlParams);
     if (newPage === 1) {
@@ -68,9 +69,9 @@ const Actors = () => {
     const fetchActors = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/actors?sort=${sort + sortDirection}${
+          `${config.apiUrl}/actors?sort=${sort + sortDirection}${
             isMale ? "&male" : ""
-          }&page=${page}`
+          }&page=${page}`,
         );
         setActors(res.data.actors);
         totalPagesRef.current = res.data.totalPages;
@@ -92,18 +93,18 @@ const Actors = () => {
   }, [refetch, isMale, sort, urlParams, setUrlParams, sortDirection, page]);
 
   return isLoaded ? (
-    <div className="px-[3vw] mb-12">
-      <div className="flex px-1 mt-1 mb-4">
+    <div className="mb-12 px-[3vw]">
+      <div className="mb-4 mt-1 flex px-1">
         <h1 className="text-3xl font-semibold">Actors</h1>
         <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
-        <div className="flex gap-2 ml-auto">
+        <div className="ml-auto flex gap-2">
           <SortSelect type="actors" />
           <ActorListSwitch checked={isMale} onChange={handleSwitchChange} />
         </div>
       </div>
-      <div className="grid-fit-1 sm:grid-fit-015 max-w-[1660px] mx-auto md:gap-6 grid gap-4">
+      <div className="grid-fit-1 sm:grid-fit-015 mx-auto grid max-w-[1660px] gap-4 md:gap-6">
         {actors.map((actor) => (
           <ActorCard key={actor._id} actor={actor}>
             <IconButton
@@ -120,14 +121,14 @@ const Actors = () => {
                 right: "0",
                 top: "0",
               }}
-              className="sm:opacity-0 group-hover:opacity-100"
+              className="group-hover:opacity-100 sm:opacity-0"
             >
               <MoreVert />
             </IconButton>
           </ActorCard>
         ))}
       </div>
-      <div className="flex justify-center w-full my-12">
+      <div className="my-12 flex w-full justify-center">
         <Pagination
           count={totalPagesRef.current}
           size="large"
@@ -163,7 +164,7 @@ const Actors = () => {
       />
     </div>
   ) : (
-    <div className="place-content-center h-96 grid w-full">
+    <div className="grid h-96 w-full place-content-center">
       <CircularProgress size="4rem" />
     </div>
   );

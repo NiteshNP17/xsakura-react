@@ -16,6 +16,7 @@ import { MovieData } from "../../../utils/customTypes";
 import ActorsInput from "./ActorsInput";
 import MoviePreview from "./MoviePreview";
 import SeriesInput from "./SeriesInput";
+import config from "../../../utils/config";
 
 interface MovieFormProps {
   codeToEdit: string | null;
@@ -46,7 +47,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
   const fetchMovieData = async (movieCode: string, shouldSetData: boolean) => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/movies/${movieCode.toLowerCase()}`
+        `${config.apiUrl}/movies/${movieCode.toLowerCase()}`,
       );
       if (shouldSetData) {
         setMovieData(res.data);
@@ -129,7 +130,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
     else {
       if (!codeToEdit) {
         try {
-          await axios.post("http://localhost:5000/movies", dataToPost);
+          await axios.post(`${config.apiUrl}/movies`, dataToPost);
           handleClose();
           refetch();
           setOpenSnack(true);
@@ -139,10 +140,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
         }
       } else {
         try {
-          await axios.put(
-            `http://localhost:5000/movies/${codeToEdit}`,
-            dataToPost
-          );
+          await axios.put(`${config.apiUrl}/movies/${codeToEdit}`, dataToPost);
           handleClose();
           refetch();
           setOpenSnack(true);
@@ -156,7 +154,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
 
   const handleOverrides = (
     e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
-    property: string
+    property: string,
   ) => {
     setOverrides((prevOverrides) => ({
       ...prevOverrides,
@@ -192,7 +190,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 {codeToEdit ? "Edit" : "Add"} Movie
               </span>
             </DialogTitle>
-            <div className="md:grid-cols-2 md:gap-6 grid justify-center">
+            <div className="grid justify-center md:grid-cols-2 md:gap-6">
               <div className="grid gap-4">
                 <MoviePreview
                   codeToPv={codeToEdit || previewCode || ""}
@@ -205,7 +203,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                       : movieData.overrides?.preview,
                   }}
                 />
-                <div className="gap-x-3 grid items-center grid-cols-2">
+                <div className="grid grid-cols-2 items-center gap-x-3">
                   <TextField
                     type="search"
                     name="code"
@@ -214,7 +212,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                     onChange={(e) => {
                       e.target.value.length > 4 &&
                         setPreviewCode(
-                          formatCode(e.target.value.toLowerCase())
+                          formatCode(e.target.value.toLowerCase()),
                         );
                     }}
                     onBlur={(e) =>
@@ -246,8 +244,8 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   />
                 </div>
               </div>
-              <div className="gap-x-3 grid items-center grid-cols-2">
-                <div className="h-9 flex items-center w-full col-span-2 gap-1 overflow-x-scroll">
+              <div className="grid grid-cols-2 items-center gap-x-3">
+                <div className="col-span-2 flex h-9 w-full items-center gap-1 overflow-x-scroll">
                   {selectedActorsF.length > 0 ? (
                     <MovieCastList
                       movieCast={selectedActorsF}
@@ -255,7 +253,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                       release={release}
                     />
                   ) : (
-                    <span className="md:pt-0 w-full pt-4 text-lg text-center opacity-50">
+                    <span className="w-full pt-4 text-center text-lg opacity-50 md:pt-0">
                       Actors
                     </span>
                   )}
@@ -362,7 +360,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
             </DialogActions>
           </>
         ) : (
-          <div className="place-content-center h-96 grid w-full">
+          <div className="grid h-96 w-full place-content-center">
             <CircularProgress size="4rem" />
           </div>
         )}

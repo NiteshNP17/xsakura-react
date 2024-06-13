@@ -15,11 +15,11 @@ export interface MovieData {
 }
 
 export interface ActorData {
-  _id: string;
+  _id?: string;
   name: string;
   dob: string | Date;
-  height: number;
+  height: number | undefined;
   isMale: boolean;
   img500: string;
-  numMovies: number;
+  numMovies?: number;
 }

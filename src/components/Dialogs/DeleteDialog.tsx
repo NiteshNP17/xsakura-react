@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import axios from "axios";
 import { useState } from "react";
+import config from "../../utils/config";
 
 interface DeleteDialogProps {
   type: string;
@@ -24,9 +25,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
   const deleteItem = async () => {
     setLoading(true);
     try {
-      const res = await axios.delete(
-        `http://localhost:5000/${type}/${deleteId.id}`
-      );
+      const res = await axios.delete(`${config.apiUrl}/${type}/${deleteId.id}`);
       console.log(res.data);
       setLoading(false);
       handleClose();

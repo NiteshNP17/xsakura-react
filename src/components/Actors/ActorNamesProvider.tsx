@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react";
+import config from "../../utils/config";
 
 interface ActorNames {
   _id: string;
@@ -27,9 +28,7 @@ export const ActorNamesProvider = ({
   useEffect(() => {
     const fetchAllActors = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5000/lookups/actor-names"
-        );
+        const response = await fetch(`${config.apiUrl}/lookups/actor-names`);
         const data = await response.json();
         setActorsInDb(data);
       } catch (err) {
