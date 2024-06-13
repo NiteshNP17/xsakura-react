@@ -54,6 +54,7 @@ const SortSelect: React.FC<SortSelectProps> = ({ type }) => {
           sx={{ minWidth: "100px" }}
           onChange={handleSortChange}
         >
+          <MenuItem value={"name"}>Name</MenuItem>
           <MenuItem value={"added"}>Added</MenuItem>
           <MenuItem value={"moviecount"}>Movie Count</MenuItem>
           <MenuItem value={"age"}>Age</MenuItem>

@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import DarkModeSwitch from "./DarkModeSwitch";
 import NavMenu from "./NavMenu";
 import useKeyboardShortcut from "../../utils/useKeyboardShortcut";
+import Searchbar from "./Searchbar";
 
 interface NavbarProps {
   setMode: () => void;
@@ -62,6 +63,9 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
               Actors
             </Button>
           </nav>
+          <div className="mx-auto">
+            <Searchbar />
+          </div>
         </>
       ) : (
         <NavMenu />
