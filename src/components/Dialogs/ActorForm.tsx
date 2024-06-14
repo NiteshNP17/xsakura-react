@@ -77,7 +77,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
 
     try {
       if (!actorToEdit?.name) {
-        await axios.post(`${config.apiUrl}}/actors`, formFields);
+        await axios.post(`${config.apiUrl}/actors`, formFields);
         refetchActors();
       } else {
         await axios.put(

@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { ActorNamesContext } from "../../Actors/ActorNamesProvider";
-import { Autocomplete, TextField } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
 
 interface ActorsInputProps {
   selectedActorsF: string[];
@@ -21,12 +22,13 @@ const ActorsInput: React.FC<ActorsInputProps> = ({
       freeSolo
       multiple
       autoHighlight
+      clearOnBlur
       limitTags={1}
       value={selectedActorsF}
       onChange={(_e, newValue) => {
         setSelectedActorsF(newValue);
       }}
-      disableCloseOnSelect // Add this prop
+      // disableCloseOnSelect // Add this prop
       renderOption={(props, option) => (
         <li {...props}>
           <span className="capitalize">{option}</span>
@@ -37,7 +39,7 @@ const ActorsInput: React.FC<ActorsInputProps> = ({
           {...params}
           label="Actor(s)"
           variant="outlined"
-          placeholder="Girls"
+          placeholder="Select Actresses"
         />
       )}
       renderTags={() => <></>}
