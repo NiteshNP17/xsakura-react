@@ -94,15 +94,17 @@ const Actors = () => {
 
   return isLoaded ? (
     <div className="mb-12 px-[3vw]">
-      <div className="mb-4 mt-1 flex px-1">
+      <div className="mb-1 mt-1 flex px-1">
         <h1 className="text-3xl font-semibold">Actors</h1>
         <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
         <div className="ml-auto flex gap-2">
           <SortSelect type="actors" />
-          <ActorListSwitch checked={isMale} onChange={handleSwitchChange} />
         </div>
+      </div>
+      <div className="mb-3">
+        <ActorListSwitch checked={isMale} onChange={handleSwitchChange} />
       </div>
       <div className="grid-fit-1 sm:grid-fit-015 mx-auto grid max-w-[1660px] gap-4 md:gap-6">
         {actors.map((actor) => (
