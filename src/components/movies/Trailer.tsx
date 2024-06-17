@@ -45,7 +45,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
     getPrefixData();
   }, [codePrefix, codeNum, code, reload]);
 
-  return videoSrc ? (
+  return (
     <video
       src={videoSrc}
       controls
@@ -58,8 +58,6 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
         console.log("🎥 A trailer was not found for", code.toUpperCase())
       }
     />
-  ) : (
-    <p>Loading video...</p>
   );
 };
 

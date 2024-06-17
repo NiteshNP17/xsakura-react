@@ -31,12 +31,12 @@ const MoviePage = () => {
         <Trailer code={code || ""} reload={reload} />
       </div>
       <div className="my-6">
-        {/* <iframe
+        <iframe
           width="650"
           height="550"
           src={`https://sextb.net/e/${code}`}
           allowFullScreen
-        /> */}
+        />
         <a href={`https://sextb.net/e/${code}`}>SexTB Link</a>
       </div>
       <PrefixDialog
