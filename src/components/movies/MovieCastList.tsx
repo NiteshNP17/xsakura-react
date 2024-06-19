@@ -30,7 +30,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
 
   const renderActorName = (
     actor: string,
-    dbActor?: { _id: string; name: string; dob?: string | Date }
+    dbActor?: { _id: string; name: string; dob?: string | Date },
   ) => {
     return `★${actor} ${
       dbActor?.dob && releaseDate
@@ -63,7 +63,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
 
   return (
     <div
-      className={`flex gap-1 px-2 mt-auto ${
+      className={`mt-auto flex gap-1 px-2 ${
         mb ? "mb-2" : ""
       } overflow-x-scroll`}
     >
@@ -71,7 +71,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
         <div
           key={actor}
           className={`${btClasses.btBase} ${
-            maleCast.includes(actor) ? btClasses.txtM : btClasses.txtF
+            maleCast?.includes(actor) ? btClasses.txtM : btClasses.txtF
           } ${btClasses.bgNoDb}`}
         >
           <ActorLink actor={actor}>
@@ -84,21 +84,22 @@ const MovieCastList: React.FC<MovieCastProps> = ({
           </ActorLink>
         </div>
       ))}
-      {maleCast.map((actor) => (
-        <button
-          key={actor}
-          className={`${btClasses.btBase} ${btClasses.txtM} ${btClasses.bgNoDb}`}
-        >
-          <ActorLink actor={actor} isMale>
-            {actorsInDb.length > 0 &&
-            actorsInDb.some((dbActor) => dbActor.name === actor)
-              ? actorsInDb
-                  .filter((dbActor) => dbActor.name === actor)
-                  .map((dbActor) => renderActorName(actor, dbActor))
-              : actor}
-          </ActorLink>
-        </button>
-      ))}
+      {maleCast &&
+        maleCast.map((actor) => (
+          <button
+            key={actor}
+            className={`${btClasses.btBase} ${btClasses.txtM} ${btClasses.bgNoDb}`}
+          >
+            <ActorLink actor={actor} isMale>
+              {actorsInDb.length > 0 &&
+              actorsInDb.some((dbActor) => dbActor.name === actor)
+                ? actorsInDb
+                    .filter((dbActor) => dbActor.name === actor)
+                    .map((dbActor) => renderActorName(actor, dbActor))
+                : actor}
+            </ActorLink>
+          </button>
+        ))}
     </div>
   );
 };

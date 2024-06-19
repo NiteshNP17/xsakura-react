@@ -13,7 +13,7 @@ const App = () => {
     (): "light" | "dark" => {
       const storedMode = localStorage.getItem("themeMode");
       return storedMode ? (storedMode as "light" | "dark") : "light";
-    }
+    },
   );
 
   useEffect(() => {
@@ -42,6 +42,7 @@ const App = () => {
           <Route path="/actor-m/:name" Component={pages.ActorPage} />
           <Route path="/movies" Component={pages.Movies} />
           <Route path="/movie/:code" Component={pages.MoviePage} />
+          <Route path="/search" Component={pages.SearchPage} />
         </Routes>
       </ActorNamesProvider>
     </ThemeProvider>

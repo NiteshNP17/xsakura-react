@@ -1,7 +1,10 @@
 import { Search } from "@mui/icons-material";
 import { IconButton, InputBase, Paper } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const Searchbar = () => {
+  const navigate = useNavigate();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const searchQuery = (
@@ -9,6 +12,8 @@ const Searchbar = () => {
     )?.value;
 
     console.log("search query: ", searchQuery);
+
+    searchQuery.length > 1 && navigate(`/search?q=${searchQuery}`);
   };
 
   return (
