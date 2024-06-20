@@ -42,15 +42,18 @@ const MovieList: React.FC<MovieListProps> = ({
   const [id, setId] = useState("");
 
   const handlePageChange = (
-    _e: React.ChangeEvent<unknown> | KeyboardEvent | null,
-    newPage: number
+    _e: React.ChangeEvent<unknown>,
+    newPage: number,
   ) => {
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+
     if (newPage === 1) {
-      searchParams.delete("p");
-      setSearchParams(searchParams);
+      newSearchParams.delete("p");
     } else {
-      setSearchParams({ p: newPage.toString() });
+      newSearchParams.set("p", newPage.toString());
     }
+
+    setSearchParams(newSearchParams);
   };
 
   const handleAdd = () => {
