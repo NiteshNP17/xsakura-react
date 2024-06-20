@@ -45,7 +45,7 @@ function formatCode(str: string) {
 
   // Check if a hyphen or space already exists between the last letter and the first number
   // const hasHyphen = str[lastLetterIndex] === "-";
-  const hasHyphen = str.includes("-");
+  const hasHyphen = str.includes("-") || str.includes("_");
 
   const hasSpace = str[lastLetterIndex + 1] === " ";
 
@@ -54,7 +54,7 @@ function formatCode(str: string) {
   // If a hyphen or space doesn't exist, insert a hyphen
   if (!hasHyphen && !hasSpace) {
     const modifiedStr = `${str.slice(0, lastLetterIndex + 1)}-${str.slice(
-      firstNumberIndex
+      firstNumberIndex,
     )}`;
     return modifiedStr;
   }
@@ -69,7 +69,7 @@ function formatCode(str: string) {
 function calculateAge(dobDate: Date, referenceDate: Date): number {
   const diffInMilliseconds = referenceDate.getTime() - dobDate.getTime();
   const ageInYears = Math.floor(
-    diffInMilliseconds / (1000 * 60 * 60 * 24 * 365.25)
+    diffInMilliseconds / (1000 * 60 * 60 * 24 * 365.25),
   );
 
   return ageInYears;
