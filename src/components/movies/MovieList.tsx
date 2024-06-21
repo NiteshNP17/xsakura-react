@@ -10,19 +10,11 @@ import MovieCastList from "./MovieCastList";
 import MutateMenu from "../Dialogs/MutateMenu";
 import DeleteDialog from "../Dialogs/DeleteDialog";
 import useKeyboardShortcut from "../../utils/useKeyboardShortcut";
+import { MovieData } from "../../utils/customTypes";
+import { SubtitlesOutlined } from "@mui/icons-material";
 
 interface MovieListProps {
-  movies: {
-    code: string;
-    title: string;
-    cast: string[];
-    maleCast: string[];
-    release: string;
-    overrides: {
-      cover: string;
-      preview: string;
-    };
-  }[];
+  movies: MovieData[];
   totalPages: number;
   refetch: () => void;
 }
@@ -68,20 +60,33 @@ const MovieList: React.FC<MovieListProps> = ({
 
   return (
     <div className="px-[3vw]">
-      <div className="flex px-1 mt-1 mb-4">
+      <div className="mb-4 mt-1 flex px-1">
         <h1 className="text-3xl font-semibold">Movies</h1>
         <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
       </div>
-      <div className="grid-fit-2 max-w-[1660px] gap-6 mx-auto mb-12">
+      <div className="grid-fit-2 mx-auto mb-12 max-w-[1660px] gap-6">
         {movies.map((movie) => (
           <article
             key={movie.code}
-            className="group dark:bg-zinc-800 dark:border-zinc-600 grid gap-1 overflow-hidden bg-white border border-gray-200 rounded-lg shadow-md"
+            className="group relative grid gap-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-800"
           >
             <Link to={`/movie/${movie.code}`}>
               <MovieCover code={movie.code} overrides={movie.overrides} />
+              <div className="absolute left-1 top-1 flex gap-1 rounded-md bg-black bg-opacity-60 px-1.5 align-bottom">
+                {movie.opt?.includes("mr") && (
+                  <span className="font-semibold text-yellow-400">MR</span>
+                )}
+                {movie.opt?.includes("un") && (
+                  <span className="font-black text-rose-400">UN</span>
+                )}
+                {movie.opt?.includes("en") && (
+                  <span className="text-xs text-cyan-400">
+                    <SubtitlesOutlined color="inherit" />
+                  </span>
+                )}
+              </div>
             </Link>
             <div className="flex pl-3">
               <p className="line-clamp-2">
@@ -94,7 +99,7 @@ const MovieList: React.FC<MovieListProps> = ({
               </p>
               <IconButton
                 sx={{ p: 0, ml: "auto", maxHeight: "24px", mt: "1px" }}
-                className="sm:opacity-0 group-hover:opacity-100"
+                className="group-hover:opacity-100 sm:opacity-0"
                 onClick={(e) => {
                   refCodeToEdit.current = movie.code;
                   setId(Math.random().toString(36).substring(6));
@@ -119,7 +124,7 @@ const MovieList: React.FC<MovieListProps> = ({
           setOpenDeleteDialog={setOpenDeleteDialog}
         />
       </div>
-      <div className="flex justify-center w-full mb-12">
+      <div className="mb-12 flex w-full justify-center">
         <Pagination
           color="primary"
           count={totalPages}

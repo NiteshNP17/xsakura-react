@@ -32,6 +32,12 @@ const MoviePage = () => {
       </div>
       <div className="my-6">
         <a href={`https://sextb.net/${code}`}>SexTB Link</a>
+        {/* <iframe
+          src="https://drive.google.com/file/d/1KnCdVZt2NaPgAzZdyDjtdpISWMSO-Y6u/preview"
+          height={480}
+          allow="autoplay"
+          className="aspect-video"
+        ></iframe> */}
       </div>
       <PrefixDialog
         prefix={code?.split("-")[0] || ""}
