@@ -79,7 +79,7 @@ const MovieList: React.FC<MovieListProps> = ({
                   <span className="font-semibold text-yellow-400">MR</span>
                 )}
                 {movie.opt?.includes("un") && (
-                  <span className="font-black text-rose-400">UN</span>
+                  <span className="font-black text-rose-500">UN</span>
                 )}
                 {movie.opt?.includes("en") && (
                   <span className="text-xs text-cyan-400">
