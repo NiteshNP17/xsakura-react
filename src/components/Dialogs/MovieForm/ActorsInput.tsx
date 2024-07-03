@@ -27,7 +27,7 @@ const ActorsInput: React.FC<ActorsInputProps> = ({
       value={selectedActorsF}
       onChange={(_e, newValue) => {
         const processedValue = newValue.map((item) => {
-          if (item.startsWith('Add "') && item.endsWith('"')) {
+          if (item.startsWith('Add "')) {
             return item.slice(5, -1); // Remove 'Add "' and the closing quotation mark
           }
           return item;
@@ -36,24 +36,17 @@ const ActorsInput: React.FC<ActorsInputProps> = ({
       }}
       // disableCloseOnSelect // Add this prop
       filterOptions={(options, params) => {
-        const inputValue = params.inputValue.toLowerCase();
+        const inputValue = params.inputValue.toLowerCase().trim();
         const filtered = options
           .filter((option) => option.includes(inputValue))
           .sort((a, b) => {
             // Exact matches first
-            if (a.toLowerCase() === inputValue) return -1;
-            if (b.toLowerCase() === inputValue) return 1;
+            if (a === inputValue) return -1;
+            if (b === inputValue) return 1;
             // Then, options starting with the input
-            if (
-              a.toLowerCase().startsWith(inputValue) &&
-              !b.toLowerCase().startsWith(inputValue)
-            )
+            if (a.startsWith(inputValue) && !b.startsWith(inputValue))
               return -1;
-            if (
-              !a.toLowerCase().startsWith(inputValue) &&
-              b.toLowerCase().startsWith(inputValue)
-            )
-              return 1;
+            if (!a.startsWith(inputValue) && b.startsWith(inputValue)) return 1;
             // Finally, alphabetical order
             return a.localeCompare(b);
           });

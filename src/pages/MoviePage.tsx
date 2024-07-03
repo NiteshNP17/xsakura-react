@@ -27,7 +27,7 @@ const MoviePage = () => {
           <AddCircleOutline />
         </IconButton>
       </div>
-      <div className="cq flex aspect-video max-w-[1024px] items-center justify-center overflow-hidden rounded-xl bg-black">
+      <div className="cq flex aspect-video max-w-[1024px] items-center justify-center overflow-hidden rounded-xl">
         <Trailer code={code || ""} reload={reload} />
       </div>
       <div className="my-6">

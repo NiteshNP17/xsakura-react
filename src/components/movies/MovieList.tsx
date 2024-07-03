@@ -1,17 +1,14 @@
-import { Link, useSearchParams } from "react-router-dom";
-import MovieCover from "./MovieCover";
+import { useSearchParams } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
-import MoreVert from "@mui/icons-material/MoreVert";
 import { useRef, useState } from "react";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import { Alert, Pagination, Snackbar } from "@mui/material";
 import MovieForm from "../Dialogs/MovieForm/MovieForm";
-import MovieCastList from "./MovieCastList";
 import MutateMenu from "../Dialogs/MutateMenu";
 import DeleteDialog from "../Dialogs/DeleteDialog";
 import useKeyboardShortcut from "../../utils/useKeyboardShortcut";
 import { MovieData } from "../../utils/customTypes";
-import { SubtitlesOutlined } from "@mui/icons-material";
+import MovieArticle from "./MovieArticle";
 
 interface MovieListProps {
   movies: MovieData[];
@@ -68,54 +65,13 @@ const MovieList: React.FC<MovieListProps> = ({
       </div>
       <div className="grid-fit-2 mx-auto mb-12 max-w-[1660px] gap-6">
         {movies.map((movie) => (
-          <article
+          <MovieArticle
             key={movie.code}
-            className="group relative grid gap-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-800"
-          >
-            <Link to={`/movie/${movie.code}`}>
-              <MovieCover code={movie.code} overrides={movie.overrides} />
-              <div className="absolute left-1 top-1 flex gap-1 rounded-md bg-black bg-opacity-60 px-1.5 align-bottom">
-                {movie.opt?.includes("mr") && (
-                  <span className="font-semibold text-yellow-400">MR</span>
-                )}
-                {movie.opt?.includes("un") && (
-                  <span className="font-black text-rose-500">UN</span>
-                )}
-                {movie.opt?.includes("en") && (
-                  <span className="text-xs text-cyan-400">
-                    <SubtitlesOutlined color="inherit" />
-                  </span>
-                )}
-              </div>
-            </Link>
-            <div className="flex pl-3">
-              <p className="line-clamp-2">
-                <span className="text-lg font-semibold uppercase">
-                  {movie.code}
-                </span>
-                {movie.title && (
-                  <span className="capitalize"> {movie.title}</span>
-                )}
-              </p>
-              <IconButton
-                sx={{ p: 0, ml: "auto", maxHeight: "24px", mt: "1px" }}
-                className="group-hover:opacity-100 sm:opacity-0"
-                onClick={(e) => {
-                  refCodeToEdit.current = movie.code;
-                  setId(Math.random().toString(36).substring(6));
-                  setAnchorEl(e.currentTarget);
-                }}
-              >
-                <MoreVert />
-              </IconButton>
-            </div>
-            <MovieCastList
-              movieCast={movie.cast}
-              maleCast={movie.maleCast}
-              release={movie.release}
-              mb
-            />
-          </article>
+            movie={movie}
+            setAnchorEl={setAnchorEl}
+            setId={setId}
+            refCodeToEdit={refCodeToEdit}
+          />
         ))}
         <MutateMenu
           anchorEl={anchorEl}
