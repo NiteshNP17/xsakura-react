@@ -31,13 +31,10 @@ const MoviePage = () => {
         <Trailer code={code || ""} reload={reload} />
       </div>
       <div className="my-6">
-        <a href={`https://sextb.net/${code}`}>SexTB Link</a>
-        {/* <iframe
-          src="https://drive.google.com/file/d/1KnCdVZt2NaPgAzZdyDjtdpISWMSO-Y6u/preview"
-          height={480}
-          allow="autoplay"
-          className="aspect-video"
-        ></iframe> */}
+        <a href={`https://sextb.net/${code}`}>SexTB</a>{" "}
+        <a href={`https://njav.tv/en/v/${code}`}>Njav</a>{" "}
+        <a href={`https://missav.com/en/${code}`}>MissAV</a>{" "}
+        <a href={`https://www4.javhdporn.net/video/${code}`}>JavHDPorn</a>
       </div>
       <PrefixDialog
         prefix={code?.split("-")[0] || ""}

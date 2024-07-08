@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Button,
   CircularProgress,
   DialogActions,
@@ -311,13 +312,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   inputProps={{ autoCapitalize: "none" }}
                 />
                 <SeriesInput defaultValue={movieData.series} />
-                {/* <TextField
-                  type="text"
-                  name="series"
-                  label="Series"
-                  defaultValue={movieData.series}
-                  variant="outlined"
-                /> */}
                 <TextField
                   type="text"
                   name="cover"
@@ -327,14 +321,23 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   sx={{ my: "1rem" }}
                   onBlur={(e) => handleOverrides(e, "cover")}
                 />
-                <TextField
-                  type="text"
-                  name="preview"
-                  label="Preview"
+                <Autocomplete
+                  freeSolo
+                  options={[
+                    `https://fivetiu.com/${codeToEdit || previewCode}-uncensored-leak/preview.mp4`,
+                  ]}
                   defaultValue={movieData.overrides?.preview}
-                  variant="outlined"
-                  sx={{ my: "1rem" }}
-                  onBlur={(e) => handleOverrides(e, "preview")}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      type="text"
+                      name="preview"
+                      label="Preview"
+                      variant="outlined"
+                      sx={{ my: "1rem" }}
+                      onBlur={(e) => handleOverrides(e, "preview")}
+                    />
+                  )}
                 />
               </div>
             </div>
