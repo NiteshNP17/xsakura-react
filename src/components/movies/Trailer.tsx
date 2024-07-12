@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import config from "../../utils/config";
+import { CircularProgress } from "@mui/material";
 
 interface TrailerProps {
   code: string;
@@ -22,6 +23,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
   const [videoSrc, setVideoSrc] = useState<string>("");
   const [isPaddedUrl, setIsPaddedUrl] = useState<boolean>(false);
   const [prefixData, setPrefixData] = useState<PrefixData | null>(null);
+  const [isLoaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const getPrefixData = async (): Promise<void> => {
@@ -35,13 +37,10 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
         const longCode = `${data.prePre || ""}${codePrefix}`;
 
         const createVideoSrc = (num: string): string =>
-          `${baseUrl}${longCode[0]}/${longCode.slice(
-            0,
-            3,
-          )}/${longCode}${num}/${longCode}${num}${data.isDmb ? "_dmb_w" : "mhb"}.mp4`;
-
+          `${baseUrl}${longCode[0]}/${longCode.slice(0, 3)}/${longCode}${num}/${longCode}${num}${data.isDmb ? "_dmb_w" : "mhb"}.mp4`;
         const newVideoSrc = createVideoSrc(codeNum);
         setVideoSrc(newVideoSrc);
+        setLoaded(true);
         setIsPaddedUrl(false);
 
         console.log("Trailer link: ", newVideoSrc);
@@ -72,7 +71,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
     }
   };
 
-  return (
+  return isLoaded ? (
     <video
       src={videoSrc}
       controls
@@ -82,6 +81,10 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
       } w-full bg-black object-contain`}
       onError={handleVideoError}
     />
+  ) : (
+    <div className="grid h-full w-full place-content-center bg-black text-white">
+      <CircularProgress size="3rem" color="inherit" />
+    </div>
   );
 };
 

@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { MovieData } from "../../utils/customTypes";
 import MovieCover from "./MovieCover";
-import { MoreVert, SubtitlesOutlined, Vrpano } from "@mui/icons-material";
+import {
+  FileDownload,
+  MoreVert,
+  SubtitlesOutlined,
+  Vrpano,
+} from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import MovieCastList from "./MovieCastList";
 import { MutableRefObject } from "react";
@@ -37,6 +42,7 @@ const MovieArticle: React.FC<MovieArticleProps> = ({
               <Vrpano color="inherit" />
             </span>
           )}
+          {movie.opt.includes("dn") && <FileDownload color="success" />}
           {movie.opt?.includes("mr") && (
             <span className="font-semibold text-yellow-400">MR</span>
           )}
