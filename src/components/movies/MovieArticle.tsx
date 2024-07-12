@@ -42,7 +42,11 @@ const MovieArticle: React.FC<MovieArticleProps> = ({
               <Vrpano color="inherit" />
             </span>
           )}
-          {movie.opt.includes("dn") && <FileDownload color="success" />}
+          {movie.opt.includes("dn") && (
+            <span className="text-green-400">
+              <FileDownload color="inherit" />
+            </span>
+          )}
           {movie.opt?.includes("mr") && (
             <span className="font-semibold text-yellow-400">MR</span>
           )}
