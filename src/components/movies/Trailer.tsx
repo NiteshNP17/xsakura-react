@@ -82,8 +82,12 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
       onError={handleVideoError}
     />
   ) : (
-    <div className="grid h-full w-full place-content-center bg-black text-white">
-      <CircularProgress size="3rem" color="inherit" />
+    <div
+      className={`${
+        posterSm ? "aspect-[16/10]" : "aspect-video"
+      } grid h-full w-full place-content-center bg-black text-white`}
+    >
+      <CircularProgress size="4rem" color="inherit" />
     </div>
   );
 };
