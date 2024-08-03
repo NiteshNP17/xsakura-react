@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import config from "../../utils/config";
-import { CircularProgress } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 
 interface TrailerProps {
   code: string;
@@ -16,14 +16,14 @@ interface PrefixData {
 const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
   const [codePrefix, codeNum] = code.split("-");
   const baseUrl = "https://cc3001.dmm.co.jp/litevideo/freepv/";
-  const posterSrc = `https://fivetiu.com/${code}/cover-${
-    posterSm ? "t" : "n"
-  }.jpg`;
+  // posterSm ? "t" : "n"
 
   const [videoSrc, setVideoSrc] = useState<string>("");
   const [isPaddedUrl, setIsPaddedUrl] = useState<boolean>(false);
   const [prefixData, setPrefixData] = useState<PrefixData | null>(null);
   const [isLoaded, setLoaded] = useState(false);
+  const [posterSrc, setPosterSrc] = useState("");
+  const absLabels = ["abp", "abw", "abf"];
 
   useEffect(() => {
     const getPrefixData = async (): Promise<void> => {
@@ -40,6 +40,17 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
           `${baseUrl}${longCode[0]}/${longCode.slice(0, 3)}/${longCode}${num}/${longCode}${num}${data.isDmb ? "_dmb_w" : "mhb"}.mp4`;
         const newVideoSrc = createVideoSrc(codeNum);
         setVideoSrc(newVideoSrc);
+
+        // Calculate poster URL
+        const codeNumPadded: string = codeNum.padStart(5, "0");
+        const paddedLongCode: string = `${data.prePre || ""}${codePrefix}${codeNumPadded}`;
+        const newPosterSrc = absLabels.includes(codePrefix)
+          ? `https://pics.dmm.co.jp/mono/movie/adult/${longCode}${codeNum}/${longCode}${codeNum}pl.jpg`
+          : `https://pics.dmm.co.jp/digital/video/${paddedLongCode}/${paddedLongCode}pl.jpg`;
+
+        setPosterSrc(newPosterSrc);
+        console.log("Poster link: ", newPosterSrc);
+
         setLoaded(true);
         setIsPaddedUrl(false);
 
@@ -50,7 +61,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
     };
 
     getPrefixData();
-  }, [codePrefix, codeNum, code, reload]);
+  }, [codePrefix, codeNum, code, reload, posterSm]);
 
   const handleVideoError = (): void => {
     if (!isPaddedUrl && prefixData) {
