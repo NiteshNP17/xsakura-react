@@ -11,6 +11,7 @@ interface TrailerProps {
 interface PrefixData {
   prePre?: string;
   isDmb: boolean;
+  isHq: boolean;
 }
 
 const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
@@ -37,7 +38,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
         const longCode = `${data.prePre || ""}${codePrefix}`;
 
         const createVideoSrc = (num: string): string =>
-          `${baseUrl}${longCode[0]}/${longCode.slice(0, 3)}/${longCode}${num}/${longCode}${num}${data.isDmb ? "_dmb_w" : "mhb"}.mp4`;
+          `${baseUrl}${longCode[0]}/${longCode.slice(0, 3)}/${longCode}${num}/${longCode}${num}${data.isDmb ? "_dmb_w" : data.isHq ? "hhb" : "mhb"}.mp4`;
         const newVideoSrc = createVideoSrc(codeNum);
         setVideoSrc(newVideoSrc);
 
@@ -71,7 +72,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
       const paddedVideoSrc: string = `${baseUrl}${longCode[0]}/${longCode.slice(
         0,
         3,
-      )}/${longCode}${codeNumPadded}/${longCode}${codeNumPadded}${prefixData.isDmb ? "_dmb_w" : "mhb"}.mp4`;
+      )}/${longCode}${codeNumPadded}/${longCode}${codeNumPadded}${prefixData.isDmb ? "_dmb_w" : prefixData.isHq ? "hhb" : "mhb"}.mp4`;
 
       setVideoSrc(paddedVideoSrc);
       setIsPaddedUrl(true);

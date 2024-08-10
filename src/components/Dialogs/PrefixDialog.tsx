@@ -73,15 +73,8 @@ const PrefixDialog: React.FC<PrefixDialogProps> = ({
           />
         </div>
         <div className="mx-auto grid w-full grid-cols-3 place-items-center">
-          <FormControlLabel
-            control={<Checkbox name="is3Digits" />}
-            label="3 Digits"
-          />
+          <FormControlLabel control={<Checkbox name="isHq" />} label="HQ" />
           <FormControlLabel control={<Checkbox name="isDmb" />} label="DMB" />
-          <FormControlLabel
-            control={<Checkbox name="isPrestige" />}
-            label="Prestige?"
-          />
         </div>
       </DialogContent>
       <DialogActions>
