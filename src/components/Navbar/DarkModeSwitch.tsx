@@ -59,7 +59,7 @@ const DarkModeSwitch: React.FC<DarkModeSwitchProps> = ({
   mode,
 }) => {
   return (
-    <FormGroup style={{ marginLeft: "auto" }}>
+    <FormGroup>
       <FormControlLabel
         control={
           <MaterialUISwitch onChange={toggleMode} checked={mode === "dark"} />

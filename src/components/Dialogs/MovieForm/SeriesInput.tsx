@@ -1,18 +1,24 @@
 import { Autocomplete, CircularProgress, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import config from "../../../utils/config";
+import { SeriesItem } from "../../../utils/customTypes";
 
-const SeriesInput = ({ defaultValue }: { defaultValue: string }) => {
-  const [options, setOptions] = useState([]);
+interface SeriesInputProps {
+  value: SeriesItem | null;
+  onChange: (series: SeriesItem | null) => void;
+}
+
+const SeriesInput: React.FC<SeriesInputProps> = ({ value, onChange }) => {
+  const [options, setOptions] = useState<SeriesItem[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const fetchOptions = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${config.apiUrl}/lookups/series`);
+      const res = await fetch(`${config.apiUrl}/series`);
       const resData = await res.json();
-      setOptions(resData);
+      setOptions(resData.data);
     } catch (err) {
       console.error("Error:", err);
     } finally {
@@ -29,15 +35,18 @@ const SeriesInput = ({ defaultValue }: { defaultValue: string }) => {
   return (
     <Autocomplete
       open={open}
-      loading={loading}
-      options={options}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
-      defaultValue={defaultValue}
-      freeSolo
+      loading={loading}
+      options={options}
+      value={value}
+      autoHighlight
+      onChange={(_, newValue) => onChange(newValue)}
+      getOptionLabel={(option) => option.name}
+      isOptionEqualToValue={(option, value) => option._id === value._id}
       renderOption={(props, option) => (
         <li {...props}>
-          <span className="line-clamp-2 capitalize">{option}</span>
+          <span className="line-clamp-2 capitalize">{option.name}</span>
         </li>
       )}
       renderInput={(params) => (

@@ -5,7 +5,6 @@ import ActorCard from "../components/Actors/ActorCard";
 import ActorForm from "../components/Dialogs/ActorForm";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { ActorListSwitch } from "../components/Actors/ActorListSwitch";
 import MutateMenu from "../components/Dialogs/MutateMenu";
 import MoreVert from "@mui/icons-material/MoreVert";
 import DeleteDialog from "../components/Dialogs/DeleteDialog";
@@ -20,26 +19,15 @@ const Actors = () => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [actors, setActors] = useState<ActorData[]>([]);
+  const [actorToEdit, setActorToEdit] = useState<ActorData>({} as ActorData);
   const [refetch, setRefetch] = useState(false);
   const [urlParams, setUrlParams] = useSearchParams();
-  const isMale = urlParams.get("list") === "male";
   const sort =
     urlParams.get("sort") || localStorage.getItem("actorSort") || "added";
   const sortDirection =
     urlParams.get("sortd") || localStorage.getItem("actorSortD") || "asc";
   const page = parseInt(urlParams.get("p") || "1");
-  const actorToEditRef = useRef(null as string | null);
   const totalPagesRef = useRef<number>(0);
-
-  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const params = new URLSearchParams(urlParams);
-    if (event.target.checked) {
-      params.set("list", "male");
-    } else {
-      params.delete("list");
-    }
-    setUrlParams(params);
-  };
 
   const refetchActors = () => {
     setRefetch((prev) => !prev);
@@ -59,8 +47,10 @@ const Actors = () => {
   };
 
   const handleAdd = () => {
-    actorToEditRef.current = null;
-    setOpenEditDialog(true);
+    setActorToEdit({} as ActorData);
+    setTimeout(() => {
+      setOpenEditDialog(true);
+    }, 10);
   };
 
   useKeyboardShortcut({ modifier: "alt", key: "i", callback: handleAdd });
@@ -69,9 +59,7 @@ const Actors = () => {
     const fetchActors = async () => {
       try {
         const res = await axios.get(
-          `${config.apiUrl}/actors?sort=${sort + sortDirection}${
-            isMale ? "&male" : ""
-          }&page=${page}`,
+          `${config.apiUrl}/actors?sort=${sort + sortDirection}&page=${page}`,
         );
         setActors(res.data.actors);
         totalPagesRef.current = res.data.totalPages;
@@ -90,9 +78,9 @@ const Actors = () => {
     }
 
     fetchActors();
-  }, [refetch, isMale, sort, urlParams, setUrlParams, sortDirection, page]);
+  }, [refetch, sort, urlParams, setUrlParams, sortDirection, page]);
 
-  return isLoaded ? (
+  return (
     <div className="mb-12 px-[3vw]">
       <div className="my-1 flex px-1">
         <h1 className="text-3xl font-semibold">Actors</h1>
@@ -102,34 +90,39 @@ const Actors = () => {
       </div>
       <div className="flex w-full justify-center">
         <div className="mb-4 mt-2 flex w-full max-w-[1660px] gap-2">
-          <SortSelect type="actors" />
-          <ActorListSwitch checked={isMale} onChange={handleSwitchChange} />
+          <SortSelect type="actors" setLoaded={setIsLoaded} />
         </div>
       </div>
-      <div className="grid-fit-1 sm:grid-fit-015 mx-auto grid max-w-[1660px] gap-4 md:gap-6">
-        {actors.map((actor) => (
-          <ActorCard key={actor._id} actor={actor}>
-            <IconButton
-              onClick={(e) => {
-                actorToEditRef.current = actor.name;
-                setAnchorEl(e.currentTarget);
-              }}
-              sx={{
-                p: 0,
-                ml: "auto",
-                maxHeight: "24px",
-                mt: "1px",
-                position: "absolute",
-                right: "0",
-                top: "0",
-              }}
-              className="group-hover:opacity-100 sm:opacity-0"
-            >
-              <MoreVert />
-            </IconButton>
-          </ActorCard>
-        ))}
-      </div>
+      {isLoaded ? (
+        <div className="grid-fit-1 sm:grid-fit-015 mx-auto grid max-w-[1660px] gap-4 md:gap-6">
+          {actors.map((actor) => (
+            <ActorCard key={actor._id} actor={actor}>
+              <IconButton
+                onClick={(e) => {
+                  setActorToEdit(actor);
+                  setAnchorEl(e.currentTarget);
+                }}
+                sx={{
+                  p: 0,
+                  ml: "auto",
+                  maxHeight: "24px",
+                  mt: "1px",
+                  position: "absolute",
+                  right: "0",
+                  top: "0",
+                }}
+                className="group-hover:opacity-100 sm:opacity-0"
+              >
+                <MoreVert />
+              </IconButton>
+            </ActorCard>
+          ))}
+        </div>
+      ) : (
+        <div className="mb-96 grid h-96 w-full place-content-center">
+          <CircularProgress size="4rem" />
+        </div>
+      )}
       <div className="my-12 flex w-full justify-center">
         <Pagination
           count={totalPagesRef.current}
@@ -150,7 +143,7 @@ const Actors = () => {
         setOpenEditDialog={setOpenEditDialog}
         refetch={refetchActors}
         actorToEdit={{
-          name: actorToEditRef.current,
+          actor: actorToEdit,
           id: Math.random().toString(),
         }}
       />
@@ -159,15 +152,11 @@ const Actors = () => {
         open={openDeleteDialog}
         setOpen={setOpenDeleteDialog}
         deleteId={{
-          id: actorToEditRef.current || "",
+          id: actorToEdit.name || "",
           uId: Math.random().toString(),
         }}
         refetch={refetchActors}
       />
-    </div>
-  ) : (
-    <div className="grid h-96 w-full place-content-center">
-      <CircularProgress size="4rem" />
     </div>
   );
 };

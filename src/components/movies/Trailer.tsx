@@ -24,7 +24,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
   const [prefixData, setPrefixData] = useState<PrefixData | null>(null);
   const [isLoaded, setLoaded] = useState(false);
   const [posterSrc, setPosterSrc] = useState("");
-  const absLabels = ["abp", "abw", "abf"];
+  const absLabels = ["ab", "mbr", "chn", "bgn", "gni", "dlv", "t38"];
 
   useEffect(() => {
     const getPrefixData = async (): Promise<void> => {
@@ -45,7 +45,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
         // Calculate poster URL
         const codeNumPadded: string = codeNum.padStart(5, "0");
         const paddedLongCode: string = `${data.prePre || ""}${codePrefix}${codeNumPadded}`;
-        const newPosterSrc = absLabels.includes(codePrefix)
+        const newPosterSrc = absLabels.some((sub) => codePrefix.startsWith(sub))
           ? `https://pics.dmm.co.jp/mono/movie/adult/${longCode}${codeNum}/${longCode}${codeNum}pl.jpg`
           : `https://pics.dmm.co.jp/digital/video/${paddedLongCode}/${paddedLongCode}pl.jpg`;
 
@@ -89,8 +89,10 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
       controls
       poster={posterSrc}
       className={`${
-        posterSm ? "aspect-[16/10]" : "aspect-video"
-      } w-full bg-black object-contain`}
+        posterSm
+          ? "aspect-[3/1.98] object-cover"
+          : "aspect-video object-contain"
+      } w-full bg-black`}
       onError={handleVideoError}
     />
   ) : (

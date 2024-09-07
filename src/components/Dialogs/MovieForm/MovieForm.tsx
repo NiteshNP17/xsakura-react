@@ -13,14 +13,14 @@ import { useEffect, useRef, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { formatCode, formatNames } from "../../../utils/utils";
 import MovieCastList from "../../movies/MovieCastList";
-import { MovieData } from "../../../utils/customTypes";
+import { ActorData, MovieData, SeriesItem } from "../../../utils/customTypes";
 import ActorsInput from "./ActorsInput";
 import MoviePreview from "./MoviePreview";
 import SeriesInput from "./SeriesInput";
 import config from "../../../utils/config";
 
 interface MovieFormProps {
-  codeToEdit: string | null;
+  movieToEdit: MovieData;
   openEditDialog: boolean;
   setOpenEditDialog: (open: boolean) => void;
   setOpenSnack: (open: boolean) => void;
@@ -29,7 +29,7 @@ interface MovieFormProps {
 }
 
 const MovieForm: React.FC<MovieFormProps> = ({
-  codeToEdit,
+  movieToEdit,
   openEditDialog,
   setOpenEditDialog,
   setOpenSnack,
@@ -42,19 +42,16 @@ const MovieForm: React.FC<MovieFormProps> = ({
   const isClearRef = useRef(false);
   const isMobile = useMediaQuery("(max-width:660px)");
   const [overrides, setOverrides] = useState<{ [key: string]: string }>({});
-  const [selectedActorsF, setSelectedActorsF] = useState<string[]>([]);
+  const [selectedActorsF, setSelectedActorsF] = useState<ActorData[]>([]);
   const [release, setRelease] = useState(movieData.release || "");
+  const [selectedSeries, setSelectedSeries] = useState<SeriesItem | null>(null);
 
-  const fetchMovieData = async (movieCode: string, shouldSetData: boolean) => {
+  const fetchMovieData = async (movieCode: string) => {
     try {
       const res = await axios.get(
         `${config.apiUrl}/movies/${movieCode.toLowerCase()}`,
       );
-      if (shouldSetData) {
-        setMovieData(res.data);
-        setRelease(res.data.release);
-        setSelectedActorsF(res.data.cast);
-      } else alert("movie already exists");
+      if (res) alert("movie already exists");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (err.response.status === 404) {
@@ -81,10 +78,10 @@ const MovieForm: React.FC<MovieFormProps> = ({
       return false;
     }
 
-    if (!isClearRef.current && !codeToEdit)
-      await fetchMovieData(dataToPost.code.toString(), false);
+    if (!isClearRef.current && !movieToEdit.code)
+      await fetchMovieData(dataToPost.code.toString());
 
-    if (!codeToEdit && !isClearRef.current) {
+    if (!movieToEdit.code && !isClearRef.current) {
       setLoading(false);
       alert("Movie already exists!");
       return false;
@@ -93,26 +90,38 @@ const MovieForm: React.FC<MovieFormProps> = ({
   };
 
   useEffect(() => {
-    if (codeToEdit) {
-      fetchMovieData(codeToEdit, true);
-    }
-    if (!codeToEdit && openEditDialog) {
+    const purgeData = () => {
+      // setLoading(false);
+      // setPreviewCode(null);
+      setRelease("");
+      setSelectedActorsF([]);
+      setOverrides({});
+      setMovieData({} as MovieData);
+      setSelectedSeries(null);
+    };
+
+    purgeData();
+  }, [openEditDialog]);
+
+  useEffect(() => {
+    if (movieToEdit.code) {
+      setMovieData(movieToEdit);
+      setSelectedActorsF(movieToEdit.cast);
+      setRelease(movieToEdit.release);
+      setSelectedSeries(movieToEdit.series);
+    } else setMovieData({} as MovieData);
+
+    if (!movieToEdit.code && openEditDialog) {
       setTimeout(() => {
         document.getElementById("code-input")?.focus();
       }, 50);
     }
-  }, [codeToEdit, id, openEditDialog]);
+  }, [movieToEdit, id, openEditDialog]);
 
   const handleClose = () => {
     setLoading(false);
     setOpenEditDialog(false);
     setPreviewCode(null);
-    setTimeout(() => {
-      setRelease("");
-      setSelectedActorsF([]);
-      setOverrides({});
-      setMovieData({} as MovieData);
-    }, 300);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -121,15 +130,19 @@ const MovieForm: React.FC<MovieFormProps> = ({
 
     const formData = new FormData(e.target as HTMLFormElement);
     const dataToPost = Object.fromEntries(formData);
+    const castArray = selectedActorsF.map((actorData) => actorData._id);
 
     dataToPost.code = previewCode || dataToPost.code;
-    dataToPost.cast = JSON.stringify(selectedActorsF).toLowerCase();
+    dataToPost.cast = JSON.stringify(castArray);
+    dataToPost.series = selectedSeries ? selectedSeries._id : "";
+
+    console.log(dataToPost);
 
     const isValid = await validateData(dataToPost);
 
     if (!isValid) return;
     else {
-      if (!codeToEdit) {
+      if (!movieToEdit.code) {
         try {
           await axios.post(`${config.apiUrl}/movies`, dataToPost);
           handleClose();
@@ -141,7 +154,10 @@ const MovieForm: React.FC<MovieFormProps> = ({
         }
       } else {
         try {
-          await axios.put(`${config.apiUrl}/movies/${codeToEdit}`, dataToPost);
+          await axios.put(
+            `${config.apiUrl}/movies/${movieToEdit.code}`,
+            dataToPost,
+          );
           handleClose();
           refetch();
           setOpenSnack(true);
@@ -184,17 +200,17 @@ const MovieForm: React.FC<MovieFormProps> = ({
       }}
     >
       <div className="p-5">
-        {!codeToEdit || movieData.code ? (
+        {!movieToEdit.code || movieData.code ? (
           <>
             <DialogTitle sx={{ pb: 0 }}>
               <span className="text-2xl font-semibold">
-                {codeToEdit ? "Edit" : "Add"} Movie
+                {movieToEdit.code ? "Edit" : "Add"} Movie
               </span>
             </DialogTitle>
             <div className="grid justify-center md:grid-cols-2 md:gap-6">
               <div className="grid gap-4">
                 <MoviePreview
-                  codeToPv={codeToEdit || previewCode || ""}
+                  codeToPv={movieToEdit.code || previewCode || ""}
                   overrides={{
                     cover: overrides.cover
                       ? overrides.cover
@@ -203,13 +219,14 @@ const MovieForm: React.FC<MovieFormProps> = ({
                       ? overrides.preview
                       : movieData.overrides?.preview,
                   }}
+                  isForm
                 />
                 <div className="grid grid-cols-2 items-center gap-x-3">
                   <TextField
                     type="search"
                     name="code"
-                    autoFocus={!codeToEdit}
-                    defaultValue={codeToEdit}
+                    autoFocus={!movieToEdit.code}
+                    defaultValue={movieToEdit.code}
                     onChange={(e) => {
                       e.target.value.length > 4 &&
                         setPreviewCode(
@@ -218,7 +235,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                     }}
                     onBlur={(e) =>
                       e.target.value.length > 4 &&
-                      fetchMovieData(formatCode(e.target.value), false)
+                      fetchMovieData(formatCode(e.target.value))
                     }
                     label="Code"
                     variant="outlined"
@@ -227,7 +244,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                     required
                     inputProps={{
                       autoCapitalize: "characters",
-                      readOnly: codeToEdit && true,
+                      readOnly: movieToEdit.code && true,
                       className: "uppercase",
                       id: "code-input",
                     }}
@@ -250,7 +267,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   {selectedActorsF.length > 0 ? (
                     <MovieCastList
                       movieCast={selectedActorsF}
-                      maleCast={[]}
                       release={release}
                     />
                   ) : (
@@ -311,7 +327,10 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   variant="outlined"
                   inputProps={{ autoCapitalize: "none" }}
                 />
-                <SeriesInput defaultValue={movieData.series} />
+                <SeriesInput
+                  value={selectedSeries}
+                  onChange={(series) => setSelectedSeries(series)}
+                />
                 <TextField
                   type="text"
                   name="cover"
@@ -324,7 +343,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 <Autocomplete
                   freeSolo
                   options={[
-                    `https://fivetiu.com/${codeToEdit || previewCode}-uncensored-leak/preview.mp4`,
+                    `https://fivetiu.com/${movieToEdit.code || previewCode}-uncensored-leak/preview.mp4`,
                   ]}
                   defaultValue={movieData.overrides?.preview}
                   renderInput={(params) => (
@@ -356,9 +375,9 @@ const MovieForm: React.FC<MovieFormProps> = ({
                 color="success"
                 size="large"
                 type="submit"
-                sx={codeToEdit ? { px: 4 } : {}}
+                sx={movieToEdit.code ? { px: 4 } : {}}
               >
-                {codeToEdit ? "Save" : "Add Movie"}
+                {movieToEdit.code ? "Save" : "Add Movie"}
               </LoadingButton>
             </DialogActions>
           </>

@@ -26,6 +26,11 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
     key: "a",
     callback: () => navigate("/actors"),
   });
+  useKeyboardShortcut({
+    modifier: "alt",
+    key: "s",
+    callback: () => navigate("/series"),
+  });
 
   return (
     <header className="flex items-center gap-2 px-[2.5vw]">
@@ -62,15 +67,42 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
             >
               Actors
             </Button>
+            <Button
+              component={Link}
+              to="/series"
+              color={path.includes("/series") ? "primary" : "secondary"}
+              size="large"
+              disableRipple
+            >
+              Series
+            </Button>
+            <Button
+              component={Link}
+              to="/studio"
+              color={path.includes("/studio") ? "primary" : "secondary"}
+              size="large"
+              disableRipple
+            >
+              Studios
+            </Button>
+            <Button
+              component={Link}
+              to="/albums"
+              color={path.includes("/albums") ? "primary" : "secondary"}
+              size="large"
+              disableRipple
+            >
+              Albums
+            </Button>
           </nav>
-          <div className="mx-auto">
-            <Searchbar />
-          </div>
         </>
       ) : (
         <NavMenu />
       )}
-      <DarkModeSwitch toggleMode={setMode} mode={themeMode} />
+      <div className="ml-auto flex items-center gap-4">
+        {!isMobile && <Searchbar />}
+        <DarkModeSwitch toggleMode={setMode} mode={themeMode} />
+      </div>
     </header>
   );
 };

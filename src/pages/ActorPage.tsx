@@ -3,9 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
 import MovieList from "../components/movies/MovieList";
-import { CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Tab } from "@mui/material";
 import { ActorData, MovieData } from "../utils/customTypes";
 import config from "../utils/config";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import Albums from "./Albums";
 
 const ActorPage = () => {
   const { name } = useParams<{ name: string }>();
@@ -21,6 +23,8 @@ const ActorPage = () => {
   const totalMoviesRef = useRef<number>(0);
   const [searchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") || "1");
+  const [tabVal, setTabVal] = useState("1");
+  const selectedTags = searchParams.get("tags");
 
   const refetchMovies = () => {
     setRefetchTrigger((prev) => !prev);
@@ -42,7 +46,7 @@ const ActorPage = () => {
         const res = await axios.get(
           `${config.apiUrl}/movies?${
             !isMale ? "cast=" + actorName : "mcast=" + actorName
-          }&sort=release&page=${page}`,
+          }&sort=release${selectedTags ? "&tags=" + selectedTags : ""}&page=${page}`,
         );
         setMovies(res.data.movies);
         totalPagesRef.current = res.data.totalPages;
@@ -55,7 +59,7 @@ const ActorPage = () => {
 
     fetchActorData();
     fetchMovies();
-  }, [actorName, page, refetchTrigger, isLoaded, isMale]);
+  }, [actorName, page, refetchTrigger, isLoaded, isMale, selectedTags]);
 
   return (
     <>
@@ -74,11 +78,31 @@ const ActorPage = () => {
         )}
       </div>
       {isLoaded ? (
-        <MovieList
-          movies={movies}
-          totalPages={totalPagesRef.current}
-          refetch={refetchMovies}
-        />
+        <TabContext value={tabVal}>
+          <Box
+            sx={{
+              borderBottom: 1,
+              borderColor: "divider",
+              maxWidth: "1660px",
+              mx: "auto",
+            }}
+          >
+            <TabList onChange={(_e, newVal) => setTabVal(newVal)}>
+              <Tab label="Movies" value="1" />
+              <Tab label="Albums" value="2" />
+            </TabList>
+          </Box>
+          <TabPanel value="1" sx={{ p: 0 }}>
+            <MovieList
+              movies={movies}
+              totalPages={totalPagesRef.current}
+              refetch={refetchMovies}
+            />
+          </TabPanel>
+          <TabPanel value="2" sx={{ p: 0 }}>
+            <Albums model={actorData._id} />
+          </TabPanel>
+        </TabContext>
       ) : (
         <div className="grid h-32 w-full place-content-center">
           <CircularProgress size="4rem" />

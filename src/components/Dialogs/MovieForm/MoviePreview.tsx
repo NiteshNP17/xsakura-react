@@ -10,22 +10,27 @@ interface MoviePvProps {
     cover: string;
     preview: string;
   };
+  isForm?: boolean;
 }
 
-const MoviePreview: React.FC<MoviePvProps> = ({ codeToPv, overrides }) => {
+const MoviePreview: React.FC<MoviePvProps> = ({
+  codeToPv,
+  overrides,
+  isForm,
+}) => {
   const [tabValue, setTabValue] = useState("pv");
   const showPv = codeToPv.length > 5;
 
   return (
     <TabContext value={tabValue}>
-      <div className="tabs-container border-zinc-300 border-b">
+      <div className="tabs-container border-b border-zinc-300">
         <TabList onChange={(_e, newVal) => setTabValue(newVal)}>
           <Tab label="Preview" value="pv" />
           <Tab label="Trailer" value="trailer" disabled={!showPv} />
         </TabList>
       </div>
       <TabPanel value="pv">
-        <div className="md:mb-0 mb-2 overflow-hidden rounded-lg">
+        <div className="mb-2 overflow-hidden rounded-lg md:mb-0">
           {showPv ? (
             <MovieCover
               code={codeToPv}
@@ -33,9 +38,10 @@ const MoviePreview: React.FC<MoviePvProps> = ({ codeToPv, overrides }) => {
                 cover: overrides.cover,
                 preview: overrides.preview,
               }}
+              isForm={isForm}
             />
           ) : (
-            <div className="bg-slate-200 dark:bg-zinc-600 w-full aspect-[16/10] grid place-content-center text-2xl font-semibold text-slate-400 text-center">
+            <div className="grid aspect-[3/1.98] w-full place-content-center bg-slate-200 text-center text-2xl font-semibold text-slate-400 dark:bg-zinc-600">
               ENTER CODE
               <br />
               TO SEE PREVIEW
@@ -44,7 +50,7 @@ const MoviePreview: React.FC<MoviePvProps> = ({ codeToPv, overrides }) => {
         </div>
       </TabPanel>
       <TabPanel value="trailer">
-        <div className="md:mb-0 mb-2 overflow-hidden rounded-lg">
+        <div className="mb-2 overflow-hidden rounded-lg md:mb-0">
           <Trailer code={codeToPv} posterSm />
         </div>
       </TabPanel>

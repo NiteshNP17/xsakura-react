@@ -22,9 +22,6 @@ const ActorCard: React.FC<ActorCardProps> = ({
   const blankImg =
     "https://upload.wikimedia.org/wikipedia/commons/5/53/Blank_woman_placeholder.svg";
   const [showBlank, setShowBlank] = useState<boolean>(false);
-  const actorLink = `/actor${actor.isMale ? "-m" : ""}/${
-    actor.name && actor.name.replace(/ /g, "-")
-  }`;
 
   useEffect(() => {
     if (actor.img500) {
@@ -33,37 +30,45 @@ const ActorCard: React.FC<ActorCardProps> = ({
   }, [actor.img500]);
 
   const ActorLink = ({ children }: { children: React.ReactNode }) =>
-    !noLink ? <Link to={actorLink}>{children}</Link> : <>{children}</>;
+    !noLink ? (
+      <Link to={`/actor/${actor.name && actor.name.replace(/ /g, "-")}`}>
+        {children}
+      </Link>
+    ) : (
+      <>{children}</>
+    );
 
   return (
-    <div className="border-zinc-300 dark:bg-zinc-800 dark:border-zinc-600 cq group overflow-hidden bg-white border rounded-lg shadow-md">
-      {!showBlank && actor.name ? (
-        <ActorLink>
+    <div className="cq group overflow-hidden rounded-lg border border-zinc-300 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-800">
+      <ActorLink>
+        {!showBlank && actor.img500 ? (
           <img
             src={actor.img500}
             alt={actor.name}
             width="100%"
-            className="object-cover object-top aspect-[3/4] bg-zinc-200"
+            className="aspect-[3/4] bg-zinc-200 object-cover" //object-top
             onError={() => setShowBlank(true)}
           />
-          <div className="right-1 place-content-center top-1 backdrop-filter backdrop-blur-sm aspect-square absolute px-2 bg-gray-800 bg-opacity-50 rounded-full">
+        ) : (
+          <img
+            src={blankImg}
+            alt="blank"
+            width="100%"
+            className="aspect-[3/4] bg-zinc-200 object-cover"
+          />
+        )}
+        {!showBlank && (
+          <div className="absolute right-1 top-1 aspect-square place-content-center rounded-full bg-gray-800 bg-opacity-50 px-2 text-sm">
             <span className="font-semibold text-white">
               {movieCount || actor.numMovies}
             </span>
           </div>
-        </ActorLink>
-      ) : (
-        <img
-          src={blankImg}
-          alt="blank"
-          width="100%"
-          className="object-cover aspect-[3/4] bg-zinc-200"
-        />
-      )}
+        )}
+      </ActorLink>
       <div className="relative grid px-2">
         <div>
           <ActorLink>
-            <p className="w-full text-lg font-semibold text-center capitalize">
+            <p className="w-full text-center text-lg font-semibold capitalize">
               {actor.name || "⠀"}
             </p>
           </ActorLink>
@@ -73,24 +78,22 @@ const ActorCard: React.FC<ActorCardProps> = ({
           <div className="flex justify-between">
             {dobDate && (
               <p>
-                <span className="opacity-80 font-semibold">
+                <span className="font-semibold opacity-80">
                   {calculateAge(dobDate, today)}
                 </span>{" "}
                 <span className="text-sm opacity-50">
                   {dobDate.getDate()}-
                   {dobDate.toLocaleString("default", { month: "short" })}-
                   {dobDate.getFullYear().toString().slice(-2)}
-                  {!actor.isMale && (
-                    <span className="my-age">
-                      &nbsp;({ageCompare(dobDate, myAge)})
-                    </span>
-                  )}
+                  <span className="my-age">
+                    &nbsp;({ageCompare(dobDate, myAge)})
+                  </span>
                 </span>
               </p>
             )}
             {actor.height && (
               <p>
-                <span className="opacity-80 font-semibold">
+                <span className="font-semibold opacity-80">
                   {formatHeight(actor.height)}
                 </span>
                 <span className="text-sm opacity-50"> {actor.height}</span>

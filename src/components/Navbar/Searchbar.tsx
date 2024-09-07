@@ -24,7 +24,7 @@ const Searchbar = () => {
         p: "2px 4px",
         display: "flex",
         alignItems: "center",
-        width: "clamp(100px, 30vw, 400px)",
+        width: "clamp(100px, 30vw, 280px)",
       }}
     >
       <InputBase

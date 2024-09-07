@@ -5,6 +5,7 @@ import { AddCircleOutline } from "@mui/icons-material";
 import { useState } from "react";
 import PrefixDialog from "../components/Dialogs/PrefixDialog";
 import useKeyboardShortcut from "../utils/useKeyboardShortcut";
+import MovieImages from "../components/movies/MovieImages";
 
 const MoviePage = () => {
   const { code } = useParams();
@@ -17,8 +18,6 @@ const MoviePage = () => {
     callback: () => setOpenPrefixDialog(true),
   });
 
-  // const posterSrc = `https://pics.dmm.co.jp/digital/video/${longCode}/${longCode}pl.jpg`;
-
   return (
     <div className="mx-auto max-w-[1660px] px-4">
       <div className="my-4 flex items-center">
@@ -27,14 +26,21 @@ const MoviePage = () => {
           <AddCircleOutline />
         </IconButton>
       </div>
-      <div className="cq flex aspect-video max-w-[1024px] items-center justify-center overflow-hidden rounded-xl">
-        <Trailer code={code || ""} reload={reload} />
-      </div>
-      <div className="my-6">
-        <a href={`https://sextb.net/${code}`}>SexTB</a>{" "}
-        <a href={`https://njav.tv/en/v/${code}`}>Njav</a>{" "}
-        <a href={`https://missav.com/en/${code}`}>MissAV</a>{" "}
-        <a href={`https://www4.javhdporn.net/video/${code}`}>JavHDPorn</a>
+      <div className="grid grid-cols-5 gap-4">
+        <div className="col-span-3">
+          <div className="cq flex aspect-video max-w-[1024px] items-center justify-center overflow-hidden rounded-xl">
+            <Trailer code={code || ""} reload={reload} />
+          </div>
+          <div className="my-6">
+            <a href={`https://sextb.net/${code}`}>SexTB</a>{" "}
+            <a href={`https://njav.tv/en/v/${code}`}>Njav</a>{" "}
+            <a href={`https://missav.com/en/${code}`}>MissAV</a>{" "}
+            <a href={`https://www4.javhdporn.net/video/${code}`}>JavHDPorn</a>
+          </div>
+        </div>
+        <div className="col-span-2">
+          <MovieImages code={code ? code : ""} />
+        </div>
       </div>
       <PrefixDialog
         prefix={code?.split("-")[0] || ""}

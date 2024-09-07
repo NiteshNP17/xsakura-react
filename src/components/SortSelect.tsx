@@ -12,9 +12,10 @@ import { useSearchParams } from "react-router-dom";
 
 interface SortSelectProps {
   type: "actors" | "movies";
+  setLoaded: (isLoaded: boolean) => void;
 }
 
-const SortSelect: React.FC<SortSelectProps> = ({ type }) => {
+const SortSelect: React.FC<SortSelectProps> = ({ type, setLoaded }) => {
   const [urlParams, setUrlParams] = useSearchParams();
   const sort =
     urlParams.get("sort") || localStorage.getItem("actorSort") || "added";
@@ -22,6 +23,7 @@ const SortSelect: React.FC<SortSelectProps> = ({ type }) => {
     urlParams.get("sortd") || localStorage.getItem("actorSortD") || "asc";
 
   const handleSortChange = (e: SelectChangeEvent) => {
+    setLoaded(false);
     const params = new URLSearchParams(urlParams);
     params.set("sort", e.target.value as string);
     setUrlParams(params);
@@ -30,12 +32,13 @@ const SortSelect: React.FC<SortSelectProps> = ({ type }) => {
   };
 
   const handleDirectionChange = () => {
+    setLoaded(false);
     const params = new URLSearchParams(urlParams);
     if (params.get("sortd") !== "desc") {
       params.set("sortd", "desc");
       type === "actors" && localStorage.setItem("actorSortD", "desc");
     } else {
-      params.delete("sortd");
+      params.set("sortd", "asc");
       localStorage.removeItem("actorSortD");
     }
     setUrlParams(params);

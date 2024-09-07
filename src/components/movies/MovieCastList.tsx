@@ -1,12 +1,12 @@
-import { ReactNode, useContext, useEffect } from "react";
+import { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ActorNamesContext } from "../Actors/ActorNamesProvider";
 import { calculateAge } from "../../utils/utils";
+import { ActorData } from "../../utils/customTypes";
 
 interface MovieCastProps {
-  movieCast: string[];
-  maleCast: string[];
-  release?: string;
+  movieCast: ActorData[];
+  maleCast?: string[];
+  release?: string | Date;
   mb?: boolean;
 }
 
@@ -16,7 +16,6 @@ const MovieCastList: React.FC<MovieCastProps> = ({
   release,
   mb,
 }) => {
-  const { actorsInDb } = useContext(ActorNamesContext);
   const btClasses = {
     txtF: "text-pink-600 dark:text-pink-500",
     txtM: "text-blue-600 dark:text-blue-500",
@@ -28,31 +27,28 @@ const MovieCastList: React.FC<MovieCastProps> = ({
   };
   const releaseDate = release ? new Date(release) : null;
 
-  const renderActorName = (
-    actor: string,
-    dbActor?: { _id: string; name: string; dob?: string | Date },
-  ) => {
-    return `★${actor} ${
-      dbActor?.dob && releaseDate
-        ? calculateAge(new Date(dbActor.dob), releaseDate)
-        : ""
-    }`;
+  const renderActressName = (actor: ActorData) => {
+    return `${actor.name} ${actor.dob && releaseDate ? calculateAge(new Date(actor.dob), releaseDate) : ""}`;
   };
-
-  useEffect(() => {}, [actorsInDb]);
 
   interface ActorLinkProps {
     children: ReactNode;
-    actor: string;
+    actor?: string;
     isMale?: boolean;
+    endpoint?: string;
   }
 
-  const ActorLink: React.FC<ActorLinkProps> = ({ children, actor, isMale }) => {
+  const ActorLink: React.FC<ActorLinkProps> = ({
+    children,
+    actor,
+    isMale,
+    endpoint,
+  }) => {
     return mb ? (
       <Link
-        to={`/actor${isMale ? "-m" : ""}/${actor
-          .replace(/ /g, "-")
-          .toLowerCase()}`}
+        to={`/actor${isMale ? "-m" : ""}/${
+          isMale ? actor?.replace(/ /g, "-").toLowerCase() : endpoint
+        }`}
       >
         {children}
       </Link>
@@ -69,18 +65,15 @@ const MovieCastList: React.FC<MovieCastProps> = ({
     >
       {movieCast.map((actor) => (
         <div
-          key={actor}
+          key={actor.slug}
           className={`${btClasses.btBase} ${
-            maleCast?.includes(actor) ? btClasses.txtM : btClasses.txtF
+            btClasses.txtF
           } ${btClasses.bgNoDb}`}
         >
-          <ActorLink actor={actor}>
-            {actorsInDb.length > 0 &&
-            actorsInDb.some((dbActor) => dbActor.name === actor)
-              ? actorsInDb
-                  .filter((dbActor) => dbActor.name === actor)
-                  .map((dbActor) => renderActorName(actor, dbActor))
-              : actor}
+          <ActorLink
+            endpoint={actor.name ? actor.name.replace(" ", "-") : "aa"}
+          >
+            {renderActressName(actor)}
           </ActorLink>
         </div>
       ))}
@@ -91,12 +84,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
             className={`${btClasses.btBase} ${btClasses.txtM} ${btClasses.bgNoDb}`}
           >
             <ActorLink actor={actor} isMale>
-              {actorsInDb.length > 0 &&
-              actorsInDb.some((dbActor) => dbActor.name === actor)
-                ? actorsInDb
-                    .filter((dbActor) => dbActor.name === actor)
-                    .map((dbActor) => renderActorName(actor, dbActor))
-                : actor}
+              {actor}
             </ActorLink>
           </button>
         ))}

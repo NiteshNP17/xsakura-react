@@ -1,13 +1,13 @@
 export interface MovieData {
   code: string;
-  cast: string[];
+  cast: ActorData[];
   maleCast: string[];
   title: string;
   release: string;
   runtime: number;
   tags: string[];
   opt: string[];
-  series: string;
+  series: SeriesItem;
   overrides: {
     cover: string;
     preview: string;
@@ -15,11 +15,41 @@ export interface MovieData {
 }
 
 export interface ActorData {
-  _id?: string;
+  _id: string;
+  slug?: string;
   name: string;
   dob: string | Date;
-  height: number | undefined;
-  isMale: boolean;
+  height?: number;
   img500: string;
-  numMovies?: number;
+  numMovies: number;
+}
+
+export interface SeriesItem {
+  _id: string;
+  slug: string;
+  name: string;
+  studio: string;
+  movieCount: number;
+  thumbs: string;
+  movieCodes: string[];
+}
+
+export interface LabelData {
+  prePre?: string;
+  isDmb: boolean;
+  isHq: boolean;
+}
+
+export interface AlbumData {
+  models: ActorData[];
+  name: string;
+  cover: string;
+  domain: string;
+  studio: string;
+  galleryCode: string;
+  date: Date;
+  images: [{ imgCode: string; fileName: string }];
+  isNonNude: boolean;
+  imageCount: number;
+  slug: string;
 }

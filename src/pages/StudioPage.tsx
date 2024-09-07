@@ -1,13 +1,13 @@
-import MovieList from "../components/movies/MovieList";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import CircularProgress from "@mui/material/CircularProgress";
+import { useParams, useSearchParams } from "react-router-dom";
 import { MovieData } from "../utils/customTypes";
 import config from "../utils/config";
-// import { Autocomplete, TextField } from "@mui/material";
+import MovieList from "../components/movies/MovieList";
+import { CircularProgress } from "@mui/material";
 
-const Movies = () => {
+const StudioPage = () => {
+  const { slug } = useParams();
   const totalPagesRef = useRef<number>(0);
   const [movies, setMovies] = useState<MovieData[]>([]);
   const [isLoaded, setLoaded] = useState<boolean>(false);
@@ -25,7 +25,7 @@ const Movies = () => {
     const fetchMovies = async () => {
       try {
         const res = await axios.get(
-          `${config.apiUrl}/movies?page=${page}${selectedTags ? "&tags=" + selectedTags : ""}`,
+          `${config.apiUrl}/movies?studio=${slug}&sort=release${selectedTags ? "&tags=" + selectedTags : ""}&page=${page}`,
         );
         setMovies(res.data.movies);
         totalPagesRef.current = res.data.totalPages;
@@ -40,27 +40,6 @@ const Movies = () => {
 
   return (
     <>
-      {/* <div className="w-full max-w-[1660px] mb-3 grid gap-1 place-items-center"></div>
-        <div className="place-items-center grid w-full px-[3vw]">
-        <Autocomplete
-          id="search-tags"
-          options={searchCast}
-          sx={{ width: 300 }}
-          freeSolo
-          multiple
-          limitTags={2}
-          clearOnEscape
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Search"
-              variant="outlined"
-              size="small"
-              className="w-full max-w-xl"
-            />
-          )}
-        />
-      </div>*/}
       {isLoaded ? (
         <MovieList
           movies={movies}
@@ -76,4 +55,4 @@ const Movies = () => {
   );
 };
 
-export default Movies;
+export default StudioPage;

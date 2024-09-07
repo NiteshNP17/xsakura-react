@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import { Alert, Pagination, Snackbar } from "@mui/material";
 import MovieForm from "../Dialogs/MovieForm/MovieForm";
@@ -9,20 +9,23 @@ import DeleteDialog from "../Dialogs/DeleteDialog";
 import useKeyboardShortcut from "../../utils/useKeyboardShortcut";
 import { MovieData } from "../../utils/customTypes";
 import MovieArticle from "./MovieArticle";
+import TagButtons from "./TagButtons";
 
 interface MovieListProps {
   movies: MovieData[];
   totalPages: number;
   refetch: () => void;
+  hideTags?: boolean;
 }
 
 const MovieList: React.FC<MovieListProps> = ({
   movies,
   totalPages,
   refetch,
+  hideTags,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const refCodeToEdit = useRef<string | null>(null);
+  const [movieToEdit, setMovieToEdit] = useState<MovieData>({} as MovieData);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openSnack, setOpenSnack] = useState<boolean>(false);
@@ -47,9 +50,11 @@ const MovieList: React.FC<MovieListProps> = ({
 
   const handleAdd = () => {
     if (!openEditDialog) {
-      refCodeToEdit.current = null;
+      setMovieToEdit({} as MovieData);
       setId(Math.random().toString(36).substring(6));
-      setOpenEditDialog(true);
+      setTimeout(() => {
+        setOpenEditDialog(true);
+      }, 10);
     }
   };
 
@@ -57,20 +62,21 @@ const MovieList: React.FC<MovieListProps> = ({
 
   return (
     <div className="px-[3vw]">
-      <div className="mb-4 mt-1 flex px-1">
-        <h1 className="text-3xl font-semibold">Movies</h1>
+      <div className="mt-1 flex items-center px-1">
+        <h1 className="text-2xl font-semibold">Movies</h1>
         <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
       </div>
-      <div className="grid-fit-2 mx-auto mb-12 max-w-[1660px] gap-6">
+      {!hideTags && <TagButtons />}
+      <div className="grid-fit-2 mx-auto mb-12 mt-2 max-w-[1660px] gap-6">
         {movies.map((movie) => (
           <MovieArticle
             key={movie.code}
             movie={movie}
             setAnchorEl={setAnchorEl}
             setId={setId}
-            refCodeToEdit={refCodeToEdit}
+            setMovieToEdit={setMovieToEdit}
           />
         ))}
         <MutateMenu
@@ -90,7 +96,7 @@ const MovieList: React.FC<MovieListProps> = ({
         />
       </div>
       <MovieForm
-        codeToEdit={refCodeToEdit.current}
+        movieToEdit={movieToEdit}
         openEditDialog={openEditDialog}
         setOpenEditDialog={setOpenEditDialog}
         setOpenSnack={setOpenSnack}
@@ -101,7 +107,7 @@ const MovieList: React.FC<MovieListProps> = ({
         type="movies"
         open={openDeleteDialog}
         setOpen={setOpenDeleteDialog}
-        deleteId={{ id: refCodeToEdit.current || "", uId: id }}
+        deleteId={{ id: movieToEdit.code || "", uId: id }}
         refetch={refetch}
       />
       <Snackbar
@@ -119,7 +125,7 @@ const MovieList: React.FC<MovieListProps> = ({
           variant="filled"
           sx={{ fontSize: "1.1rem", padding: "0.5rem 3.5rem" }}
         >
-          {!refCodeToEdit.current
+          {!movieToEdit.code
             ? "Movie Added Successfully!"
             : "Movie Updated Successfully!"}
         </Alert>

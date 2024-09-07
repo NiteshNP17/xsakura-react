@@ -9,18 +9,18 @@ import {
 } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import MovieCastList from "./MovieCastList";
-import { MutableRefObject } from "react";
+import MovieTitleWithSeriesLink from "./MovieTitleWithSeriesLink";
 
 interface MovieArticleProps {
   movie: MovieData;
-  refCodeToEdit: MutableRefObject<string | null>;
+  setMovieToEdit: (movieToEdit: MovieData) => void;
   setId: (id: string) => void;
   setAnchorEl: (anchorEl: null | HTMLElement) => void;
 }
 
 const MovieArticle: React.FC<MovieArticleProps> = ({
   movie,
-  refCodeToEdit,
+  setMovieToEdit,
   setId,
   setAnchorEl,
 }) => {
@@ -62,14 +62,14 @@ const MovieArticle: React.FC<MovieArticleProps> = ({
       </Link>
       <div className="flex pl-3">
         <p className="line-clamp-2">
-          <span className="text-lg font-semibold uppercase">{movie.code}</span>
-          {movie.title && <span className="capitalize"> {movie.title}</span>}
+          <span className="text-lg font-semibold uppercase">{movie.code} </span>
+          <MovieTitleWithSeriesLink movie={movie} />
         </p>
         <IconButton
           sx={{ p: 0, ml: "auto", maxHeight: "24px", mt: "1px" }}
           className="group-hover:opacity-100 sm:opacity-0"
           onClick={(e) => {
-            refCodeToEdit.current = movie.code;
+            setMovieToEdit(movie);
             setId(Math.random().toString(36).substring(6));
             setAnchorEl(e.currentTarget);
           }}
