@@ -1,10 +1,13 @@
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import config from "../utils/config";
 import { MovieData } from "../utils/customTypes";
 import MovieList from "../components/movies/MovieList";
+import SeriesCard from "../components/series/SeriesCard";
+import SeriesDialog from "../components/Dialogs/SeriesDialog";
+import Edit from "@mui/icons-material/Edit";
 
 interface MoviesRes {
   movies: MovieData[];
@@ -20,6 +23,7 @@ const SeriesPage = () => {
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") || "1");
+  const [openSeriesDialog, setOpenSeriesDialog] = useState(false);
 
   useEffect(() => {
     const fetchSeriesData = async () => {
@@ -44,16 +48,35 @@ const SeriesPage = () => {
 
   return isLoaded ? (
     <>
-      <div className="flex justify-center gap-2 px-[3vw] text-2xl font-semibold capitalize">
+      {moviesRes.movies[0].series.thumbs && (
+        <div className="mx-auto max-w-80 text-lg">
+          <SeriesCard
+            series={{
+              ...moviesRes.movies[0].series,
+              movieCount: moviesRes.totalMovies,
+            }}
+          />
+        </div>
+      )}
+      <div className="mt-2 flex justify-center gap-2 px-[3vw] text-xl capitalize">
         <span className="opacity-50">Series</span>
         <span>{moviesRes.movies[0].series.name}</span>
         <span className="opacity-50">{moviesRes.totalMovies}</span>
+        <IconButton size="small" onClick={() => setOpenSeriesDialog(true)}>
+          <Edit sx={{ fontSize: "1.18rem" }} />
+        </IconButton>
       </div>
       <MovieList
         movies={moviesRes.movies}
         totalPages={moviesRes.totalPages}
         refetch={refetchMovies}
         hideTags
+      />
+      <SeriesDialog
+        open={openSeriesDialog}
+        setOpen={setOpenSeriesDialog}
+        reload={refetchMovies}
+        serieToEdit={moviesRes.movies[0].series}
       />
     </>
   ) : (

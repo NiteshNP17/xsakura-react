@@ -16,7 +16,6 @@ export interface MovieData {
 
 export interface ActorData {
   _id: string;
-  slug?: string;
   name: string;
   dob: string | Date;
   height?: number;

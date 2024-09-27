@@ -62,7 +62,7 @@ const MovieList: React.FC<MovieListProps> = ({
 
   return (
     <div className="px-[3vw]">
-      <div className="mt-1 flex items-center px-1">
+      <div className="flex items-center px-1">
         <h1 className="text-2xl font-semibold">Movies</h1>
         <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />

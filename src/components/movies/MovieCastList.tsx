@@ -2,9 +2,11 @@ import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { calculateAge } from "../../utils/utils";
 import { ActorData } from "../../utils/customTypes";
+import { IconButton } from "@mui/material";
 
 interface MovieCastProps {
   movieCast: ActorData[];
+  setMovieCast?: React.Dispatch<React.SetStateAction<ActorData[]>>;
   maleCast?: string[];
   release?: string | Date;
   mb?: boolean;
@@ -12,6 +14,7 @@ interface MovieCastProps {
 
 const MovieCastList: React.FC<MovieCastProps> = ({
   movieCast,
+  setMovieCast,
   maleCast,
   release,
   mb,
@@ -22,13 +25,12 @@ const MovieCastList: React.FC<MovieCastProps> = ({
     bgNoDb: `bg-zinc-200 dark:bg-zinc-700 ${
       mb ? "hover:bg-zinc-300 dark:hover:bg-zinc-600" : ""
     }`,
-    btBase:
-      "max-h-7 whitespace-nowrap px-2 py-0.5 text-sm capitalize transition-colors rounded-full",
+    btBase: `max-h-7 whitespace-nowrap ${setMovieCast ? "pl-2 pr-0.5" : "px-2"} py-0.5 text-sm capitalize transition-colors rounded-full`,
   };
   const releaseDate = release ? new Date(release) : null;
 
   const renderActressName = (actor: ActorData) => {
-    return `${actor.name} ${actor.dob && releaseDate ? calculateAge(new Date(actor.dob), releaseDate) : ""}`;
+    return `${actor.name}${actor.dob && releaseDate ? " " + calculateAge(new Date(actor.dob), releaseDate) : ""}`;
   };
 
   interface ActorLinkProps {
@@ -65,7 +67,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
     >
       {movieCast.map((actor) => (
         <div
-          key={actor.slug}
+          key={actor._id}
           className={`${btClasses.btBase} ${
             btClasses.txtF
           } ${btClasses.bgNoDb}`}
@@ -75,6 +77,23 @@ const MovieCastList: React.FC<MovieCastProps> = ({
           >
             {renderActressName(actor)}
           </ActorLink>
+          {setMovieCast && (
+            <IconButton
+              size="small"
+              sx={{
+                py: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.15)",
+                ml: "0.25rem",
+              }}
+              onClick={() =>
+                setMovieCast((prevCast: ActorData[]) =>
+                  prevCast.filter((castMember) => castMember._id !== actor._id),
+                )
+              }
+            >
+              <span className="dark:text-zinc-400">&times;</span>
+            </IconButton>
+          )}
         </div>
       ))}
       {maleCast &&

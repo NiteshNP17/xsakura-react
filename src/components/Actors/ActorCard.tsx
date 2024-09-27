@@ -39,7 +39,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
     );
 
   return (
-    <div className="cq group overflow-hidden rounded-lg border border-zinc-300 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-800">
+    <div className="cq group relative overflow-hidden rounded-lg border border-zinc-300 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-800">
       <ActorLink>
         {!showBlank && actor.img500 ? (
           <img
@@ -58,7 +58,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
           />
         )}
         {!showBlank && (
-          <div className="absolute right-1 top-1 aspect-square place-content-center rounded-full bg-gray-800 bg-opacity-50 px-2 text-sm">
+          <div className="absolute right-1 top-1 aspect-square place-content-center rounded-full bg-gray-800 bg-opacity-50 px-1.5 text-sm">
             <span className="font-semibold text-white">
               {movieCount || actor.numMovies}
             </span>

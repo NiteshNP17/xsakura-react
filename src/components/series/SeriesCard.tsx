@@ -41,15 +41,17 @@ const SeriesCard: React.FC<SeriesCardProps> = ({
                   }
                 /> */}
         </div>
-        <p className="mr-4 flex gap-1 p-2">
-          <span className="line-clamp-1 text-ellipsis">{series.name}</span>
-          {`(${series.movieCount})`}
-        </p>
+        {setSerieToEdit && (
+          <p className="mr-4 flex gap-1 p-2">
+            <span className="line-clamp-1 text-ellipsis">{series.name}</span>
+            {`(${series.movieCount})`}
+          </p>
+        )}
       </Link>
-      {setSerieToEdit && (
+      {setAnchorEl && (
         <IconButton
           onClick={(e) => {
-            setSerieToEdit(series);
+            setSerieToEdit && setSerieToEdit(series);
             setAnchorEl && setAnchorEl(e.currentTarget);
           }}
           sx={{

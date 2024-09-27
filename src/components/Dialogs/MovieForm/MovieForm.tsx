@@ -268,6 +268,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                     <MovieCastList
                       movieCast={selectedActorsF}
                       release={release}
+                      setMovieCast={setSelectedActorsF}
                     />
                   ) : (
                     <span className="w-full pt-4 text-center text-lg opacity-50 md:pt-0">

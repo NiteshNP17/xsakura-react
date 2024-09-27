@@ -4,7 +4,7 @@ import config from "../../utils/config";
 // Function to fetch image source
 const fetchDmmSrc = async (code: string) => {
   const [codeLabel, codeNum] = code.split("-");
-  const prestigeLabels = ["ab", "chn", "bgn", "gni", "dlv"];
+  const prestigeLabels = ["ab", "chn", "bgn", "gni", "dlv", "wps"];
   const codeNumPadded = codeNum.padStart(5, "0");
   let dmmSrc;
 
@@ -48,7 +48,7 @@ const SeriesImage = ({ code }: { code: string }) => {
   }, [code]);
 
   return (
-    <div className="flex aspect-[21/30]">
+    <div className="flex aspect-[20.93/30]">
       <img src={src} alt={code} className="object-cover" />
     </div>
   );

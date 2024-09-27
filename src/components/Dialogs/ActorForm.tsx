@@ -40,14 +40,14 @@ const ActorForm: React.FC<ActorFormProps> = ({
     if (res.data.message !== "notFound") {
       setFormFields({
         ...formFields,
-        slug: res.data.slug,
+        _id: res.data.id,
         name: actorName,
       });
     } else {
       console.log("notFound");
       setFormFields({
         ...formFields,
-        slug: undefined,
+        _id: "",
         name: actorName,
       });
     }
@@ -59,11 +59,11 @@ const ActorForm: React.FC<ActorFormProps> = ({
     setLoading(true);
 
     try {
-      if (!actorToEdit?.actor.name && !formFields.slug) {
+      if (!actorToEdit?.actor.name && !formFields._id) {
         await axios.post(`${config.apiUrl}/actors`, formFields);
       } else {
-        await axios.put(
-          `${config.apiUrl}/actors/${formFields.slug}`,
+        await axios.patch(
+          `${config.apiUrl}/actors/${formFields._id}`,
           formFields,
         );
       }
@@ -91,7 +91,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
     >
       <div className="p-6">
         <h1 className="mb-3 w-full text-2xl font-semibold">
-          {!formFields.slug ? "Add" : "Edit"} Actor {formFields.slug}
+          {!formFields._id ? "Add" : "Edit"} Actor {formFields._id}
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col items-center justify-center gap-6 md:grid md:grid-cols-2">
@@ -108,7 +108,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
                 autoComplete="off"
                 defaultValue={formFields.name}
                 onBlur={(e) => {
-                  !formFields.slug && e.target.value.trim().length > 2
+                  !formFields._id && e.target.value.trim().length > 2
                     ? verifyActor(e.target.value.toLowerCase().trim())
                     : setFormFields({
                         ...formFields,
@@ -121,8 +121,8 @@ const ActorForm: React.FC<ActorFormProps> = ({
                 name="img500"
                 label="Image URL"
                 defaultValue={formFields.img500}
-                onBlur={(e) =>
-                  e.target.value.trim().length > 10 &&
+                onChange={(e) =>
+                  e.target.value.trim().length > 25 &&
                   setFormFields({
                     ...formFields,
                     img500: e.target.value.toLowerCase().trim(),

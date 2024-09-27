@@ -3,11 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
 import MovieList from "../components/movies/MovieList";
-import { Box, CircularProgress, Tab } from "@mui/material";
+import { Box, CircularProgress, IconButton, Tab } from "@mui/material";
 import { ActorData, MovieData } from "../utils/customTypes";
 import config from "../utils/config";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import Albums from "./Albums";
+import ActorForm from "../components/Dialogs/ActorForm";
+import Edit from "@mui/icons-material/Edit";
 
 const ActorPage = () => {
   const { name } = useParams<{ name: string }>();
@@ -25,6 +27,7 @@ const ActorPage = () => {
   const page = parseInt(searchParams.get("p") || "1");
   const [tabVal, setTabVal] = useState("1");
   const selectedTags = searchParams.get("tags");
+  const [openEditDialog, setOpenEditDialog] = useState(false);
 
   const refetchMovies = () => {
     setRefetchTrigger((prev) => !prev);
@@ -64,8 +67,11 @@ const ActorPage = () => {
   return (
     <>
       <div className="mb-12 px-[3vw]">
-        <div className="mb-4 mt-1 flex px-1">
+        <div className="mb-4 mt-1 flex gap-2 px-1">
           <h1 className="text-3xl font-semibold capitalize">{actorName}</h1>
+          <IconButton onClick={() => setOpenEditDialog(true)}>
+            <Edit />
+          </IconButton>
         </div>
         {actorData.img500 && (
           <div className="mx-auto max-w-80 md:mx-12">
@@ -76,6 +82,15 @@ const ActorPage = () => {
             />
           </div>
         )}
+        <ActorForm
+          openEditDialog={openEditDialog}
+          setOpenEditDialog={setOpenEditDialog}
+          refetch={refetchMovies}
+          actorToEdit={{
+            actor: actorData,
+            id: Math.random().toString(),
+          }}
+        />
       </div>
       {isLoaded ? (
         <TabContext value={tabVal}>

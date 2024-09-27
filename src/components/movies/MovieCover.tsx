@@ -32,7 +32,7 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
 
   const fetchDmmSrc = async (code: string) => {
     const [codeLabel, codeNum] = code.split("-");
-    const prestigeLabels = ["ab", "chn", "bgn", "gni", "dlv"];
+    const prestigeLabels = ["ab", "chn", "bgn", "gni", "dlv", "fit"];
     const noPreLabels = ["waaa", "mih"];
     let dmmSrc;
 
@@ -59,13 +59,26 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
     setImgSrc(dmmSrc);
   };
 
+  const vidClassesBuilder = () => {
+    let classes =
+      "absolute object-cover opacity-0 transition-opacity duration-300 hover:opacity-100 ";
+    if (overrides?.preview?.includes("sexlikereal")) {
+      classes += "h-[120%]";
+    } else if (overrides?.preview?.includes("vrlite")) {
+      classes += "h-[152%] object-left";
+    } else {
+      classes += "h-full";
+    }
+    return classes;
+  };
+
   return imgLoaded ? (
     // return (
     <div
       onMouseEnter={() => handlePointerEnter(code)}
       onTouchStart={() => handlePointerEnter(code)}
       onMouseLeave={() => handlePointerEnter(null)}
-      className="relative flex aspect-[3/1.98] max-w-full justify-center overflow-hidden"
+      className="relative flex aspect-[3/1.98] max-w-full items-center justify-center overflow-hidden"
     >
       {hoverCode === code && (
         <video
@@ -73,7 +86,7 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
           loop
           muted
           preload="none"
-          className={`absolute ${overrides?.preview && overrides.preview.includes("sexlikereal") ? "h-[120%]" : "h-full"} object-cover opacity-0 transition-opacity duration-300 hover:opacity-100`}
+          className={vidClassesBuilder()}
           height="100%"
         >
           <source

@@ -1,7 +1,15 @@
 import { CircularProgress } from "@mui/material";
 import { useState, useEffect } from "react";
 
-const PreloadingImage = ({ src, alt }: { src: string; alt: string }) => {
+const PreloadingImage = ({
+  src,
+  alt,
+  onClick,
+}: {
+  src: string;
+  alt: string;
+  onClick?: () => void;
+}) => {
   const [imageDetails, setImageDetails] = useState({
     loaded: false,
     width: 0,
@@ -57,6 +65,7 @@ const PreloadingImage = ({ src, alt }: { src: string; alt: string }) => {
       alt={alt}
       width={imageDetails.width}
       height={imageDetails.height}
+      onClick={onClick}
       className="h-auto max-w-full"
     />
   );

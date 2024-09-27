@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ImageList, ImageListItem } from "@mui/material";
+import { Dialog, ImageList, ImageListItem } from "@mui/material";
 import { LabelData } from "../../utils/customTypes";
 import config from "../../utils/config";
 import PreloadingImage from "../PreloadingImage";
@@ -8,9 +8,8 @@ const MovieImages = ({ code }: { code: string }) => {
   const [codeLabel, codeNum] = code.split("-");
   const codeNumPadded = codeNum.padStart(5, "0");
   const [labelData, setLabelData] = useState<LabelData>({} as LabelData);
-  const max10Labels = ["chn", "bgn", "gni", "dlv", "fway"];
-  const length =
-    codeLabel.startsWith("ab") || max10Labels.includes(codeLabel) ? 10 : 20;
+  const [open, setOpen] = useState(false);
+  const [imgToShow, setImgToShow] = useState("");
 
   useEffect(() => {
     const getLabelData = async (label: string) => {
@@ -27,7 +26,7 @@ const MovieImages = ({ code }: { code: string }) => {
 
   const getImgSrc = (i: string): string => {
     const noPadLabels = ["abc"];
-    const prestigeLabels = ["chn", "bgn", "gni", "dlv"];
+    const prestigeLabels = ["chn", "bgn", "gni", "dlv", "wps", "fit"];
     if (codeLabel.startsWith("ab") || prestigeLabels.includes(codeLabel)) {
       return `https://pics.dmm.co.jp/digital/video/118${codeLabel}${codeNum}/118${codeLabel}${codeNum}jp-${i}.jpg`;
     } else {
@@ -40,25 +39,40 @@ const MovieImages = ({ code }: { code: string }) => {
   };
 
   return (
-    <ImageList variant="masonry" cols={3} gap={8}>
-      {codeLabel === "rebd" &&
-        Array.from({ length: 12 }, (_, i) => (
+    <>
+      <ImageList variant="masonry" cols={3} gap={8}>
+        {codeLabel === "rebd" &&
+          Array.from({ length: 12 }, (_, i) => (
+            <ImageListItem key={`img ${i}`}>
+              <img
+                src={`https://file.rebecca-web.com/media/videos/dl02/rebd_${codeNum}/b${(i + 1).toString().padStart(2, "0")}_pc2.jpg`}
+                alt={`img ${i + 1}`}
+                onClick={() => {
+                  setImgToShow(
+                    `https://file.rebecca-web.com/media/videos/dl02/rebd_${codeNum}/b${(i + 1).toString().padStart(2, "0")}_pc2.jpg`,
+                  );
+                  setOpen(true);
+                }}
+              />
+            </ImageListItem>
+          ))}
+        {Array.from({ length: 20 }, (_, i) => (
           <ImageListItem key={`img ${i}`}>
-            <img
-              src={`https://file.rebecca-web.com/media/videos/dl02/rebd_${codeNum}/b${(i + 1).toString().padStart(2, "0")}_pc2.jpg`}
-              alt={`img ${i + 1}`}
+            <PreloadingImage
+              src={getImgSrc((i + 1).toString())}
+              alt={`img ${i}`}
+              onClick={() => {
+                setImgToShow(getImgSrc((i + 1).toString()));
+                setOpen(true);
+              }}
             />
           </ImageListItem>
         ))}
-      {Array.from({ length }, (_, i) => (
-        <ImageListItem key={`img ${i}`}>
-          <PreloadingImage
-            src={getImgSrc((i + 1).toString())}
-            alt={`img ${i}`}
-          />
-        </ImageListItem>
-      ))}
-    </ImageList>
+      </ImageList>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <img src={imgToShow} alt="Opened Image" />
+      </Dialog>
+    </>
   );
 };
 

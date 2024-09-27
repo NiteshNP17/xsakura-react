@@ -24,7 +24,17 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
   const [prefixData, setPrefixData] = useState<PrefixData | null>(null);
   const [isLoaded, setLoaded] = useState(false);
   const [posterSrc, setPosterSrc] = useState("");
-  const absLabels = ["ab", "mbr", "chn", "bgn", "gni", "dlv", "t38"];
+  const absLabels = [
+    "ab",
+    "mbr",
+    "chn",
+    "bgn",
+    "gni",
+    "dlv",
+    "t38",
+    "wps",
+    "fit",
+  ];
 
   useEffect(() => {
     const getPrefixData = async (): Promise<void> => {

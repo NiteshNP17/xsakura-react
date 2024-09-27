@@ -32,7 +32,7 @@ const MoviePage = () => {
             <Trailer code={code || ""} reload={reload} />
           </div>
           <div className="my-6">
-            <a href={`https://sextb.net/${code}`}>SexTB</a>{" "}
+            <a href={`https://javct.net/v/${code}`}>JavCT</a>{" "}
             <a href={`https://njav.tv/en/v/${code}`}>Njav</a>{" "}
             <a href={`https://missav.com/en/${code}`}>MissAV</a>{" "}
             <a href={`https://www4.javhdporn.net/video/${code}`}>JavHDPorn</a>
