@@ -31,9 +31,9 @@ const SerieImage: React.FC<SerieImgProps> = ({ thumbs }) => {
       return `https://pics.dmm.co.jp/mono/movie/adult/118${codeLabel}${codeNum}/118${codeLabel}${codeNum}ps.jpg`;
     } else {
       return `https://pics.dmm.co.jp/digital/video/${
-        labelData.prePre || ""
+        labelData.prefix || ""
       }${codeLabel}${codeNumPadded}/${
-        labelData.prePre || ""
+        labelData.prefix || ""
       }${codeLabel}${codeNumPadded}ps.jpg`;
     }
   };
