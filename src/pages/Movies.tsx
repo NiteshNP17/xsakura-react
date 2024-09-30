@@ -1,7 +1,7 @@
 import MovieList from "../components/movies/MovieList";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { MovieData } from "../utils/customTypes";
 import config from "../utils/config";
@@ -13,7 +13,10 @@ const Movies = () => {
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
+  const path = useLocation().pathname;
   const page = parseInt(searchParams.get("p") || "1");
+  const sort =
+    searchParams.get("sort") || path !== "/movies" ? "release" : "added";
   const selectedTags = searchParams.get("tags");
 
   const refetchMovies = () => {
@@ -25,7 +28,7 @@ const Movies = () => {
     const fetchMovies = async () => {
       try {
         const res = await axios.get(
-          `${config.apiUrl}/movies?page=${page}${selectedTags ? "&tags=" + selectedTags : ""}`,
+          `${config.apiUrl}/movies?${selectedTags ? "&tags=" + selectedTags + "&" : ""}sort=${sort}&page=${page}`,
         );
         setMovies(res.data.movies);
         totalPagesRef.current = res.data.totalPages;
@@ -36,43 +39,18 @@ const Movies = () => {
     };
 
     fetchMovies();
-  }, [page, refetchTrigger, isLoaded, selectedTags]);
+  }, [page, refetchTrigger, isLoaded, selectedTags, sort]);
 
-  return (
-    <>
-      {/* <div className="w-full max-w-[1660px] mb-3 grid gap-1 place-items-center"></div>
-        <div className="place-items-center grid w-full px-[3vw]">
-        <Autocomplete
-          id="search-tags"
-          options={searchCast}
-          sx={{ width: 300 }}
-          freeSolo
-          multiple
-          limitTags={2}
-          clearOnEscape
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Search"
-              variant="outlined"
-              size="small"
-              className="w-full max-w-xl"
-            />
-          )}
-        />
-      </div>*/}
-      {isLoaded ? (
-        <MovieList
-          movies={movies}
-          totalPages={totalPagesRef.current}
-          refetch={refetchMovies}
-        />
-      ) : (
-        <div className="grid h-96 w-full place-content-center">
-          <CircularProgress size="4rem" />
-        </div>
-      )}
-    </>
+  return isLoaded ? (
+    <MovieList
+      movies={movies}
+      totalPages={totalPagesRef.current}
+      refetch={refetchMovies}
+    />
+  ) : (
+    <div className="grid h-96 w-full place-content-center">
+      <CircularProgress size="4rem" />
+    </div>
   );
 };
 

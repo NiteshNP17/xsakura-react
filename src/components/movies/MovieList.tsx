@@ -1,8 +1,17 @@
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import { useState } from "react";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
-import { Alert, Pagination, Snackbar } from "@mui/material";
+import {
+  Alert,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  Select,
+  SelectChangeEvent,
+  Snackbar,
+} from "@mui/material";
 import MovieForm from "../Dialogs/MovieForm/MovieForm";
 import MutateMenu from "../Dialogs/MutateMenu";
 import DeleteDialog from "../Dialogs/DeleteDialog";
@@ -30,7 +39,10 @@ const MovieList: React.FC<MovieListProps> = ({
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openSnack, setOpenSnack] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const path = useLocation().pathname;
   const page = parseInt(searchParams.get("p") ?? "1");
+  const sort =
+    searchParams.get("sort") || path !== "/movies" ? "release" : "added";
   const [id, setId] = useState("");
 
   const handlePageChange = (
@@ -48,6 +60,14 @@ const MovieList: React.FC<MovieListProps> = ({
     setSearchParams(newSearchParams);
   };
 
+  const handleSortChange = (e: SelectChangeEvent) => {
+    // setLoaded(false);
+    const params = new URLSearchParams(searchParams);
+    params.set("sort", e.target.value as string);
+    params.delete("p");
+    setSearchParams(params);
+  };
+
   const handleAdd = () => {
     if (!openEditDialog) {
       setMovieToEdit({} as MovieData);
@@ -62,11 +82,26 @@ const MovieList: React.FC<MovieListProps> = ({
 
   return (
     <div className="px-[3vw]">
-      <div className="flex items-center px-1">
+      <div className="my-2 flex items-center px-1">
         <h1 className="text-2xl font-semibold">Movies</h1>
         <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
+        <FormControl sx={{ ml: "auto" }}>
+          <InputLabel>Sort</InputLabel>
+          <Select
+            labelId="sort-select-label"
+            id="sort-select"
+            value={sort}
+            size="small"
+            label="Sort"
+            sx={{ minWidth: "100px" }}
+            onChange={handleSortChange}
+          >
+            <MenuItem value={"added"}>Added</MenuItem>
+            <MenuItem value={"release"}>Release</MenuItem>
+          </Select>
+        </FormControl>
       </div>
       {!hideTags && <TagButtons />}
       <div className="grid-fit-2 mx-auto mb-12 mt-2 max-w-[1660px] gap-6">

@@ -9,13 +9,13 @@ interface TrailerProps {
 }
 
 interface PrefixData {
-  prePre?: string;
+  prefix?: string;
   isDmb: boolean;
   isHq: boolean;
 }
 
 const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
-  const [codePrefix, codeNum] = code.split("-");
+  const [codeLabel, codeNum] = code.split("-");
   const baseUrl = "https://cc3001.dmm.co.jp/litevideo/freepv/";
   // posterSm ? "t" : "n"
 
@@ -34,18 +34,19 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
     "t38",
     "wps",
     "fit",
+    "prby",
   ];
 
   useEffect(() => {
     const getPrefixData = async (): Promise<void> => {
       try {
         const res = await fetch(
-          `${config.apiUrl}/lookups/pre/${codePrefix}?codenum=${codeNum}`,
+          `${config.apiUrl}/lookups/label/${codeLabel}?codenum=${codeNum}`,
         );
         const data: PrefixData = await res.json();
         setPrefixData(data);
 
-        const longCode = `${data.prePre || ""}${codePrefix}`;
+        const longCode = `${data.prefix || ""}${codeLabel}`;
 
         const createVideoSrc = (num: string): string =>
           `${baseUrl}${longCode[0]}/${longCode.slice(0, 3)}/${longCode}${num}/${longCode}${num}${data.isDmb ? "_dmb_w" : data.isHq ? "hhb" : "mhb"}.mp4`;
@@ -54,10 +55,10 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
 
         // Calculate poster URL
         const codeNumPadded: string = codeNum.padStart(5, "0");
-        const paddedLongCode: string = `${data.prePre || ""}${codePrefix}${codeNumPadded}`;
-        const newPosterSrc = absLabels.some((sub) => codePrefix.startsWith(sub))
-          ? `https://pics.dmm.co.jp/mono/movie/adult/${longCode}${codeNum}/${longCode}${codeNum}pl.jpg`
-          : `https://pics.dmm.co.jp/digital/video/${paddedLongCode}/${paddedLongCode}pl.jpg`;
+        const paddedLongCode: string = `${data.prefix || ""}${codeLabel}${codeNumPadded}`;
+        const newPosterSrc = absLabels.some((sub) => codeLabel.startsWith(sub))
+          ? `https://pics.dmm.co.jp/mono/movie/adult/${longCode}${codeNum}/${longCode}${codeNum}p${posterSm ? "s" : "l"}.jpg`
+          : `https://pics.dmm.co.jp/digital/video/${paddedLongCode}/${paddedLongCode}p${posterSm ? "s" : "l"}.jpg`;
 
         setPosterSrc(newPosterSrc);
         console.log("Poster link: ", newPosterSrc);
@@ -72,13 +73,13 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
     };
 
     getPrefixData();
-  }, [codePrefix, codeNum, code, reload, posterSm]);
+  }, [codeLabel, codeNum, code, reload, posterSm]);
 
   const handleVideoError = (): void => {
     if (!isPaddedUrl && prefixData) {
       const codeNumPadded: string =
         "0".repeat(Math.max(0, 5 - codeNum.length)) + codeNum;
-      const longCode: string = `${prefixData.prePre || ""}${codePrefix}`;
+      const longCode: string = `${prefixData.prefix || ""}${codeLabel}`;
       const paddedVideoSrc: string = `${baseUrl}${longCode[0]}/${longCode.slice(
         0,
         3,
@@ -99,10 +100,8 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
       controls
       poster={posterSrc}
       className={`${
-        posterSm
-          ? "aspect-[3/1.98] object-cover"
-          : "aspect-video object-contain"
-      } w-full bg-black`}
+        posterSm ? "aspect-[3/1.98]" : "aspect-video"
+      } w-full bg-black object-contain`}
       onError={handleVideoError}
     />
   ) : (

@@ -34,7 +34,8 @@ export interface SeriesItem {
 }
 
 export interface LabelData {
-  prePre?: string;
+  prefix: string;
+  name: string;
   isDmb: boolean;
   isHq: boolean;
 }

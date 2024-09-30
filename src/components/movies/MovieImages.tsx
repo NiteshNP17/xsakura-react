@@ -15,7 +15,7 @@ const MovieImages = ({ code }: { code: string }) => {
     const getLabelData = async (label: string) => {
       // Fetch label data from the API
       const res = await fetch(
-        `${config.apiUrl}/lookups/pre/${label}?codenum=${codeNum}`,
+        `${config.apiUrl}/lookups/label/${label}?codenum=${codeNum}`,
       );
       const data = await res.json();
       setLabelData(data);
@@ -25,15 +25,15 @@ const MovieImages = ({ code }: { code: string }) => {
   }, [codeLabel]);
 
   const getImgSrc = (i: string): string => {
-    const noPadLabels = ["abc"];
+    const noPadLabels = ["prby", "onex"];
     const prestigeLabels = ["chn", "bgn", "gni", "dlv", "wps", "fit"];
     if (codeLabel.startsWith("ab") || prestigeLabels.includes(codeLabel)) {
       return `https://pics.dmm.co.jp/digital/video/118${codeLabel}${codeNum}/118${codeLabel}${codeNum}jp-${i}.jpg`;
     } else {
       return `https://pics.dmm.co.jp/digital/video/${
-        labelData.prePre || ""
+        labelData.prefix || ""
       }${codeLabel}${noPadLabels.includes(codeLabel) ? codeNum : codeNumPadded}/${
-        labelData.prePre || ""
+        labelData.prefix || ""
       }${codeLabel}${noPadLabels.includes(codeLabel) ? codeNum : codeNumPadded}jp-${i}.jpg`;
     }
   };

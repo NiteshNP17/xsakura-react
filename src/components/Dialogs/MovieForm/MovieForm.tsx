@@ -202,7 +202,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
       <div className="p-5">
         {!movieToEdit.code || movieData.code ? (
           <>
-            <DialogTitle sx={{ pb: 0 }}>
+            <DialogTitle sx={{ pt: 0 }}>
               <span className="text-2xl font-semibold">
                 {movieToEdit.code ? "Edit" : "Add"} Movie
               </span>
@@ -220,6 +220,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                       : movieData.overrides?.preview,
                   }}
                   isForm
+                  setRelease={setRelease}
                 />
                 <div className="grid grid-cols-2 items-center gap-x-3">
                   <TextField
@@ -250,6 +251,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                     }}
                   />
                   <TextField
+                    id="title-input"
                     type="search"
                     name="title"
                     defaultValue={movieData.title}
@@ -267,7 +269,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   {selectedActorsF.length > 0 ? (
                     <MovieCastList
                       movieCast={selectedActorsF}
-                      release={release}
+                      release={release.length > 9 ? release : ""}
                       setMovieCast={setSelectedActorsF}
                     />
                   ) : (
@@ -297,12 +299,13 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   name="release"
                   label="Release Date"
                   placeholder="YYYY-MM-DD"
-                  defaultValue={movieData.release}
-                  onBlur={(e) => setRelease(e.target.value)}
+                  value={release}
+                  onChange={(e) => setRelease(e.target.value)}
                   variant="outlined"
                   autoComplete="off"
                 />
                 <TextField
+                  id="runtime-input"
                   type="number"
                   name="runtime"
                   label="Runtime"

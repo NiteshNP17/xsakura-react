@@ -13,21 +13,21 @@ const fetchDmmSrc = async (code: string) => {
   } else {
     // Fetch label data from the API
     const response = await fetch(
-      `${config.apiUrl}/lookups/pre/${codeLabel}?codenum=${codeNum}`,
+      `${config.apiUrl}/lookups/label/${codeLabel}?codenum=${codeNum}`,
     );
     const labelData = await response.json();
 
     dmmSrc = `https://pics.dmm.co.jp/digital/video/${
-      labelData.prePre || ""
+      labelData.prefix || ""
     }${codeLabel}${codeNumPadded}/${
-      labelData.prePre || ""
+      labelData.prefix || ""
     }${codeLabel}${codeNumPadded}ps.jpg`;
 
     // Construct the correct image URL based on the codeLabel
     /*dmmSrc = `https://pics.dmm.co.jp/mono/movie/adult/${
-      labelData.prePre || ""
+      labelData.prefix || ""
     }${codeLabel}${codeNumPadded}/${
-      labelData.prePre || ""
+      labelData.prefix || ""
     }${codeLabel}${codeNumPadded}ps.jpg`;*/
   }
 

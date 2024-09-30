@@ -11,15 +11,15 @@ import {
 import axios from "axios";
 import config from "../../utils/config";
 
-interface PrefixDialogProps {
-  prefix: string;
+interface LabelDialogProps {
+  label: string;
   open: boolean;
   setOpen: (open: boolean) => void;
   reload: () => void;
 }
 
-const PrefixDialog: React.FC<PrefixDialogProps> = ({
-  prefix,
+const PrefixDialog: React.FC<LabelDialogProps> = ({
+  label,
   open,
   setOpen,
   reload,
@@ -32,12 +32,12 @@ const PrefixDialog: React.FC<PrefixDialogProps> = ({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const dataToSubmit = Object.fromEntries(formData);
-    dataToSubmit.pre = prefix;
+    dataToSubmit.label = label;
 
     console.log(dataToSubmit);
 
     try {
-      await axios.post(`${config.apiUrl}/lookups/pre`, dataToSubmit);
+      await axios.post(`${config.apiUrl}/lookups/label`, dataToSubmit);
       handleClose();
       reload();
     } catch (err) {
@@ -52,16 +52,23 @@ const PrefixDialog: React.FC<PrefixDialogProps> = ({
       PaperProps={{ component: "form", onSubmit: handleSubmit }}
     >
       <DialogTitle>
-        Add prefix data for{" "}
-        <span className="font-semibold uppercase">{prefix}</span>
+        Add label data for{" "}
+        <span className="font-semibold uppercase">{label}</span>
       </DialogTitle>
       <DialogContent>
         <div className="mx-auto my-2 grid max-w-80 grid-cols-2 gap-4">
           <TextField
-            name="prePre"
+            name="prefix"
             type="text"
             autoComplete="off"
-            label="PrePre"
+            label="Prefix"
+            size="small"
+          />
+          <TextField
+            name="name"
+            type="text"
+            autoComplete="off"
+            label="Name"
             size="small"
           />
           <TextField

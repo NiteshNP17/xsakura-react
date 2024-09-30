@@ -43,7 +43,7 @@ const MoviePage = () => {
         </div>
       </div>
       <PrefixDialog
-        prefix={code?.split("-")[0] || ""}
+        label={code?.split("-")[0] || ""}
         open={openPrefixDialog}
         setOpen={setOpenPrefixDialog}
         reload={() => setReload(!reload)}

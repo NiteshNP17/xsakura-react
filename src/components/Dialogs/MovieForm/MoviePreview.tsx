@@ -1,8 +1,10 @@
-import { TabContext, TabList, TabPanel } from "@mui/lab";
 import MovieCover from "../../movies/MovieCover";
 import { useState } from "react";
-import { Tab } from "@mui/material";
 import Trailer from "../../movies/Trailer";
+import { IconButton, Switch } from "@mui/material";
+import { PlayCircleOutline } from "@mui/icons-material";
+import axios from "axios";
+import config from "../../../utils/config";
 
 interface MoviePvProps {
   codeToPv: string;
@@ -11,26 +13,48 @@ interface MoviePvProps {
     preview: string;
   };
   isForm?: boolean;
+  setRelease: (release: string) => void;
 }
 
 const MoviePreview: React.FC<MoviePvProps> = ({
   codeToPv,
   overrides,
   isForm,
+  setRelease,
 }) => {
-  const [tabValue, setTabValue] = useState("pv");
+  const [isChecked, setIsChecked] = useState(false);
   const showPv = codeToPv.length > 5;
 
+  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(event.target.checked);
+  };
+
+  const handleBtnClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const titleField = document.getElementById(
+      "title-input",
+    ) as HTMLInputElement | null;
+    const runtimeField = document.getElementById(
+      "runtime-input",
+    ) as HTMLInputElement | null;
+
+    try {
+      const res = await axios.get(
+        `${config.apiUrl}/lookups/scrape?code=${codeToPv}`,
+      );
+
+      if (titleField) titleField.value = res.data.title;
+      setRelease(res.data.relDate);
+      if (runtimeField) runtimeField.value = res.data.runtime;
+    } catch (err) {
+      alert("Error fetching movie data: " + err);
+    }
+  };
+
   return (
-    <TabContext value={tabValue}>
-      <div className="tabs-container border-b border-zinc-300">
-        <TabList onChange={(_e, newVal) => setTabValue(newVal)}>
-          <Tab label="Preview" value="pv" />
-          <Tab label="Trailer" value="trailer" disabled={!showPv} />
-        </TabList>
-      </div>
-      <TabPanel value="pv">
-        <div className="mb-2 overflow-hidden rounded-lg md:mb-0">
+    <>
+      {!isChecked ? (
+        <div className="h-fit overflow-hidden rounded-md">
           {showPv ? (
             <MovieCover
               code={codeToPv}
@@ -48,13 +72,24 @@ const MoviePreview: React.FC<MoviePvProps> = ({
             </div>
           )}
         </div>
-      </TabPanel>
-      <TabPanel value="trailer">
+      ) : (
         <div className="mb-2 overflow-hidden rounded-lg md:mb-0">
           <Trailer code={codeToPv} posterSm />
         </div>
-      </TabPanel>
-    </TabContext>
+      )}
+      <div className="relative mx-auto flex w-full items-center justify-center gap-1">
+        <span>Preview</span>
+        <Switch checked={isChecked} onChange={handleSwitchChange} />
+        <span>Trailer</span>
+        <IconButton
+          // className="absolute right-1 rounded-md p-1 text-white opacity-90 backdrop-brightness-50 transition-all duration-200 hover:backdrop-brightness-75 active:backdrop-brightness-50"
+          onClick={handleBtnClick}
+          sx={{ position: "absolute", right: "0.25rem" }}
+        >
+          <PlayCircleOutline />
+        </IconButton>
+      </div>
+    </>
   );
 };
 

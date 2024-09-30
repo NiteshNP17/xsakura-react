@@ -45,15 +45,15 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
 
       // Fetch label data from the API
       const response = await fetch(
-        `${config.apiUrl}/lookups/pre/${codeLabel}?codenum=${codeNum}`,
+        `${config.apiUrl}/lookups/label/${codeLabel}?codenum=${codeNum}`,
       );
       const labelData = await response.json();
 
       // Construct the correct image URL based on the codeLabel
       dmmSrc = `https://pics.dmm.co.jp/digital/video/${
-        labelData.prePre || ""
+        labelData.prefix || ""
       }${codeLabel}${codeNumPadded}/${
-        labelData.prePre || ""
+        labelData.prefix || ""
       }${codeLabel}${codeNumPadded}pl.jpg`;
     }
     setImgSrc(dmmSrc);
@@ -98,7 +98,7 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
         </video>
       )}
       <img
-        className="bg-slate-200 object-cover dark:bg-zinc-600"
+        className="h-full bg-slate-200 object-cover object-right dark:bg-zinc-600"
         src={
           overrides?.cover
             ? overrides?.cover
