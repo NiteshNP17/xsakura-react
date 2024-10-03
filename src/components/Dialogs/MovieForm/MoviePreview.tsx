@@ -14,6 +14,8 @@ interface MoviePvProps {
   };
   isForm?: boolean;
   setRelease: (release: string) => void;
+  setRuntime: (runtime: string) => void;
+  setTitle: (title: string) => void;
 }
 
 const MoviePreview: React.FC<MoviePvProps> = ({
@@ -21,6 +23,8 @@ const MoviePreview: React.FC<MoviePvProps> = ({
   overrides,
   isForm,
   setRelease,
+  setTitle,
+  setRuntime,
 }) => {
   const [isChecked, setIsChecked] = useState(false);
   const showPv = codeToPv.length > 5;
@@ -31,21 +35,13 @@ const MoviePreview: React.FC<MoviePvProps> = ({
 
   const handleBtnClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const titleField = document.getElementById(
-      "title-input",
-    ) as HTMLInputElement | null;
-    const runtimeField = document.getElementById(
-      "runtime-input",
-    ) as HTMLInputElement | null;
-
     try {
       const res = await axios.get(
         `${config.apiUrl}/lookups/scrape?code=${codeToPv}`,
       );
-
-      if (titleField) titleField.value = res.data.title;
+      setTitle(res.data.title);
       setRelease(res.data.relDate);
-      if (runtimeField) runtimeField.value = res.data.runtime;
+      setRuntime(res.data.runtime);
     } catch (err) {
       alert("Error fetching movie data: " + err);
     }

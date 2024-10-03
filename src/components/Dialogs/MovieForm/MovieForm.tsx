@@ -44,6 +44,8 @@ const MovieForm: React.FC<MovieFormProps> = ({
   const [overrides, setOverrides] = useState<{ [key: string]: string }>({});
   const [selectedActorsF, setSelectedActorsF] = useState<ActorData[]>([]);
   const [release, setRelease] = useState(movieData.release || "");
+  const [title, setTitle] = useState(movieData.title || "");
+  const [runtime, setRuntime] = useState(movieData.runtime || "");
   const [selectedSeries, setSelectedSeries] = useState<SeriesItem | null>(null);
 
   const fetchMovieData = async (movieCode: string) => {
@@ -66,12 +68,6 @@ const MovieForm: React.FC<MovieFormProps> = ({
   const validateData = async (dataToPost: {
     [x: string]: FormDataEntryValue;
   }) => {
-    if (!dataToPost.code) {
-      setLoading(false);
-      alert("Code is required!");
-      return false;
-    }
-
     if (String(dataToPost.code).length < 6) {
       setLoading(false);
       alert("Invalid Code!");
@@ -91,9 +87,9 @@ const MovieForm: React.FC<MovieFormProps> = ({
 
   useEffect(() => {
     const purgeData = () => {
-      // setLoading(false);
-      // setPreviewCode(null);
       setRelease("");
+      setTitle("");
+      setRuntime("");
       setSelectedActorsF([]);
       setOverrides({});
       setMovieData({} as MovieData);
@@ -108,6 +104,8 @@ const MovieForm: React.FC<MovieFormProps> = ({
       setMovieData(movieToEdit);
       setSelectedActorsF(movieToEdit.cast);
       setRelease(movieToEdit.release);
+      setTitle(movieToEdit.title);
+      setRuntime(movieToEdit.runtime);
       setSelectedSeries(movieToEdit.series);
     } else setMovieData({} as MovieData);
 
@@ -221,6 +219,8 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   }}
                   isForm
                   setRelease={setRelease}
+                  setRuntime={setRuntime}
+                  setTitle={setTitle}
                 />
                 <div className="grid grid-cols-2 items-center gap-x-3">
                   <TextField
@@ -254,7 +254,9 @@ const MovieForm: React.FC<MovieFormProps> = ({
                     id="title-input"
                     type="search"
                     name="title"
-                    defaultValue={movieData.title}
+                    // defaultValue={movieData.title}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     label="Title"
                     variant="outlined"
                     autoComplete="off"
@@ -310,7 +312,9 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   name="runtime"
                   label="Runtime"
                   placeholder="Runtime (minutes)"
-                  defaultValue={movieData.runtime}
+                  // defaultValue={movieData.runtime}
+                  value={runtime}
+                  onChange={(e) => setRuntime(e.target.value)}
                   variant="outlined"
                   autoComplete="off"
                 />
