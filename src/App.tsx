@@ -6,6 +6,7 @@ import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
 import { getTheme } from "./utils/theme";
 import * as pages from "./pages";
+import "react-photo-view/dist/react-photo-view.css";
 
 const App = () => {
   const [themeMode, setThemeMode] = useState<"light" | "dark">(

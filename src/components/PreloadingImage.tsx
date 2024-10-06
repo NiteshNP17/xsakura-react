@@ -1,12 +1,15 @@
 import { CircularProgress } from "@mui/material";
 import { useState, useEffect } from "react";
+import { PhotoView } from "react-photo-view";
 
 const PreloadingImage = ({
   src,
+  smSrc,
   alt,
   onClick,
 }: {
   src: string;
+  smSrc: string;
   alt: string;
   onClick?: () => void;
 }) => {
@@ -19,7 +22,7 @@ const PreloadingImage = ({
 
   useEffect(() => {
     const img = new Image();
-    img.src = src;
+    img.src = smSrc;
 
     img.onload = () => {
       setImageDetails({
@@ -44,7 +47,7 @@ const PreloadingImage = ({
       img.onload = null;
       img.onerror = null;
     };
-  }, [src]);
+  }, [smSrc]);
 
   if (!imageDetails.loaded) {
     return (
@@ -60,14 +63,17 @@ const PreloadingImage = ({
   }
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      width={imageDetails.width}
-      height={imageDetails.height}
-      onClick={onClick}
-      className="h-auto max-w-full"
-    />
+    <PhotoView src={src}>
+      <img
+        src={smSrc}
+        alt={alt}
+        width={imageDetails.width}
+        height={imageDetails.height}
+        onClick={onClick}
+        loading="lazy"
+        className="h-auto"
+      />
+    </PhotoView>
   );
 };
 

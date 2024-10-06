@@ -64,7 +64,10 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
       "absolute object-cover opacity-0 transition-opacity duration-300 hover:opacity-100 ";
     if (overrides?.preview?.includes("sexlikereal")) {
       classes += "h-[120%]";
-    } else if (overrides?.preview?.includes("vrlite")) {
+    } else if (
+      overrides?.preview?.includes("vrlite") ||
+      (!overrides?.preview && code.includes("vr"))
+    ) {
       classes += "h-[152%] object-left";
     } else {
       classes += "h-full";

@@ -35,9 +35,11 @@ export interface SeriesItem {
 
 export interface LabelData {
   prefix: string;
+  imgPre: string;
   name: string;
   isDmb: boolean;
   isHq: boolean;
+  isVr: boolean;
 }
 
 export interface AlbumData {

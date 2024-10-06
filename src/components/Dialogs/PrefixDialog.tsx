@@ -1,11 +1,15 @@
 import {
   Button,
-  Checkbox,
+  // Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
   FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
   TextField,
 } from "@mui/material";
 import axios from "axios";
@@ -72,6 +76,13 @@ const PrefixDialog: React.FC<LabelDialogProps> = ({
             size="small"
           />
           <TextField
+            name="imgPre"
+            type="text"
+            autoComplete="off"
+            label="Img Prefix"
+            size="small"
+          />
+          <TextField
             name="maxNum"
             type="number"
             autoComplete="off"
@@ -79,9 +90,27 @@ const PrefixDialog: React.FC<LabelDialogProps> = ({
             size="small"
           />
         </div>
-        <div className="mx-auto grid w-full grid-cols-3 place-items-center">
-          <FormControlLabel control={<Checkbox name="isHq" />} label="HQ" />
-          <FormControlLabel control={<Checkbox name="isDmb" />} label="DMB" />
+        <div className="mx-auto mt-4 flex w-full justify-center text-center">
+          <FormControl>
+            <FormLabel>Suffix</FormLabel>
+            <RadioGroup row>
+              <FormControlLabel
+                value="isHq"
+                control={<Radio name="isHq" />}
+                label="HQ"
+              />
+              <FormControlLabel
+                value="isDmb"
+                control={<Radio name="isDmb" />}
+                label="DMB"
+              />
+              <FormControlLabel
+                value="isVr"
+                control={<Radio name="isVr" />}
+                label="VR"
+              />
+            </RadioGroup>
+          </FormControl>
         </div>
       </DialogContent>
       <DialogActions>
