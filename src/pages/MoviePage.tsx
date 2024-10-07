@@ -26,8 +26,8 @@ const MoviePage = () => {
           <AddCircleOutline />
         </IconButton>
       </div>
-      <div className="grid grid-cols-5 gap-4">
-        <div className="col-span-3">
+      <div className="grid gap-4 sm:grid-cols-6">
+        <div className="col-span-4">
           <div className="cq flex aspect-video max-w-[1024px] items-center justify-center overflow-hidden rounded-xl">
             <Trailer code={code || ""} reload={reload} />
           </div>

@@ -44,9 +44,6 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
     isPadded: boolean,
     prefixData: PrefixData,
   ): string => {
-    if (prefixData.prefix) console.log("👍");
-    else console.log("🅱️");
-
     const longCode = `${prefixData.prefix || ""}${codeLabel}`;
     const codeNumPadded: string =
       "0".repeat(Math.max(0, 5 - codeNum.length)) + codeNum;
@@ -74,7 +71,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
         setVideoSrc(newVideoSrc);
 
         // Calculate poster URL
-        const longCode = `${prefixData.prefix || ""}${codeLabel}`;
+        const longCode = `${data.prefix || ""}${codeLabel}`;
         const codeNumPadded: string = codeNum.padStart(5, "0");
         const imgPaddedLongCode: string = `${data.imgPre || data.prefix || ""}${codeLabel}${codeNumPadded}`;
         const newPosterSrc = absLabels.some((sub) => codeLabel.startsWith(sub))

@@ -40,7 +40,7 @@ const MovieImages = ({ code }: { code: string }) => {
   };
 
   return (
-    <PhotoProvider>
+    <PhotoProvider maskOpacity={0.5}>
       <div className="grid max-h-[50vh] w-full grid-cols-4 items-center overflow-scroll">
         {codeLabel === "rebd" &&
           Array.from({ length: 12 }, (_, i) => (
