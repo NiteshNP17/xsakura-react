@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-// import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import config from "../../utils/config";
 
 interface MovieCoverProps {
@@ -17,6 +16,7 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
   const [imgSrc, setImgSrc] = useState(
     `https://fivetiu.com/${code}/cover-t.jpg`,
   );
+  const vidRef = useRef<HTMLVideoElement>(null);
 
   const handlePointerEnter = (code: string | null) => {
     code
@@ -36,7 +36,9 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
     const noPreLabels = ["waaa", "mih"];
     let dmmSrc;
 
-    if (prestigeLabels.some((sub) => codeLabel.startsWith(sub))) {
+    if (codeLabel === "rebd") {
+      dmmSrc = `https://file.rebecca-web.com/media/videos/dl03/rebd_${codeNum}/b01_pc2.jpg`;
+    } else if (prestigeLabels.some((sub) => codeLabel.startsWith(sub))) {
       dmmSrc = `https://pics.dmm.co.jp/mono/movie/adult/118${codeLabel}${codeNum}/118${codeLabel}${codeNum}pl.jpg`;
     } else if (noPreLabels.includes(codeLabel)) {
       dmmSrc = `https://pics.dmm.co.jp/mono/movie/adult/${codeLabel}${codeNum}/${codeLabel}${codeNum}pl.jpg`;
@@ -65,7 +67,7 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
     if (overrides?.preview?.includes("sexlikereal")) {
       classes += "h-[120%]";
     } else if (
-      overrides?.preview?.includes("vrlite") ||
+      overrides?.preview?.includes("vrsample") ||
       (!overrides?.preview && code.includes("vr"))
     ) {
       classes += "h-[152%] object-left";
@@ -85,12 +87,21 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
     >
       {hoverCode === code && (
         <video
+          ref={vidRef}
           autoPlay
           loop
           muted
           preload="none"
           className={vidClassesBuilder()}
           height="100%"
+          onCanPlay={() => {
+            if (
+              vidRef.current &&
+              (overrides?.preview?.startsWith("https://cc3001") ||
+                overrides?.preview?.startsWith("https://file.rebecca"))
+            )
+              vidRef.current.playbackRate = 1.5;
+          }}
         >
           <source
             src={

@@ -37,7 +37,7 @@ const MoviePreview: React.FC<MoviePvProps> = ({
     e.preventDefault();
     try {
       const res = await axios.get(
-        `${config.apiUrl}/lookups/scrape?code=${codeToPv}`,
+        `${config.apiUrl}/lookups/scrape${isChecked ? "-jt" : ""}?code=${codeToPv}`,
       );
       setTitle(res.data.title);
       setRelease(res.data.relDate);
@@ -78,7 +78,6 @@ const MoviePreview: React.FC<MoviePvProps> = ({
         <Switch checked={isChecked} onChange={handleSwitchChange} />
         <span>Trailer</span>
         <IconButton
-          // className="absolute right-1 rounded-md p-1 text-white opacity-90 backdrop-brightness-50 transition-all duration-200 hover:backdrop-brightness-75 active:backdrop-brightness-50"
           onClick={handleBtnClick}
           sx={{ position: "absolute", right: "0.25rem" }}
         >

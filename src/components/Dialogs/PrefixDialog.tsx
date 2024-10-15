@@ -10,6 +10,7 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  Switch,
   TextField,
 } from "@mui/material";
 import axios from "axios";
@@ -90,10 +91,11 @@ const PrefixDialog: React.FC<LabelDialogProps> = ({
             size="small"
           />
         </div>
-        <div className="mx-auto mt-4 flex w-full justify-center text-center">
+        <div className="mx-auto mt-4 w-full justify-center text-center">
           <FormControl>
             <FormLabel>Suffix</FormLabel>
             <RadioGroup row>
+              <FormControlLabel control={<Radio />} label="None" />
               <FormControlLabel
                 value="isHq"
                 control={<Radio name="isHq" />}
@@ -110,6 +112,8 @@ const PrefixDialog: React.FC<LabelDialogProps> = ({
                 label="VR"
               />
             </RadioGroup>
+            <FormLabel>3 Digits</FormLabel>
+            <Switch name="is3digits" sx={{ mx: "auto" }} />
           </FormControl>
         </div>
       </DialogContent>

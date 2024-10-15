@@ -46,7 +46,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
             src={actor.img500}
             alt={actor.name}
             width="100%"
-            className="aspect-[3/4] bg-zinc-200 object-cover" //object-top
+            className="aspect-[3/4] bg-zinc-200 object-cover object-[50%_25%]"
             onError={() => setShowBlank(true)}
           />
         ) : (
@@ -65,7 +65,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
           </div>
         )}
       </ActorLink>
-      <div className="relative grid px-2">
+      <div className="relative grid px-2.5 py-0.5">
         <div>
           <ActorLink>
             <p className="w-full text-center text-lg font-semibold capitalize">
@@ -81,12 +81,12 @@ const ActorCard: React.FC<ActorCardProps> = ({
                 <span className="font-semibold opacity-80">
                   {calculateAge(dobDate, today)}
                 </span>{" "}
-                <span className="text-sm opacity-50">
+                <span className="text-sm opacity-65">
                   {dobDate.getDate()}-
                   {dobDate.toLocaleString("default", { month: "short" })}-
                   {dobDate.getFullYear().toString().slice(-2)}
-                  <span className="my-age">
-                    &nbsp;({ageCompare(dobDate, myAge)})
+                  <span className="my-age opacity-80">
+                    &nbsp;{ageCompare(dobDate, myAge)}
                   </span>
                 </span>
               </p>

@@ -14,6 +14,7 @@ const StudioPage = () => {
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") || "1");
+  const sort = searchParams.get("sort") || "release";
   const selectedTags = searchParams.get("tags");
 
   const refetchMovies = () => {
@@ -25,7 +26,7 @@ const StudioPage = () => {
     const fetchMovies = async () => {
       try {
         const res = await axios.get(
-          `${config.apiUrl}/movies?studio=${slug}&sort=release${selectedTags ? "&tags=" + selectedTags : ""}&page=${page}`,
+          `${config.apiUrl}/movies?studio=${slug}&sort=${sort}${selectedTags ? "&tags=" + selectedTags : ""}&page=${page}`,
         );
         setMovies(res.data.movies);
         totalPagesRef.current = res.data.totalPages;
@@ -36,7 +37,7 @@ const StudioPage = () => {
     };
 
     fetchMovies();
-  }, [page, refetchTrigger, isLoaded, selectedTags]);
+  }, [page, refetchTrigger, isLoaded, selectedTags, sort]);
 
   return (
     <>

@@ -40,6 +40,7 @@ export interface LabelData {
   isDmb: boolean;
   isHq: boolean;
   isVr: boolean;
+  is3digits: boolean;
 }
 
 export interface AlbumData {

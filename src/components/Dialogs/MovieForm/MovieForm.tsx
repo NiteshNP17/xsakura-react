@@ -28,6 +28,11 @@ interface MovieFormProps {
   id?: string;
 }
 
+interface Overrides {
+  cover: string;
+  preview: string;
+}
+
 const MovieForm: React.FC<MovieFormProps> = ({
   movieToEdit,
   openEditDialog,
@@ -41,7 +46,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
   const [loading, setLoading] = useState(false);
   const isClearRef = useRef(false);
   const isMobile = useMediaQuery("(max-width:660px)");
-  const [overrides, setOverrides] = useState<{ [key: string]: string }>({});
+  const [overrides, setOverrides] = useState<Overrides>({} as Overrides);
   const [selectedActorsF, setSelectedActorsF] = useState<ActorData[]>([]);
   const [release, setRelease] = useState(movieData.release || "");
   const [title, setTitle] = useState(movieData.title || "");
@@ -91,7 +96,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
       setTitle("");
       setRuntime("");
       setSelectedActorsF([]);
-      setOverrides({});
+      setOverrides({} as Overrides);
       setMovieData({} as MovieData);
       setSelectedSeries(null);
     };
@@ -107,6 +112,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
       setTitle(movieToEdit.title);
       setRuntime(movieToEdit.runtime);
       setSelectedSeries(movieToEdit.series);
+      if (movieToEdit?.overrides?.preview) setOverrides(movieToEdit?.overrides);
     } else setMovieData({} as MovieData);
 
     if (!movieToEdit.code && openEditDialog) {
@@ -213,9 +219,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                     cover: overrides.cover
                       ? overrides.cover
                       : movieData.overrides?.cover,
-                    preview: overrides.preview
-                      ? overrides.preview
-                      : movieData.overrides?.preview,
+                    preview: overrides.preview,
                   }}
                   isForm
                   setRelease={setRelease}
@@ -271,7 +275,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   {selectedActorsF.length > 0 ? (
                     <MovieCastList
                       movieCast={selectedActorsF}
-                      release={release.length > 9 ? release : ""}
+                      release={release?.length > 7 ? release : ""}
                       setMovieCast={setSelectedActorsF}
                     />
                   ) : (
@@ -353,7 +357,12 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   options={[
                     `https://fivetiu.com/${movieToEdit.code || previewCode}-uncensored-leak/preview.mp4`,
                   ]}
-                  defaultValue={movieData.overrides?.preview}
+                  value={overrides.preview}
+                  onChange={(_e, newValue) => {
+                    newValue
+                      ? setOverrides({ ...overrides, preview: newValue })
+                      : setOverrides({ ...overrides, preview: "" });
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -362,7 +371,9 @@ const MovieForm: React.FC<MovieFormProps> = ({
                       label="Preview"
                       variant="outlined"
                       sx={{ my: "1rem" }}
-                      onBlur={(e) => handleOverrides(e, "preview")}
+                      onChange={(e) =>
+                        setOverrides({ ...overrides, preview: e.target.value })
+                      }
                     />
                   )}
                 />

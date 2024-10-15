@@ -14,10 +14,12 @@ interface PrefixData {
   isDmb: boolean;
   isHq: boolean;
   isVr: boolean;
+  is3digits: boolean;
 }
 
 const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
   const [codeLabel, codeNum] = code.split("-");
+  const codeNumInt = parseInt(codeNum);
   const baseUrl = "https://cc3001.dmm.co.jp/litevideo/freepv/";
   // posterSm ? "t" : "n"
 
@@ -26,18 +28,6 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
   const [prefixData, setPrefixData] = useState<PrefixData>({} as PrefixData);
   const [isLoaded, setLoaded] = useState(false);
   const [posterSrc, setPosterSrc] = useState("");
-  const absLabels = [
-    "ab",
-    "mbr",
-    "chn",
-    "bgn",
-    "gni",
-    "dlv",
-    "t38",
-    "wps",
-    "fit",
-    "prby",
-  ];
 
   const createVideoSrc = (
     num: string,
@@ -71,15 +61,22 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
         setVideoSrc(newVideoSrc);
 
         // Calculate poster URL
-        const longCode = `${data.prefix || ""}${codeLabel}`;
-        const codeNumPadded: string = codeNum.padStart(5, "0");
-        const imgPaddedLongCode: string = `${data.imgPre || data.prefix || ""}${codeLabel}${codeNumPadded}`;
-        const newPosterSrc = absLabels.some((sub) => codeLabel.startsWith(sub))
-          ? `https://pics.dmm.co.jp/mono/movie/adult/${longCode}${codeNum}/${longCode}${codeNum}p${posterSm ? "s" : "l"}.jpg`
-          : `https://pics.dmm.co.jp/digital/video/${imgPaddedLongCode}/${imgPaddedLongCode}p${posterSm ? "s" : "l"}.jpg`;
+        let newPosterSrc;
 
-        setPosterSrc(newPosterSrc);
-        console.log("Poster link: ", newPosterSrc);
+        if (codeLabel === "rebd") {
+          newPosterSrc = `https://file.rebecca-web.com/media/videos/dl0${codeNumInt > 873 ? "3" : codeNumInt > 500 ? "2" : "1"}/rebd_${codeNum}/b02_pc2.jpg`;
+          setPosterSrc(newPosterSrc);
+        } else {
+          const longCode = `${data.prefix || ""}${codeLabel}`;
+          const codeNumPadded: string = codeNum.padStart(5, "0");
+          const imgPaddedLongCode: string = `${data.imgPre || data.prefix || ""}${codeLabel}${codeNumPadded}`;
+          newPosterSrc = data.is3digits
+            ? `https://pics.dmm.co.jp/mono/movie/adult/${longCode}${codeNum}/${longCode}${codeNum}p${posterSm ? "s" : "l"}.jpg`
+            : `https://pics.dmm.co.jp/digital/video/${imgPaddedLongCode}/${imgPaddedLongCode}p${posterSm ? "s" : "l"}.jpg`;
+
+          setPosterSrc(newPosterSrc);
+          console.log("Poster link: ", newPosterSrc);
+        }
 
         setLoaded(true);
         setIsPaddedUrl(false);
@@ -90,7 +87,18 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload }) => {
       }
     };
 
-    getPrefixData();
+    if (codeLabel === "rebd" && codeNumInt < 561) {
+      const dlNum = `dl0${codeNumInt > 873 ? "3" : codeNumInt > 500 ? "2" : "1"}`;
+      const rebdBaseSrc = `https://file.rebecca-web.com/media/videos/${dlNum}/rebd_${codeNum}/`;
+      const rebdVidSrc = rebdBaseSrc + "movie.mp4";
+      const rebdPoster = rebdBaseSrc + "b02_pc2.jpg";
+
+      setVideoSrc(rebdVidSrc);
+      setPosterSrc(rebdPoster);
+      setLoaded(true);
+    } else {
+      getPrefixData();
+    }
   }, [codeLabel, codeNum, code, reload, posterSm]);
 
   const handleVideoError = (): void => {
