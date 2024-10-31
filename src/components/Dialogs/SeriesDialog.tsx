@@ -15,8 +15,9 @@ import { SeriesItem } from "../../utils/customTypes";
 interface PrefixDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  reload: () => void;
+  reload?: () => void;
   serieToEdit: SeriesItem;
+  setSelectedSerie?: (series: SeriesItem | null) => void;
 }
 
 const SeriesDialog: React.FC<PrefixDialogProps> = ({
@@ -24,6 +25,7 @@ const SeriesDialog: React.FC<PrefixDialogProps> = ({
   setOpen,
   reload,
   serieToEdit,
+  setSelectedSerie,
 }) => {
   useEffect(() => {
     if (!serieToEdit.slug && open) {
@@ -39,6 +41,7 @@ const SeriesDialog: React.FC<PrefixDialogProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     const formData = new FormData(e.currentTarget);
     const dataToSubmit = Object.fromEntries(formData);
 
@@ -58,7 +61,11 @@ const SeriesDialog: React.FC<PrefixDialogProps> = ({
 
     try {
       if (!serieToEdit.slug) {
-        await axios.post(`${config.apiUrl}/series`, dataToSubmit);
+        const posted = await axios.post(
+          `${config.apiUrl}/series`,
+          dataToSubmit,
+        );
+        setSelectedSerie && setSelectedSerie(posted.data);
       } else {
         await axios.patch(
           `${config.apiUrl}/series/${serieToEdit.slug}`,
@@ -66,7 +73,7 @@ const SeriesDialog: React.FC<PrefixDialogProps> = ({
         );
       }
       handleClose();
-      reload();
+      reload && reload();
     } catch (err) {
       alert("Error: " + err);
     }

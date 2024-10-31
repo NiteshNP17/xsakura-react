@@ -26,7 +26,7 @@ const StudioPage = () => {
     const fetchMovies = async () => {
       try {
         const res = await axios.get(
-          `${config.apiUrl}/movies?studio=${slug}&sort=${sort}${selectedTags ? "&tags=" + selectedTags : ""}&page=${page}`,
+          `${config.apiUrl}/movies?studio=${slug}&sort=${sort === "empty" ? "release" : sort}${selectedTags ? "&tags=" + selectedTags : ""}&page=${page}`,
         );
         setMovies(res.data.movies);
         totalPagesRef.current = res.data.totalPages;

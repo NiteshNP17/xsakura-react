@@ -1,4 +1,4 @@
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import { useState } from "react";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
@@ -39,10 +39,8 @@ const MovieList: React.FC<MovieListProps> = ({
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openSnack, setOpenSnack] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const path = useLocation().pathname;
   const page = parseInt(searchParams.get("p") ?? "1");
-  const sort =
-    searchParams.get("sort") || path !== "/movies" ? "release" : "added";
+  const sort = searchParams.get("sort") || "empty";
   const [id, setId] = useState("");
 
   const handlePageChange = (
@@ -100,6 +98,8 @@ const MovieList: React.FC<MovieListProps> = ({
           >
             <MenuItem value={"added"}>Added</MenuItem>
             <MenuItem value={"release"}>Release</MenuItem>
+            <MenuItem value={"codeAsc"}>Code Asc.</MenuItem>
+            <MenuItem value={"code"}>Code Desc.</MenuItem>
           </Select>
         </FormControl>
       </div>

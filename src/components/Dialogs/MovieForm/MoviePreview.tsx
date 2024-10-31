@@ -16,6 +16,7 @@ interface MoviePvProps {
   setRelease: (release: string) => void;
   setRuntime: (runtime: string) => void;
   setTitle: (title: string) => void;
+  title?: string;
 }
 
 const MoviePreview: React.FC<MoviePvProps> = ({
@@ -25,6 +26,7 @@ const MoviePreview: React.FC<MoviePvProps> = ({
   setRelease,
   setTitle,
   setRuntime,
+  title,
 }) => {
   const [isChecked, setIsChecked] = useState(false);
   const showPv = codeToPv.length > 5;
@@ -37,7 +39,7 @@ const MoviePreview: React.FC<MoviePvProps> = ({
     e.preventDefault();
     try {
       const res = await axios.get(
-        `${config.apiUrl}/lookups/scrape${isChecked ? "-jt" : ""}?code=${codeToPv}`,
+        `${config.apiUrl}/lookups/scrape${!isChecked ? "-jt" : ""}?code=${codeToPv}`,
       );
       setTitle(res.data.title);
       setRelease(res.data.relDate);
@@ -70,7 +72,7 @@ const MoviePreview: React.FC<MoviePvProps> = ({
         </div>
       ) : (
         <div className="mb-2 overflow-hidden rounded-lg md:mb-0">
-          <Trailer code={codeToPv} posterSm />
+          <Trailer code={codeToPv} posterSm title={title} />
         </div>
       )}
       <div className="relative mx-auto flex w-full items-center justify-center gap-1">

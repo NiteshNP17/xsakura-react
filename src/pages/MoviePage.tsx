@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Trailer from "../components/movies/Trailer";
 import { IconButton } from "@mui/material";
 import { AddCircleOutline } from "@mui/icons-material";
@@ -9,6 +9,7 @@ import MovieImages from "../components/movies/MovieImages";
 
 const MoviePage = () => {
   const { code } = useParams();
+  const [codeLabel, codeNum] = code ? code.split("-") : ["a", "b"];
   const [openPrefixDialog, setOpenPrefixDialog] = useState(false);
   const [reload, setReload] = useState(false);
 
@@ -21,14 +22,21 @@ const MoviePage = () => {
   return (
     <div className="mx-auto max-w-[1660px] px-4">
       <div className="my-4 flex items-center">
-        <h1 className="text-2xl font-semibold uppercase">{code}</h1>
+        <h1 className="text-2xl font-semibold uppercase">
+          <Link to={`/movies?label=${codeLabel}&sort=code`}>
+            <span className="text-rose-800 dark:text-rose-200">
+              {codeLabel}
+            </span>
+            -{codeNum}
+          </Link>
+        </h1>
         <IconButton color="primary" onClick={() => setOpenPrefixDialog(true)}>
           <AddCircleOutline />
         </IconButton>
       </div>
       <div className="grid gap-4 sm:grid-cols-6">
         <div className="col-span-4">
-          <div className="cq flex aspect-video max-w-[1024px] items-center justify-center overflow-hidden rounded-xl">
+          <div className="cq flex aspect-video max-w-[1024px] items-center justify-center overflow-hidden rounded-lg">
             {code?.startsWith("fc2") ? (
               <div>No Trailer</div>
             ) : (
@@ -38,6 +46,7 @@ const MoviePage = () => {
           <div className="my-6 flex gap-4">
             <a href={`https://javct.net/v/${code}`}>JavCT</a>
             <a href={`https://njav.tv/en/v/${code}`}>Njav</a>
+            <a href={`https://njav.tv/en/v/${code}-uncensored-leak`}>Njav MR</a>
             <a href={`https://missav.com/en/${code}`}>MissAV</a>
             <a href={`https://missav.com/en/${code}-uncensored-leak`}>
               MissAV MR

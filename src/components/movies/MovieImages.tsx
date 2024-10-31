@@ -7,6 +7,7 @@ import { PhotoProvider, PhotoView } from "react-photo-view";
 
 const MovieImages = ({ code }: { code: string }) => {
   const [codeLabel, codeNum] = code.split("-");
+  const codeSuf = codeLabel === "ibw" ? "z" : "";
   const codeNumPadded = codeNum.padStart(5, "0");
   const [labelData, setLabelData] = useState<LabelData>({} as LabelData);
   // const [open, setOpen] = useState(false);
@@ -23,7 +24,7 @@ const MovieImages = ({ code }: { code: string }) => {
     };
 
     getLabelData(codeLabel);
-  }, [codeLabel]);
+  }, [codeLabel, codeNum]);
 
   const getImgSrc = (i: string, sm?: boolean): string => {
     const prestigeLabels = ["chn", "bgn", "gni", "dlv", "wps", "fit"];
@@ -32,9 +33,9 @@ const MovieImages = ({ code }: { code: string }) => {
     } else {
       return `https://pics.dmm.co.jp/digital/video/${
         labelData.imgPre || labelData.prefix || ""
-      }${codeLabel}${labelData.is3digits ? codeNum : codeNumPadded}/${
+      }${codeLabel}${labelData.is3digits ? codeNum : codeNumPadded}${codeSuf}/${
         labelData.imgPre || labelData.prefix || ""
-      }${codeLabel}${labelData.is3digits ? codeNum : codeNumPadded}${!sm ? "jp" : ""}-${i}.jpg`;
+      }${codeLabel}${labelData.is3digits ? codeNum : codeNumPadded}${codeSuf}${!sm ? "jp" : ""}-${i}.jpg`;
     }
   };
 
@@ -64,6 +65,7 @@ const MovieImages = ({ code }: { code: string }) => {
         )}
         {Array.from({ length: 20 }, (_, i) => (
           <PreloadingImage
+            key={`img-${i}`}
             src={getImgSrc((i + 1).toString())}
             smSrc={getImgSrc((i + 1).toString(), true)}
             alt={`img ${i}`}

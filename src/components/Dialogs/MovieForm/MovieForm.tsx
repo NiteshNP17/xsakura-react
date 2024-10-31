@@ -225,6 +225,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
                   setRelease={setRelease}
                   setRuntime={setRuntime}
                   setTitle={setTitle}
+                  title={title}
                 />
                 <div className="grid grid-cols-2 items-center gap-x-3">
                   <TextField

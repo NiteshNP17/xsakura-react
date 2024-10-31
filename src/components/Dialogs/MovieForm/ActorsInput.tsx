@@ -85,7 +85,6 @@ const ActorsInput: React.FC<ActorsInputProps> = ({
           );
           if (inputValue.length > 3 && !isExisting) {
             filtered.push({
-              // inputValue,
               name: `Add "${inputValue}"`,
             } as ActorData);
           }

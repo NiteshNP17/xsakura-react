@@ -54,9 +54,9 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
       // Construct the correct image URL based on the codeLabel
       dmmSrc = `https://pics.dmm.co.jp/digital/video/${
         labelData.prefix || ""
-      }${codeLabel}${codeNumPadded}/${
+      }${codeLabel}${labelData.is3digits ? codeNum : codeNumPadded}/${
         labelData.prefix || ""
-      }${codeLabel}${codeNumPadded}pl.jpg`;
+      }${codeLabel}${labelData.is3digits ? codeNum : codeNumPadded}pl.jpg`;
     }
     setImgSrc(dmmSrc);
   };
