@@ -21,14 +21,15 @@ const SerieImage: React.FC<SerieImgProps> = ({ thumbs }) => {
     };
 
     getLabelData(secondLabel);
-  }, []);
+  }, [thumbs]);
 
   const getImgSrc = (fullCode: string): string => {
     const [codeLabel, codeNum] = fullCode.split("-");
     const codeNumPadded = codeNum.padStart(5, "0");
 
     if (codeLabel.startsWith("ab") || prestigeLabels.includes(codeLabel)) {
-      return `https://pics.dmm.co.jp/mono/movie/adult/118${codeLabel}${codeNum}/118${codeLabel}${codeNum}ps.jpg`;
+      // return `https://pics.dmm.co.jp/mono/movie/adult/118${codeLabel}${codeNum}/118${codeLabel}${codeNum}ps.jpg`;
+      return `https://image.mgstage.com/images/prestige/${codeLabel}/${codeNum}/pf_o1_${codeLabel}-${codeNum}.jpg`;
     } else {
       return `https://pics.dmm.co.jp/digital/video/${
         labelData.prefix || ""

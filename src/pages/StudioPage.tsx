@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { MovieData } from "../utils/customTypes";
 import config from "../utils/config";
@@ -8,7 +8,7 @@ import { CircularProgress } from "@mui/material";
 
 const StudioPage = () => {
   const { slug } = useParams();
-  const totalPagesRef = useRef<number>(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [movies, setMovies] = useState<MovieData[]>([]);
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
@@ -29,7 +29,7 @@ const StudioPage = () => {
           `${config.apiUrl}/movies?studio=${slug}&sort=${sort === "empty" ? "release" : sort}${selectedTags ? "&tags=" + selectedTags : ""}&page=${page}`,
         );
         setMovies(res.data.movies);
-        totalPagesRef.current = res.data.totalPages;
+        setTotalPages(res.data.totalPages);
         setLoaded(true);
       } catch (err) {
         console.error("error fetching movies: ", err);
@@ -37,14 +37,14 @@ const StudioPage = () => {
     };
 
     fetchMovies();
-  }, [page, refetchTrigger, isLoaded, selectedTags, sort]);
+  }, [page, refetchTrigger, isLoaded, selectedTags, sort, slug]);
 
   return (
     <>
       {isLoaded ? (
         <MovieList
           movies={movies}
-          totalPages={totalPagesRef.current}
+          totalPages={totalPages}
           refetch={refetchMovies}
         />
       ) : (

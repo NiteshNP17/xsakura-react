@@ -38,7 +38,7 @@ const Studio = () => {
       </div>
       <div className="grid gap-4">
         {studList.map((studio) => (
-          <Link key={studio.slug} to={`/studio/${studio.slug}`}>
+          <Link key={studio.slug} to={`/studio/${studio.slug}?sort=release`}>
             {studio.name}
           </Link>
         ))}

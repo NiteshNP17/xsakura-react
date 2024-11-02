@@ -20,7 +20,7 @@ const SeriesCard: React.FC<SeriesCardProps> = ({
       key={series.slug}
       className="group relative grid gap-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-800"
     >
-      <Link to={`/series/${series.slug}`} className="capitalize">
+      <Link to={`/series/${series.slug}?sort=code`} className="capitalize">
         <div className="flex justify-evenly">
           {series.thumbs
             ? series.thumbs

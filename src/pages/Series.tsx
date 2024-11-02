@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import config from "../utils/config";
 import { SeriesItem } from "../utils/customTypes";
@@ -19,7 +19,7 @@ const Series = () => {
   const [urlParams, setUrlParams] = useSearchParams();
   const page = parseInt(urlParams.get("p") || "1");
   const [serieToEdit, setSerieToEdit] = useState<SeriesItem>({} as SeriesItem);
-  const totalPagesRef = useRef<number>(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   const handlePageChange = (
     _e: React.ChangeEvent<unknown> | KeyboardEvent | null,
@@ -40,7 +40,7 @@ const Series = () => {
         const res = await fetch(`${config.apiUrl}/series?page=${page}`);
         const resData = await res.json();
         setSeriesList(resData.data);
-        totalPagesRef.current = resData.totalPages;
+        setTotalPages(resData.totalPages);
       } catch (err) {
         console.error("internal server error: ", err);
       }
@@ -78,7 +78,7 @@ const Series = () => {
       </div>
       <div className="my-12 flex w-full justify-center">
         <Pagination
-          count={totalPagesRef.current}
+          count={totalPages}
           size="large"
           color="primary"
           page={page}

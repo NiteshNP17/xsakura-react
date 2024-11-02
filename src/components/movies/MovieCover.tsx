@@ -39,7 +39,7 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
     if (codeLabel === "rebd") {
       dmmSrc = `https://file.rebecca-web.com/media/videos/dl03/rebd_${codeNum}/b01_pc2.jpg`;
     } else if (prestigeLabels.some((sub) => codeLabel.startsWith(sub))) {
-      dmmSrc = `https://pics.dmm.co.jp/mono/movie/adult/118${codeLabel}${codeNum}/118${codeLabel}${codeNum}pl.jpg`;
+      dmmSrc = `https://image.mgstage.com/images/prestige/${codeLabel}/${codeNum}/pb_e_${codeLabel}-${codeNum}.jpg`;
     } else if (noPreLabels.includes(codeLabel)) {
       dmmSrc = `https://pics.dmm.co.jp/mono/movie/adult/${codeLabel}${codeNum}/${codeLabel}${codeNum}pl.jpg`;
     } else {

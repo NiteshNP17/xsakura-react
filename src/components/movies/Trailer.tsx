@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import config from "../../utils/config";
 import CircularProgress from "@mui/material/CircularProgress";
 import MuxPlayer from "@mux/mux-player-react";
-import VideoJS from "./VideoJS";
 
 interface TrailerProps {
   code: string;
@@ -126,8 +125,6 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
           posterSm ? "aspect-[3/1.98]" : "aspect-video"
         } flex w-full bg-black object-contain`}
       />
-    ) : prefixData.isVr ? (
-      <VideoJS src={videoSrc} onError={handleVideoError} />
     ) : (
       <MuxPlayer
         src={videoSrc}
