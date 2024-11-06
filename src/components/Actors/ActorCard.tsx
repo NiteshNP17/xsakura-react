@@ -31,7 +31,9 @@ const ActorCard: React.FC<ActorCardProps> = ({
 
   const ActorLink = ({ children }: { children: React.ReactNode }) =>
     !noLink ? (
-      <Link to={`/actor/${actor.name && actor.name.replace(/ /g, "-")}`}>
+      <Link
+        to={`/actor/${actor.name && actor.name.replace(/ /g, "-")}?sort=release`}
+      >
         {children}
       </Link>
     ) : (

@@ -1,3 +1,6 @@
+import axios from "axios";
+import config from "./config";
+
 function formatNames(namesArray: string[]) {
   // Capitalize the first letter of each name
   const formattedNames = namesArray.map((name) => {
@@ -134,4 +137,23 @@ function formatHeight(heightCm: number): string {
   return `${feetString}${inchesString}`.trim();
 }
 
-export { formatNames, formatCode, calculateAge, ageCompare, formatHeight };
+async function movieExists(movieCode: string) {
+  try {
+    const res = await axios.get(
+      `${config.apiUrl}/movies/${movieCode.toLowerCase()}`,
+    );
+    if (res) return true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    if (err.response.status === 404) return false;
+  }
+}
+
+export {
+  formatNames,
+  formatCode,
+  calculateAge,
+  ageCompare,
+  formatHeight,
+  movieExists,
+};

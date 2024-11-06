@@ -16,6 +16,7 @@ interface MovieArticleProps {
   setMovieToEdit: (movieToEdit: MovieData) => void;
   setId: (id: string) => void;
   setAnchorEl: (anchorEl: null | HTMLElement) => void;
+  setToEdit: (isToEdit: boolean) => void;
 }
 
 const MovieArticle: React.FC<MovieArticleProps> = ({
@@ -23,6 +24,7 @@ const MovieArticle: React.FC<MovieArticleProps> = ({
   setMovieToEdit,
   setId,
   setAnchorEl,
+  setToEdit,
 }) => {
   return (
     <article className="group relative grid gap-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-800">
@@ -71,6 +73,7 @@ const MovieArticle: React.FC<MovieArticleProps> = ({
           onClick={(e) => {
             setMovieToEdit(movie);
             setId(Math.random().toString(36).substring(6));
+            setToEdit(true);
             setAnchorEl(e.currentTarget);
           }}
         >

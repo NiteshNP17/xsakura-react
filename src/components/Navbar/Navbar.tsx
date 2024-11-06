@@ -19,7 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
   useKeyboardShortcut({
     modifier: "alt",
     key: "m",
-    callback: () => navigate("/movies"),
+    callback: () => navigate("/movies?sort=added"),
   });
   useKeyboardShortcut({
     modifier: "alt",
@@ -51,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
             </Button>
             <Button
               component={Link}
-              to="/movies"
+              to="/movies?sort=added"
               color={path.includes("/movies") ? "primary" : "secondary"}
               size="large"
               disableRipple

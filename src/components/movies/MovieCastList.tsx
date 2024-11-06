@@ -50,7 +50,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
       <Link
         to={`/actor${isMale ? "-m" : ""}/${
           isMale ? actor?.replace(/ /g, "-").toLowerCase() : endpoint
-        }`}
+        }?sort=release`}
       >
         {children}
       </Link>

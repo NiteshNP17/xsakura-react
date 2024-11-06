@@ -12,13 +12,15 @@ import {
   SelectChangeEvent,
   Snackbar,
 } from "@mui/material";
-import MovieForm from "../Dialogs/MovieForm/MovieForm";
+// import MovieForm from "../Dialogs/MovieForm/MovieForm";
 import MutateMenu from "../Dialogs/MutateMenu";
 import DeleteDialog from "../Dialogs/DeleteDialog";
 import useKeyboardShortcut from "../../utils/useKeyboardShortcut";
 import { MovieData } from "../../utils/customTypes";
 import MovieArticle from "./MovieArticle";
 import TagButtons from "./TagButtons";
+import MovieDialogBase from "../Dialogs/MovieForm/MovieDialogBase";
+import { MovieContext } from "../Dialogs/MovieForm/MovieContext";
 
 interface MovieListProps {
   movies: MovieData[];
@@ -40,8 +42,9 @@ const MovieList: React.FC<MovieListProps> = ({
   const [openSnack, setOpenSnack] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") ?? "1");
-  const sort = searchParams.get("sort") || "empty";
+  const sort = searchParams.get("sort") || "release";
   const [id, setId] = useState("");
+  const [isToEdit, setToEdit] = useState(false);
 
   const handlePageChange = (
     _e: React.ChangeEvent<unknown>,
@@ -69,10 +72,10 @@ const MovieList: React.FC<MovieListProps> = ({
   const handleAdd = () => {
     if (!openEditDialog) {
       setMovieToEdit({} as MovieData);
-      setId(Math.random().toString(36).substring(6));
+      setToEdit(false);
       setTimeout(() => {
         setOpenEditDialog(true);
-      }, 10);
+      }, 5);
     }
   };
 
@@ -110,8 +113,9 @@ const MovieList: React.FC<MovieListProps> = ({
             key={movie.code}
             movie={movie}
             setAnchorEl={setAnchorEl}
-            setId={setId}
+            setToEdit={setToEdit}
             setMovieToEdit={setMovieToEdit}
+            setId={setId}
           />
         ))}
         <MutateMenu
@@ -130,14 +134,20 @@ const MovieList: React.FC<MovieListProps> = ({
           onChange={handlePageChange}
         />
       </div>
-      <MovieForm
-        movieToEdit={movieToEdit}
-        openEditDialog={openEditDialog}
-        setOpenEditDialog={setOpenEditDialog}
-        setOpenSnack={setOpenSnack}
-        refetch={refetch}
-        id={id}
-      />
+      <MovieContext.Provider
+        value={{
+          movieState: movieToEdit,
+          setMovieState: setMovieToEdit,
+          isToEdit,
+        }}
+      >
+        <MovieDialogBase
+          open={openEditDialog}
+          setOpen={setOpenEditDialog}
+          refetch={refetch}
+          setOpenSnack={setOpenSnack}
+        />
+      </MovieContext.Provider>
       <DeleteDialog
         type="movies"
         open={openDeleteDialog}

@@ -1,49 +1,33 @@
 import MovieCover from "../../movies/MovieCover";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Trailer from "../../movies/Trailer";
-import { IconButton, Switch } from "@mui/material";
-import { PlayCircleOutline } from "@mui/icons-material";
+import IconButton from "@mui/material/IconButton";
+import Switch from "@mui/material/Switch";
+import PlayCircleOutline from "@mui/icons-material/PlayCircleOutline";
 import axios from "axios";
 import config from "../../../utils/config";
+import { MovieContext } from "./MovieContext";
 
-interface MoviePvProps {
-  codeToPv: string;
-  overrides: {
-    cover: string;
-    preview: string;
-  };
-  isForm?: boolean;
-  setRelease: (release: string) => void;
-  setRuntime: (runtime: string) => void;
-  setTitle: (title: string) => void;
-  title?: string;
-}
-
-const MoviePreview: React.FC<MoviePvProps> = ({
-  codeToPv,
-  overrides,
-  isForm,
-  setRelease,
-  setTitle,
-  setRuntime,
-  title,
-}) => {
+const MoviePreview = () => {
   const [isChecked, setIsChecked] = useState(false);
-  const showPv = codeToPv.length > 5;
-
-  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsChecked(event.target.checked);
-  };
+  const { movieState, setMovieState } = useContext(MovieContext);
 
   const handleBtnClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
       const res = await axios.get(
-        `${config.apiUrl}/lookups/scrape${!isChecked ? "-jt" : ""}?code=${codeToPv}`,
+        `${config.apiUrl}/lookups/scrape${!isChecked ? "-jt" : ""}?code=${movieState.code}`,
       );
-      setTitle(res.data.title);
-      setRelease(res.data.relDate);
-      setRuntime(res.data.runtime);
+      setMovieState({
+        ...movieState,
+        title: res.data.title,
+        release: res.data.relDate,
+        runtime: res.data.runtime,
+        overrides: {
+          ...movieState.overrides,
+          cover: res.data.posterUrl,
+        },
+      });
     } catch (err) {
       alert("Error fetching movie data: " + err);
     }
@@ -53,14 +37,11 @@ const MoviePreview: React.FC<MoviePvProps> = ({
     <>
       {!isChecked ? (
         <div className="h-fit overflow-hidden rounded-md">
-          {showPv ? (
+          {movieState.code ? (
             <MovieCover
-              code={codeToPv}
-              overrides={{
-                cover: overrides.cover,
-                preview: overrides.preview,
-              }}
-              isForm={isForm}
+              code={movieState.code}
+              overrides={movieState.overrides}
+              isForm
             />
           ) : (
             <div className="grid aspect-[3/1.98] w-full place-content-center bg-slate-200 text-center text-2xl font-semibold text-slate-400 dark:bg-zinc-600">
@@ -72,12 +53,15 @@ const MoviePreview: React.FC<MoviePvProps> = ({
         </div>
       ) : (
         <div className="mb-2 overflow-hidden rounded-lg md:mb-0">
-          <Trailer code={codeToPv} posterSm title={title} />
+          <Trailer code={movieState.code} posterSm title={movieState.title} />
         </div>
       )}
       <div className="relative mx-auto flex w-full items-center justify-center gap-1">
         <span>Preview</span>
-        <Switch checked={isChecked} onChange={handleSwitchChange} />
+        <Switch
+          checked={isChecked}
+          onChange={(e) => setIsChecked(e.target.checked)}
+        />
         <span>Trailer</span>
         <IconButton
           onClick={handleBtnClick}

@@ -33,7 +33,7 @@ const SeriesDialog: React.FC<PrefixDialogProps> = ({
         document.getElementById("name-input")?.focus();
       }, 50);
     }
-  }, [open]);
+  }, [open, serieToEdit.slug]);
 
   const handleClose = () => {
     setOpen(false);

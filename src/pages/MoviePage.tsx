@@ -35,7 +35,7 @@ const MoviePage = () => {
         </IconButton>
       </div>
       <div className="grid gap-4 sm:grid-cols-6">
-        <div className="col-span-4">
+        <div className="col-span-6 sm:col-span-4">
           <div className="cq flex aspect-video max-w-[1024px] items-center justify-center overflow-hidden rounded-lg">
             {code?.startsWith("fc2") ? (
               <div>No Trailer</div>
@@ -43,7 +43,7 @@ const MoviePage = () => {
               <Trailer code={code || ""} reload={reload} />
             )}
           </div>
-          <div className="my-6 flex gap-4">
+          <div className="my-6 flex flex-wrap gap-4">
             <a href={`https://javct.net/v/${code}`}>JavCT</a>
             <a href={`https://njav.tv/en/v/${code}`}>Njav</a>
             <a href={`https://njav.tv/en/v/${code}-uncensored-leak`}>Njav MR</a>
@@ -55,7 +55,7 @@ const MoviePage = () => {
           </div>
         </div>
         {!code?.startsWith("fc2") && (
-          <div className="col-span-2">
+          <div className="col-span-6 px-3 sm:col-span-2">
             <MovieImages code={code ? code : ""} />
           </div>
         )}

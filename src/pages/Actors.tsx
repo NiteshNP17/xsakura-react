@@ -3,7 +3,7 @@ import { CircularProgress, IconButton, Pagination } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
 import ActorForm from "../components/Dialogs/ActorForm";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import MutateMenu from "../components/Dialogs/MutateMenu";
 import MoreVert from "@mui/icons-material/MoreVert";
@@ -27,7 +27,7 @@ const Actors = () => {
   const sortDirection =
     urlParams.get("sortd") || localStorage.getItem("actorSortD") || "asc";
   const page = parseInt(urlParams.get("p") || "1");
-  const totalPagesRef = useRef<number>(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   const refetchActors = () => {
     setRefetch((prev) => !prev);
@@ -62,7 +62,7 @@ const Actors = () => {
           `${config.apiUrl}/actors?sort=${sort + sortDirection}&page=${page}`,
         );
         setActors(res.data.actors);
-        totalPagesRef.current = res.data.totalPages;
+        setTotalPages(res.data.totalPages);
         setIsLoaded(true);
       } catch (err) {
         console.error("error fetching actors: ", err);
@@ -125,7 +125,7 @@ const Actors = () => {
       )}
       <div className="my-12 flex w-full justify-center">
         <Pagination
-          count={totalPagesRef.current}
+          count={totalPages}
           size="large"
           color="primary"
           page={page}
