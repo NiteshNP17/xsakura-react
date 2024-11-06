@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import ActorsInput from "./MovieForm/ActorsInput";
-import { ActorData } from "../../utils/customTypes";
-import MovieCastList from "../movies/MovieCastList";
+// import { ActorData } from "../../utils/customTypes";
+// import MovieCastList from "../movies/MovieCastList";
 import axios from "axios";
 import config from "../../utils/config";
 
@@ -26,8 +26,8 @@ const AlbumDialog: React.FC<AlbumDialogProps> = ({
   refetch,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [selectedActors, setSelectedActors] = useState<ActorData[]>([]);
-  const [release, setRelease] = useState("");
+  // const [selectedActors, setSelectedActors] = useState<ActorData[]>([]);
+  // const [release, setRelease] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,8 +35,8 @@ const AlbumDialog: React.FC<AlbumDialogProps> = ({
 
     const formData = new FormData(e.currentTarget);
     const dataToSubmit = Object.fromEntries(formData);
-    const castArray = selectedActors.map((actorData) => actorData._id);
-    dataToSubmit.models = JSON.stringify(castArray);
+    // const castArray = selectedActors.map((actorData) => actorData._id);
+    // dataToSubmit.models = JSON.stringify(castArray);
 
     try {
       await axios.post(`${config.apiUrl}/albums`, dataToSubmit);
@@ -57,7 +57,7 @@ const AlbumDialog: React.FC<AlbumDialogProps> = ({
     >
       <DialogTitle sx={{ pb: 0 }}>Add Album</DialogTitle>
       <DialogContent>
-        <div className="col-span-2 flex h-9 w-full items-center gap-1 overflow-x-scroll">
+        {/* <div className="col-span-2 flex h-9 w-full items-center gap-1 overflow-x-scroll">
           {selectedActors.length > 0 ? (
             <MovieCastList movieCast={selectedActors} release={release} />
           ) : (
@@ -65,12 +65,9 @@ const AlbumDialog: React.FC<AlbumDialogProps> = ({
               Actors
             </span>
           )}
-        </div>
+        </div> */}
         <div className="mx-auto my-2 mt-4 grid grid-cols-2 gap-4">
-          <ActorsInput
-            selectedActorsF={selectedActors}
-            setSelectedActorsF={setSelectedActors}
-          />
+          <ActorsInput />
           <TextField
             name="name"
             type="text"
@@ -83,9 +80,9 @@ const AlbumDialog: React.FC<AlbumDialogProps> = ({
             type="text"
             label="Date"
             autoComplete="off"
-            onBlur={(e) =>
-              e.target.value.length > 3 && setRelease(e.target.value)
-            }
+            // onBlur={(e) =>
+            //   e.target.value.length > 3 && setRelease(e.target.value)
+            // }
           />
           <TextField
             name="cover"
