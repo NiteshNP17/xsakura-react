@@ -11,12 +11,13 @@ import { MovieContext } from "./MovieContext";
 const MoviePreview = () => {
   const [isChecked, setIsChecked] = useState(false);
   const { movieState, setMovieState } = useContext(MovieContext);
+  const isFc2 = movieState.code?.startsWith("fc2");
 
   const handleBtnClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
       const res = await axios.get(
-        `${config.apiUrl}/lookups/scrape${!isChecked ? "-jt" : ""}?code=${movieState.code}`,
+        `${config.apiUrl}/lookups/scrape${!isChecked && !isFc2 ? "-jt" : ""}?code=${movieState.code}`,
       );
       setMovieState({
         ...movieState,
@@ -59,6 +60,7 @@ const MoviePreview = () => {
       <div className="relative mx-auto flex w-full items-center justify-center gap-1">
         <span>Preview</span>
         <Switch
+          disabled={isFc2}
           checked={isChecked}
           onChange={(e) => setIsChecked(e.target.checked)}
         />

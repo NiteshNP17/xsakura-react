@@ -50,7 +50,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
     const getPrefixData = async (): Promise<void> => {
       try {
         const res = await fetch(
-          `${config.apiUrl}/lookups/label/${codeLabel}?codenum=${codeNum}`,
+          `${config.apiUrl}/labels/${codeLabel}?codenum=${codeNum}`,
         );
         const data: PrefixData = await res.json();
         setPrefixData(data);
@@ -99,6 +99,14 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
       setVideoSrc(rebdVidSrc);
       setPosterSrc(rebdPoster);
       setLoaded(true);
+    } else if (codeLabel === "kidm") {
+      setVideoSrc(
+        `https://kingdom.vc/html/upload/sample_video/KIDM-${codeNum}.mp4`,
+      );
+      setPosterSrc(
+        `https://kingdom.vc/html/upload/save_image/${codeNum}VHD-4000.jpg`,
+      );
+      setLoaded(true);
     } else {
       getPrefixData();
     }
@@ -116,7 +124,8 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
   };
 
   return isLoaded ? (
-    codeLabel === "rebd" && parseInt(codeNum) < 561 ? (
+    (codeLabel === "rebd" && parseInt(codeNum) < 561) ||
+    codeLabel === "kidm" ? (
       <video
         src={videoSrc}
         poster={posterSrc}

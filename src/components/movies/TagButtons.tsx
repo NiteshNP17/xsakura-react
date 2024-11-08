@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 const TagButtons = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedTags = searchParams.get("tags");
-  const tagsList = ["softcore", "ass lover", "lotion", "multi girls"];
+  const tagsList = ["softcore", "ass lover", "lotion", "multi girls", "bbc"];
   const optTags = [
     { val: "vr", label: "VR" },
     { val: "mr", label: "Decensored" },

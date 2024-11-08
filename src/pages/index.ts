@@ -10,3 +10,4 @@ export { default as StudioPage } from "./StudioPage";
 export { default as SeriesPage } from "./SeriesPage";
 export { default as Albums } from "./Albums";
 export { default as AlbumPage } from "./AlbumPage";
+export { default as Labels } from "./Labels";

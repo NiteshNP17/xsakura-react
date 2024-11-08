@@ -48,6 +48,7 @@ const App = () => {
         <Route path="/series/:slug" Component={pages.SeriesPage} />
         <Route path="/albums" Component={pages.Albums} />
         <Route path="/album/:slug" Component={pages.AlbumPage} />
+        <Route path="/labels" Component={pages.Labels} />
       </Routes>
     </ThemeProvider>
   );

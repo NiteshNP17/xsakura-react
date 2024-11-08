@@ -47,7 +47,7 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
 
       // Fetch label data from the API
       const response = await fetch(
-        `${config.apiUrl}/lookups/label/${codeLabel}?codenum=${codeNum}`,
+        `${config.apiUrl}/${codeLabel}?codenum=${codeNum}`,
       );
       const labelData = await response.json();
 
@@ -71,6 +71,8 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
       (!overrides?.preview && code.includes("vr"))
     ) {
       classes += "h-[152%] object-left";
+    } else if (overrides?.preview?.includes("sweet-angels")) {
+      classes += "h-[175%] object-[20px_40px]";
     } else {
       classes += "h-full";
     }

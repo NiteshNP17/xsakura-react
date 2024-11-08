@@ -17,7 +17,7 @@ const MovieImages = ({ code }: { code: string }) => {
     const getLabelData = async (label: string) => {
       // Fetch label data from the API
       const res = await fetch(
-        `${config.apiUrl}/lookups/label/${label}?codenum=${codeNum}`,
+        `${config.apiUrl}/labels/${label}?codenum=${codeNum}`,
       );
       const data = await res.json();
       setLabelData(data);

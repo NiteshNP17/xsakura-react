@@ -42,7 +42,7 @@ const PrefixDialog: React.FC<LabelDialogProps> = ({
     console.log(dataToSubmit);
 
     try {
-      await axios.post(`${config.apiUrl}/lookups/label`, dataToSubmit);
+      await axios.post(`${config.apiUrl}/labels`, dataToSubmit);
       handleClose();
       reload();
     } catch (err) {

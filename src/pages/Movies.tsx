@@ -1,6 +1,6 @@
 import MovieList from "../components/movies/MovieList";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { MovieData } from "../utils/customTypes";
@@ -8,7 +8,7 @@ import config from "../utils/config";
 // import { Autocomplete, TextField } from "@mui/material";
 
 const Movies = () => {
-  const totalPagesRef = useRef<number>(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [movies, setMovies] = useState<MovieData[]>([]);
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
@@ -35,7 +35,7 @@ const Movies = () => {
         );
 
         setMovies(res.data.movies);
-        totalPagesRef.current = res.data.totalPages;
+        setTotalPages(res.data.totalPages);
         setLoaded(true);
       } catch (err) {
         console.error("error fetching movies: ", err);
@@ -43,12 +43,12 @@ const Movies = () => {
     };
 
     fetchMovies();
-  }, [page, refetchTrigger, isLoaded, selectedTags, sort]);
+  }, [page, refetchTrigger, isLoaded, selectedTags, sort, label]);
 
   return isLoaded ? (
     <MovieList
       movies={movies}
-      totalPages={totalPagesRef.current}
+      totalPages={totalPages}
       refetch={refetchMovies}
     />
   ) : (

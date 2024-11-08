@@ -13,7 +13,7 @@ const fetchDmmSrc = async (code: string) => {
   } else {
     // Fetch label data from the API
     const response = await fetch(
-      `${config.apiUrl}/lookups/label/${codeLabel}?codenum=${codeNum}`,
+      `${config.apiUrl}/labels/${codeLabel}?codenum=${codeNum}`,
     );
     const labelData = await response.json();
 

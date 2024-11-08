@@ -9,7 +9,10 @@ const CodeTitleInput = () => {
 
   const handleCodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length > 4) {
-      setMovieState({ ...movieState, code: formatCode(e.target.value) });
+      setMovieState({
+        ...movieState,
+        code: formatCode(e.target.value.toLowerCase()),
+      });
       const isExists = await movieExists(formatCode(e.target.value));
       if (isExists) {
         setExists(true);

@@ -78,6 +78,15 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
             </Button>
             <Button
               component={Link}
+              to="/labels"
+              color={path.includes("/labels") ? "primary" : "secondary"}
+              size="large"
+              disableRipple
+            >
+              Labels
+            </Button>
+            <Button
+              component={Link}
               to="/studio"
               color={path.includes("/studio") ? "primary" : "secondary"}
               size="large"

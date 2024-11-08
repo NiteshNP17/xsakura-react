@@ -15,7 +15,7 @@ export default defineConfig({
       },
       manifest: {
         name: "XSakura",
-        theme_color: "#f5f5f5",
+        theme_color: "#121212",
         icons: [
           {
             src: "logo192.png",
