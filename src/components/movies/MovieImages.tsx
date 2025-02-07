@@ -40,7 +40,12 @@ const MovieImages = ({ code }: { code: string }) => {
   };
 
   const getRebdSrc = (i: number): string => {
-    return `https://file.rebecca-web.com/media/videos/dl0${parseInt(codeNum) > 873 ? "3" : parseInt(codeNum) > 500 ? "2" : "1"}/rebd_${codeNum}/b${i.toString().padStart(2, "0")}_pc2.jpg`;
+    const codeNumInt = parseInt(codeNum);
+    let dlNum = 1;
+    if (codeNumInt < 889 && codeNumInt > 500) {
+      dlNum = codeNumInt > 873 ? 3 : 2;
+    }
+    return `https://file.rebecca-web.com/media/videos/dl0${dlNum}/rebd_${codeNum}/b${i.toString().padStart(2, "0")}_pc2.jpg`;
   };
 
   return (

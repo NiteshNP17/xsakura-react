@@ -58,10 +58,15 @@ const SortSelect: React.FC<SortSelectProps> = ({ type, setLoaded }) => {
           onChange={handleSortChange}
         >
           <MenuItem value={"name"}>Name</MenuItem>
-          <MenuItem value={"added"}>Added</MenuItem>
-          <MenuItem value={"moviecount"}>Movie Count</MenuItem>
-          <MenuItem value={"age"}>Age</MenuItem>
+          <MenuItem value={"_id"}>Added</MenuItem>
+          <MenuItem value={"numMovies"}>Movie Count</MenuItem>
+          <MenuItem value={"ageAtLatestRelease"}>Age</MenuItem>
+          <MenuItem value={"dob"}>DOB</MenuItem>
           <MenuItem value={"height"}>Height</MenuItem>
+          <MenuItem value={"yearsActive"}>Active</MenuItem>
+          <MenuItem value={"sizes.bust"}>Bust</MenuItem>
+          <MenuItem value={"sizes.waist"}>Waist</MenuItem>
+          <MenuItem value={"sizes.hips"}>Hips</MenuItem>
         </Select>
       </FormControl>
       <Button

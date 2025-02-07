@@ -5,6 +5,7 @@ import { LoadingButton } from "@mui/lab";
 import axios from "axios";
 import config from "../../utils/config";
 import { ActorData } from "../../utils/customTypes";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface ActorFormProps {
   openEditDialog: boolean;
@@ -12,6 +13,16 @@ interface ActorFormProps {
   refetch: () => void;
   setOpenSnack?: (open: boolean) => void;
   actorToEdit: { actor: ActorData; id: string } | null;
+}
+
+type EditData = Omit<ActorData, "sizes"> & {
+  sizes: string;
+};
+
+interface Sizes {
+  bust: number;
+  waist: number;
+  hips: number;
 }
 
 const ActorForm: React.FC<ActorFormProps> = ({
@@ -22,7 +33,9 @@ const ActorForm: React.FC<ActorFormProps> = ({
   actorToEdit,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [formFields, setFormFields] = useState({} as ActorData);
+  const [formFields, setFormFields] = useState({} as EditData);
+  const path = useLocation().pathname;
+  const navigate = useNavigate();
 
   const handleClose = () => {
     // setFormFields({} as ActorData);
@@ -31,8 +44,14 @@ const ActorForm: React.FC<ActorFormProps> = ({
   };
 
   useEffect(() => {
-    if (actorToEdit?.actor.name) setFormFields(actorToEdit.actor);
-    else setFormFields({} as ActorData);
+    if (actorToEdit?.actor?.name)
+      setFormFields({
+        ...actorToEdit.actor,
+        sizes: actorToEdit.actor.sizes
+          ? `${actorToEdit.actor.sizes.bust}-${actorToEdit.actor.sizes.waist}-${actorToEdit.actor.sizes.hips}`
+          : "",
+      });
+    else setFormFields({} as EditData);
   }, [actorToEdit]);
 
   const verifyActor = async (actorName: string) => {
@@ -62,10 +81,13 @@ const ActorForm: React.FC<ActorFormProps> = ({
       if (!actorToEdit?.actor.name && !formFields._id) {
         await axios.post(`${config.apiUrl}/actors`, formFields);
       } else {
-        await axios.patch(
+        const res = await axios.patch(
           `${config.apiUrl}/actors/${formFields._id}`,
           formFields,
         );
+        if (path.includes("/actor/")) {
+          navigate(`/actor/${res.data.name.replace(" ", "-")}?sort=release`);
+        }
       }
       console.log("Success!");
       refetch();
@@ -91,14 +113,14 @@ const ActorForm: React.FC<ActorFormProps> = ({
     >
       <div className="p-6">
         <h1 className="mb-3 w-full text-2xl font-semibold">
-          {!formFields._id ? "Add" : "Edit"} Actor {formFields._id}
+          {!formFields._id ? "Add" : "Edit"} Actor
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col items-center justify-center gap-6 md:grid md:grid-cols-2">
             <div className="mx-auto grid w-[69%]">
-              <ActorCard actor={formFields} noLink />
+              <ActorCard actor={{ ...formFields, sizes: {} as Sizes }} noLink />
             </div>
-            <div className="flex w-full flex-col gap-4">
+            <div className="grid w-full grid-cols-2 flex-col gap-4">
               <TextField
                 type="text"
                 name="name"
@@ -117,48 +139,63 @@ const ActorForm: React.FC<ActorFormProps> = ({
                 }}
               />
               <TextField
-                type="url"
-                name="img500"
-                label="Image URL"
-                defaultValue={formFields.img500}
-                onChange={(e) =>
-                  e.target.value.trim().length > 25 &&
+                type="text"
+                name="dob"
+                label="Birthdate"
+                autoComplete="off"
+                defaultValue={formFields.dob}
+                onBlur={(e) =>
+                  e.target.value.trim().length > 3 &&
                   setFormFields({
                     ...formFields,
-                    img500: e.target.value.toLowerCase().trim(),
+                    dob: e.target.value.trim(),
                   })
                 }
               />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2 grid">
                 <TextField
-                  type="text"
-                  name="dob"
-                  label="Birthdate"
-                  autoComplete="off"
-                  defaultValue={formFields.dob}
-                  onBlur={(e) =>
-                    e.target.value.trim().length > 3 &&
-                    setFormFields({
-                      ...formFields,
-                      dob: e.target.value.trim(),
-                    })
-                  }
-                />
-                <TextField
-                  type="number"
-                  name="height"
-                  label="Height"
-                  placeholder="Height in CM"
-                  defaultValue={formFields.height}
+                  type="url"
+                  name="img500"
+                  label="Image URL"
+                  defaultValue={formFields.img500}
                   onChange={(e) =>
-                    e.target.value.trim().length > 2 &&
+                    e.target.value.trim().length > 25 &&
                     setFormFields({
                       ...formFields,
-                      height: parseInt(e.target.value),
+                      img500: e.target.value.toLowerCase().trim(),
                     })
                   }
                 />
               </div>
+              <TextField
+                type="number"
+                name="height"
+                label="Height"
+                placeholder="Height in CM"
+                defaultValue={formFields.height}
+                onChange={(e) =>
+                  e.target.value.trim().length > 2 &&
+                  setFormFields({
+                    ...formFields,
+                    height: parseInt(e.target.value),
+                  })
+                }
+              />
+              <TextField
+                type="text"
+                name="sizes"
+                label="3 Sizes"
+                placeholder="BB-WW-HH"
+                autoComplete="off"
+                defaultValue={formFields.sizes}
+                onChange={(e) =>
+                  e.target.value.trim().length > 2 &&
+                  setFormFields({
+                    ...formFields,
+                    sizes: e.target.value,
+                  })
+                }
+              />
             </div>
           </div>
           <div className="col-span-2 ml-auto mt-6 grid grid-cols-2 gap-2 justify-self-end md:mb-0 md:w-[calc(50%-0.75rem)]">

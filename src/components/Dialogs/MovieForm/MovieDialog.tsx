@@ -1,9 +1,9 @@
-import { useContext } from "react";
-import ActorsInput from "./ActorsInput";
+import { useContext, useState } from "react";
+// import ActorsInput from "./ActorsInput";
 import CodeTitleInput from "./CodeTitleInput";
 import MoviePreview from "./MoviePreview";
 import { MovieContext } from "./MovieContext";
-import { TextField } from "@mui/material";
+import TextField from "@mui/material/TextField";
 import { formatNames } from "../../../utils/utils";
 import SeriesInput from "./SeriesInput";
 import { SeriesItem } from "../../../utils/customTypes";
@@ -11,6 +11,7 @@ import OverridesInput from "./OverridesInput";
 
 const MovieDialog = () => {
   const { movieState, setMovieState } = useContext(MovieContext);
+  const [titleInFocus, setTitleInFocus] = useState(false);
 
   return (
     <div className="grid justify-center md:grid-cols-2 md:gap-6">
@@ -18,8 +19,7 @@ const MovieDialog = () => {
         <MoviePreview />
         <CodeTitleInput />
       </div>
-      <div className="grid grid-cols-2 items-center gap-x-3">
-        <ActorsInput />
+      <div className="-mt-4 grid max-h-[470px] grid-cols-2 items-center gap-x-3 gap-y-0">
         <TextField
           type="text"
           name="maleCast"
@@ -27,8 +27,14 @@ const MovieDialog = () => {
           defaultValue={movieState.maleCast && formatNames(movieState.maleCast)}
           variant="outlined"
           fullWidth
-          sx={{ margin: "1rem 0" }}
+          // sx={{ maxHeight: "20px" }}
           inputProps={{ autoCapitalize: "words" }}
+        />
+        <SeriesInput
+          value={movieState.series}
+          onChange={(series) =>
+            setMovieState({ ...movieState, series: series as SeriesItem })
+          }
         />
         <TextField
           type="text"
@@ -62,8 +68,9 @@ const MovieDialog = () => {
           label="Tags"
           defaultValue={movieState.tags && formatNames(movieState.tags)}
           variant="outlined"
-          fullWidth
-          sx={{ margin: "1rem 0", gridColumn: "span 2" }}
+          inputProps={{ id: "tags-input" }}
+          // fullWidth
+          // sx={{ margin: "1rem 0", gridColumn: "span 2" }}
         />
         <TextField
           type="text"
@@ -71,15 +78,31 @@ const MovieDialog = () => {
           label="Opt"
           defaultValue={movieState.opt}
           variant="outlined"
-          inputProps={{ autoCapitalize: "none" }}
-        />
-        <SeriesInput
-          value={movieState.series}
-          onChange={(series) =>
-            setMovieState({ ...movieState, series: series as SeriesItem })
-          }
+          inputProps={{ autoCapitalize: "none", id: "opt-input" }}
         />
         <OverridesInput />
+        <TextField
+          id="title-input"
+          type="search"
+          name="title"
+          value={movieState.title || ""}
+          onFocus={() => setTitleInFocus(true)}
+          onBlur={() => setTitleInFocus(false)}
+          onChange={(e) =>
+            setMovieState({ ...movieState, title: e.target.value })
+          }
+          label="Title"
+          variant="outlined"
+          autoComplete="off"
+          fullWidth
+          inputProps={{
+            autoCapitalize: "words",
+          }}
+          sx={{
+            gridColumn: "span 2",
+            direction: !titleInFocus ? "rtl" : "ltr",
+          }}
+        />
       </div>
     </div>
   );

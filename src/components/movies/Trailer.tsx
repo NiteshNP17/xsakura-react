@@ -64,7 +64,11 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
         let newPosterSrc;
 
         if (codeLabel === "rebd") {
-          newPosterSrc = `https://file.rebecca-web.com/media/videos/dl0${codeNumInt > 873 ? "3" : codeNumInt > 500 ? "2" : "1"}/rebd_${codeNum}/b02_pc2.jpg`;
+          let dlNum = 1;
+          if (codeNumInt < 889 && codeNumInt > 500) {
+            dlNum = codeNumInt > 873 ? 3 : 2;
+          }
+          newPosterSrc = `https://file.rebecca-web.com/media/videos/dl0${dlNum}/rebd_${codeNum}/b02_pc2.jpg`;
           setPosterSrc(newPosterSrc);
         } else {
           const longCode = `${data.prefix || ""}${codeLabel}`;
@@ -88,7 +92,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
       }
     };
 
-    if (codeLabel === "rebd" && codeNumInt < 561) {
+    if (codeLabel === "rebd" && codeNumInt < 700) {
       const dlNum = `dl0${codeNumInt > 873 ? "3" : codeNumInt > 500 ? "2" : "1"}`;
       const rebdBaseSrc = `https://file.rebecca-web.com/media/videos/${dlNum}/rebd_${codeNum}/`;
       const rebdVidSrc = rebdBaseSrc + "movie.mp4";
@@ -124,7 +128,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
   };
 
   return isLoaded ? (
-    (codeLabel === "rebd" && parseInt(codeNum) < 561) ||
+    (codeLabel === "rebd" && parseInt(codeNum) < 700) ||
     codeLabel === "kidm" ? (
       <video
         src={videoSrc}
@@ -145,7 +149,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
         className={`${
           posterSm ? "aspect-[3/1.98]" : "aspect-video"
         } flex w-full bg-black object-contain`}
-        placeholder={!posterSm ? `https://fivetiu.com/${code}/cover-t.jpg` : ""}
+        placeholder={!posterSm ? `https://fourhoi.com/${code}/cover-t.jpg` : ""}
         forwardSeekOffset={5}
         backwardSeekOffset={7}
         title={title}

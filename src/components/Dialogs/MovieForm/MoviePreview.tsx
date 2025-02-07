@@ -7,14 +7,24 @@ import PlayCircleOutline from "@mui/icons-material/PlayCircleOutline";
 import axios from "axios";
 import config from "../../../utils/config";
 import { MovieContext } from "./MovieContext";
+import { Alert, Snackbar } from "@mui/material";
+import useKeyboardShortcut from "../../../utils/useKeyboardShortcut";
 
 const MoviePreview = () => {
   const [isChecked, setIsChecked] = useState(false);
   const { movieState, setMovieState } = useContext(MovieContext);
-  const isFc2 = movieState.code?.startsWith("fc2");
+  const [openSnack, setOpenSnack] = useState(false);
+  const isFc2 =
+    movieState.code?.startsWith("fc2") || movieState.code?.startsWith("kb");
 
-  const handleBtnClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  useKeyboardShortcut({
+    modifier: "alt",
+    key: "d",
+    callback: () => handleBtnClick(),
+  });
+
+  const handleBtnClick = async (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.preventDefault();
     try {
       const res = await axios.get(
         `${config.apiUrl}/lookups/scrape${!isChecked && !isFc2 ? "-jt" : ""}?code=${movieState.code}`,
@@ -25,12 +35,20 @@ const MoviePreview = () => {
         release: res.data.relDate,
         runtime: res.data.runtime,
         overrides: {
-          ...movieState.overrides,
-          cover: res.data.posterUrl,
+          // ...movieState.overrides,
+          cover: `http://javpop.com/img/${movieState.code.split("-")[0]}/${movieState.code}_poster.jpg`,
+          preview: `https://fourhoi.com/${movieState.code}-uncensored-leak/preview.mp4`,
         },
       });
+      (document.getElementById("opt-input") as HTMLInputElement).value = "mr";
+
+      if (movieState.cast.length === 0) {
+        (document.getElementById("f-actor-opts") as HTMLInputElement).focus();
+      } else {
+        (document.getElementById("tags-input") as HTMLInputElement).focus();
+      }
     } catch (err) {
-      alert("Error fetching movie data: " + err);
+      setOpenSnack(true);
     }
   };
 
@@ -72,6 +90,24 @@ const MoviePreview = () => {
           <PlayCircleOutline />
         </IconButton>
       </div>
+      <Snackbar
+        open={openSnack}
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{ maxWidth: "450px" }}
+        onClose={(_e, reason?) => {
+          if (reason === "clickaway") return;
+          setOpenSnack(false);
+        }}
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          sx={{ fontSize: "1.1rem", padding: "0.5rem 3.5rem" }}
+        >
+          Movie data not found
+        </Alert>
+      </Snackbar>
     </>
   );
 };

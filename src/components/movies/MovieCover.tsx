@@ -13,8 +13,12 @@ interface MovieCoverProps {
 const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
   const [hoverCode, setHoverCode] = useState<string | null>(null);
   const [imgLoaded, setImgLoaded] = useState<boolean>(true);
-  const [imgSrc, setImgSrc] = useState(
-    `https://fivetiu.com/${code}/cover-t.jpg`,
+  const [noPrev, setNoPrev] = useState<boolean>(false);
+  const isLocal = window.location.href.startsWith("http://");
+  const [imgSrc, setImgSrc] = useState(() =>
+    isLocal
+      ? `http://javpop.com/img/${code.split("-")[0]}/${code}_poster.jpg`
+      : `https://fourhoi.com/${code}/cover-t.jpg`,
   );
   const vidRef = useRef<HTMLVideoElement>(null);
 
@@ -28,7 +32,8 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
 
   useEffect(() => {
     setImgLoaded(true);
-  }, [code, overrides]);
+    isForm && setNoPrev(false);
+  }, [code, overrides, isForm]);
 
   const fetchDmmSrc = async (code: string) => {
     const [codeLabel, codeNum] = code.split("-");
@@ -36,8 +41,10 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
     const noPreLabels = ["waaa", "mih"];
     let dmmSrc;
 
-    if (codeLabel === "rebd") {
-      dmmSrc = `https://file.rebecca-web.com/media/videos/dl03/rebd_${codeNum}/b01_pc2.jpg`;
+    if (codeLabel === "fc2") {
+      return;
+    } else if (codeLabel === "rebd") {
+      dmmSrc = `https://file.rebecca-web.com/media/videos/dl01/rebd_${codeNum}/b01_pc2.jpg`;
     } else if (prestigeLabels.some((sub) => codeLabel.startsWith(sub))) {
       dmmSrc = `https://image.mgstage.com/images/prestige/${codeLabel}/${codeNum}/pb_e_${codeLabel}-${codeNum}.jpg`;
     } else if (noPreLabels.includes(codeLabel)) {
@@ -47,15 +54,15 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
 
       // Fetch label data from the API
       const response = await fetch(
-        `${config.apiUrl}/${codeLabel}?codenum=${codeNum}`,
+        `${config.apiUrl}/labels/${codeLabel}?codenum=${codeNum}`,
       );
       const labelData = await response.json();
 
       // Construct the correct image URL based on the codeLabel
       dmmSrc = `https://pics.dmm.co.jp/digital/video/${
-        labelData.prefix || ""
+        labelData.imgPre || labelData.prefix || ""
       }${codeLabel}${labelData.is3digits ? codeNum : codeNumPadded}/${
-        labelData.prefix || ""
+        labelData.imgPre || labelData.prefix || ""
       }${codeLabel}${labelData.is3digits ? codeNum : codeNumPadded}pl.jpg`;
     }
     setImgSrc(dmmSrc);
@@ -64,14 +71,21 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
   const vidClassesBuilder = () => {
     let classes =
       "absolute object-cover opacity-0 transition-opacity duration-300 hover:opacity-100 ";
-    if (overrides?.preview?.includes("sexlikereal")) {
+    if (
+      overrides?.preview &&
+      overrides?.preview?.toString().includes("sexlikereal")
+    ) {
       classes += "h-[120%]";
     } else if (
-      overrides?.preview?.includes("vrsample") ||
+      (overrides?.preview &&
+        overrides?.preview?.toString().includes("vrsample")) ||
       (!overrides?.preview && code.includes("vr"))
     ) {
       classes += "h-[152%] object-left";
-    } else if (overrides?.preview?.includes("sweet-angels")) {
+    } else if (
+      overrides?.preview &&
+      overrides?.preview?.toString().includes("sweet-angels")
+    ) {
       classes += "h-[175%] object-[20px_40px]";
     } else {
       classes += "h-full";
@@ -87,6 +101,11 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
       onMouseLeave={() => handlePointerEnter(null)}
       className="relative flex aspect-[3/1.98] max-w-full items-center justify-center overflow-hidden"
     >
+      {isForm && noPrev && (
+        <div className="absolute rounded-lg bg-red-600 px-2 text-xl font-semibold">
+          NO
+        </div>
+      )}
       {hoverCode === code && (
         <video
           ref={vidRef}
@@ -104,10 +123,13 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
             )
               vidRef.current.playbackRate = 1.5;
           }}
+          onError={() => {
+            isForm && setNoPrev(true);
+          }}
         >
           <source
             src={
-              overrides?.preview || `https://fivetiu.com/${code}/preview.mp4`
+              overrides?.preview || `https://fourhoi.com/${code}/preview.mp4`
             }
             type="video/mp4"
           />
@@ -118,8 +140,8 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
         src={
           overrides?.cover
             ? overrides?.cover
-            : isForm
-              ? `https://fivetiu.com/${code}/cover-t.jpg`
+            : isForm || code.startsWith("fc2")
+              ? `https://fourhoi.com/${code}/cover-t.jpg`
               : imgSrc
         }
         alt={code.toUpperCase()}

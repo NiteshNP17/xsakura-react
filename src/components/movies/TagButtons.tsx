@@ -1,4 +1,4 @@
-import { LocalOffer } from "@mui/icons-material";
+import LocalOffer from "@mui/icons-material/LocalOffer";
 import { useSearchParams } from "react-router-dom";
 
 const TagButtons = () => {

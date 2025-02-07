@@ -4,6 +4,7 @@ import { useState } from "react";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import {
   Alert,
+  ButtonGroup,
   FormControl,
   InputLabel,
   MenuItem,
@@ -16,17 +17,22 @@ import {
 import MutateMenu from "../Dialogs/MutateMenu";
 import DeleteDialog from "../Dialogs/DeleteDialog";
 import useKeyboardShortcut from "../../utils/useKeyboardShortcut";
-import { MovieData } from "../../utils/customTypes";
+import { ActorData, MovieData, SeriesItem } from "../../utils/customTypes";
 import MovieArticle from "./MovieArticle";
 import TagButtons from "./TagButtons";
 import MovieDialogBase from "../Dialogs/MovieForm/MovieDialogBase";
 import { MovieContext } from "../Dialogs/MovieForm/MovieContext";
+import { ArrowBack, Shuffle } from "@mui/icons-material";
+import CastButtons from "./CastButtons";
 
 interface MovieListProps {
   movies: MovieData[];
   totalPages: number;
   refetch: () => void;
   hideTags?: boolean;
+  actorData?: ActorData;
+  actorStats?: ActorData[];
+  serieData?: SeriesItem;
 }
 
 const MovieList: React.FC<MovieListProps> = ({
@@ -34,6 +40,9 @@ const MovieList: React.FC<MovieListProps> = ({
   totalPages,
   refetch,
   hideTags,
+  actorData,
+  actorStats,
+  serieData,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [movieToEdit, setMovieToEdit] = useState<MovieData>({} as MovieData);
@@ -45,6 +54,7 @@ const MovieList: React.FC<MovieListProps> = ({
   const sort = searchParams.get("sort") || "release";
   const [id, setId] = useState("");
   const [isToEdit, setToEdit] = useState(false);
+  const isRandom = searchParams.get("random");
 
   const handlePageChange = (
     _e: React.ChangeEvent<unknown>,
@@ -71,15 +81,37 @@ const MovieList: React.FC<MovieListProps> = ({
 
   const handleAdd = () => {
     if (!openEditDialog) {
-      setMovieToEdit({} as MovieData);
+      setMovieToEdit({
+        cast: actorData ? [actorData] : [],
+        series: serieData,
+      } as MovieData);
       setToEdit(false);
+      const scrollPos = window.scrollY;
       setTimeout(() => {
         setOpenEditDialog(true);
+        window.scrollTo(0, scrollPos);
       }, 5);
     }
   };
 
   useKeyboardShortcut({ modifier: "alt", key: "i", callback: handleAdd });
+
+  const handleRandom = () => {
+    if (isRandom) {
+      refetch();
+    } else {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set("random", "true");
+      newSearchParams.delete("p");
+      setSearchParams(newSearchParams);
+    }
+  };
+
+  const handleRandomBack = () => {
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.delete("random");
+    setSearchParams(newSearchParams);
+  };
 
   return (
     <div className="px-[3vw]">
@@ -88,25 +120,51 @@ const MovieList: React.FC<MovieListProps> = ({
         <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
-        <FormControl sx={{ ml: "auto" }}>
-          <InputLabel>Sort</InputLabel>
-          <Select
-            labelId="sort-select-label"
-            id="sort-select"
-            value={sort}
-            size="small"
-            label="Sort"
-            sx={{ minWidth: "100px" }}
-            onChange={handleSortChange}
-          >
-            <MenuItem value={"added"}>Added</MenuItem>
-            <MenuItem value={"release"}>Release</MenuItem>
-            <MenuItem value={"codeAsc"}>Code Asc.</MenuItem>
-            <MenuItem value={"code"}>Code Desc.</MenuItem>
-          </Select>
-        </FormControl>
+        <div className="ml-auto flex items-center gap-2">
+          <ButtonGroup>
+            <IconButton onClick={handleRandom}>
+              <Shuffle />
+            </IconButton>
+            <IconButton onClick={handleRandomBack} disabled={!isRandom}>
+              <ArrowBack />
+            </IconButton>
+          </ButtonGroup>
+          {/* <FormControl sx={{ ml: "auto" }}> */}
+          <FormControl>
+            <InputLabel>Sort</InputLabel>
+            <Select
+              labelId="sort-select-label"
+              id="sort-select"
+              value={sort}
+              size="small"
+              label="Sort"
+              sx={{ minWidth: "100px" }}
+              onChange={handleSortChange}
+            >
+              <MenuItem value={"added"}>Added</MenuItem>
+              <MenuItem value={"release"}>Release</MenuItem>
+              <MenuItem value={"codeAsc"}>Code Asc.</MenuItem>
+              <MenuItem value={"code"}>Code Desc.</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
       </div>
       {!hideTags && <TagButtons />}
+      {actorStats && <CastButtons castList={actorStats} />}
+      <MovieContext.Provider
+        value={{
+          movieState: movieToEdit,
+          setMovieState: setMovieToEdit,
+          isToEdit,
+        }}
+      >
+        <MovieDialogBase
+          open={openEditDialog}
+          setOpen={setOpenEditDialog}
+          refetch={refetch}
+          setOpenSnack={setOpenSnack}
+        />
+      </MovieContext.Provider>
       <div className="grid-fit-2 mx-auto mb-12 mt-2 max-w-[1660px] gap-6">
         {movies.map((movie) => (
           <MovieArticle
@@ -134,20 +192,6 @@ const MovieList: React.FC<MovieListProps> = ({
           onChange={handlePageChange}
         />
       </div>
-      <MovieContext.Provider
-        value={{
-          movieState: movieToEdit,
-          setMovieState: setMovieToEdit,
-          isToEdit,
-        }}
-      >
-        <MovieDialogBase
-          open={openEditDialog}
-          setOpen={setOpenEditDialog}
-          refetch={refetch}
-          setOpenSnack={setOpenSnack}
-        />
-      </MovieContext.Provider>
       <DeleteDialog
         type="movies"
         open={openDeleteDialog}
@@ -170,7 +214,7 @@ const MovieList: React.FC<MovieListProps> = ({
           variant="filled"
           sx={{ fontSize: "1.1rem", padding: "0.5rem 3.5rem" }}
         >
-          {!movieToEdit.code
+          {!isToEdit
             ? "Movie Added Successfully!"
             : "Movie Updated Successfully!"}
         </Alert>

@@ -39,7 +39,7 @@ const SeriesPage = () => {
     };
 
     fetchSeriesData();
-  }, [refetchTrigger, page]);
+  }, [refetchTrigger, page, slug]);
 
   const refetchMovies = () => {
     setLoaded(true);
@@ -70,6 +70,7 @@ const SeriesPage = () => {
         movies={moviesRes.movies}
         totalPages={moviesRes.totalPages}
         refetch={refetchMovies}
+        serieData={moviesRes.movies[0].series}
         hideTags
       />
       <SeriesDialog

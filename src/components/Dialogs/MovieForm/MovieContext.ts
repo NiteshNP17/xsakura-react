@@ -4,7 +4,7 @@ import { MovieData } from "../../../utils/customTypes";
 
 interface MovieContextType {
   movieState: MovieData;
-  setMovieState: (movieState: MovieData) => void;
+  setMovieState: React.Dispatch<React.SetStateAction<MovieData>>;
   isToEdit: boolean;
 }
 

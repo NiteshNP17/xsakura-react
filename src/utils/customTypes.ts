@@ -20,7 +20,14 @@ export interface ActorData {
   dob: string | Date;
   height?: number;
   img500: string;
+  sizes: {
+    bust: number;
+    waist: number;
+    hips: number;
+  };
   numMovies: number;
+  yearsActive: number;
+  ageAtLatestRelease: number;
 }
 
 export interface SeriesItem {
@@ -55,4 +62,13 @@ export interface AlbumData {
   isNonNude: boolean;
   imageCount: number;
   slug: string;
+}
+
+export interface StudioItem {
+  slug: string;
+  name: string;
+  logo: string;
+  labels: string[];
+  movieCount: number;
+  web: string;
 }

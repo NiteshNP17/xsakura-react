@@ -1,5 +1,10 @@
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
-import { CircularProgress, IconButton, Pagination } from "@mui/material";
+import {
+  ButtonGroup,
+  CircularProgress,
+  IconButton,
+  Pagination,
+} from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
 import ActorForm from "../components/Dialogs/ActorForm";
@@ -12,6 +17,7 @@ import useKeyboardShortcut from "../utils/useKeyboardShortcut";
 import { ActorData } from "../utils/customTypes";
 import SortSelect from "../components/SortSelect";
 import config from "../utils/config";
+import { ArrowBack, Shuffle } from "@mui/icons-material";
 
 const Actors = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -28,6 +34,7 @@ const Actors = () => {
     urlParams.get("sortd") || localStorage.getItem("actorSortD") || "asc";
   const page = parseInt(urlParams.get("p") || "1");
   const [totalPages, setTotalPages] = useState(1);
+  const isRandom = urlParams.get("random");
 
   const refetchActors = () => {
     setRefetch((prev) => !prev);
@@ -59,7 +66,7 @@ const Actors = () => {
     const fetchActors = async () => {
       try {
         const res = await axios.get(
-          `${config.apiUrl}/actors?sort=${sort + sortDirection}&page=${page}`,
+          `${config.apiUrl}/actors?${isRandom ? "random" : `sort=${sort}&dir=${sortDirection}&page=${page}`}`,
         );
         setActors(res.data.actors);
         setTotalPages(res.data.totalPages);
@@ -78,7 +85,24 @@ const Actors = () => {
     }
 
     fetchActors();
-  }, [refetch, sort, urlParams, setUrlParams, sortDirection, page]);
+  }, [refetch, sort, urlParams, setUrlParams, sortDirection, page, isRandom]);
+
+  const handleRandom = () => {
+    if (isRandom) {
+      refetchActors();
+    } else {
+      const newSearchParams = new URLSearchParams(urlParams.toString());
+      newSearchParams.set("random", "true");
+      newSearchParams.delete("p");
+      setUrlParams(newSearchParams);
+    }
+  };
+
+  const handleRandomBack = () => {
+    const newSearchParams = new URLSearchParams(urlParams.toString());
+    newSearchParams.delete("random");
+    setUrlParams(newSearchParams);
+  };
 
   return (
     <div className="mb-12 px-[3vw]">
@@ -91,6 +115,14 @@ const Actors = () => {
       <div className="flex w-full justify-center">
         <div className="mb-4 mt-2 flex w-full max-w-[1660px] gap-2">
           <SortSelect type="actors" setLoaded={setIsLoaded} />
+          <ButtonGroup>
+            <IconButton onClick={handleRandom}>
+              <Shuffle />
+            </IconButton>
+            <IconButton onClick={handleRandomBack} disabled={!isRandom}>
+              <ArrowBack />
+            </IconButton>
+          </ButtonGroup>
         </div>
       </div>
       {isLoaded ? (

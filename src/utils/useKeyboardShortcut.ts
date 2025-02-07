@@ -1,3 +1,4 @@
+//utils/useKeyboardShortcut.ts
 import { useEffect, useCallback } from "react";
 
 type Modifier = "ctrl" | "shift" | "alt" | "meta";
@@ -14,8 +15,8 @@ const useKeyboardShortcut = ({ modifier, key, callback }: ShortcutOptions) => {
       const modifiers = Array.isArray(modifier)
         ? modifier
         : modifier
-        ? [modifier]
-        : [];
+          ? [modifier]
+          : [];
 
       const isModifierPressed = modifiers.every((mod) => event[`${mod}Key`]);
       const isKeyPressed = event.key.toLowerCase() === key.toLowerCase();
@@ -25,7 +26,7 @@ const useKeyboardShortcut = ({ modifier, key, callback }: ShortcutOptions) => {
         event.preventDefault();
       }
     },
-    [key, callback, modifier]
+    [key, callback, modifier],
   );
 
   useEffect(() => {

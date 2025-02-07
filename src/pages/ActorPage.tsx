@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
 import MovieList from "../components/movies/MovieList";
@@ -21,13 +21,15 @@ const ActorPage = () => {
   const [movies, setMovies] = useState<MovieData[]>([]);
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
-  const totalPagesRef = useRef<number>(0);
-  const totalMoviesRef = useRef<number>(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalMovies, setTotalMovies] = useState(0);
   const [searchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") || "1");
+  const sort = searchParams.get("sort") || "release";
   const [tabVal, setTabVal] = useState("1");
   const selectedTags = searchParams.get("tags");
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const isRandom = searchParams.get("random");
 
   const refetchMovies = () => {
     setRefetchTrigger((prev) => !prev);
@@ -38,7 +40,7 @@ const ActorPage = () => {
       // Fetch actor data
       try {
         const res = await axios.get(`${config.apiUrl}/actors/${actorName}`);
-        setActorData(res.data);
+        setActorData(res.data[0]);
       } catch (err) {
         console.log("Error: ", err);
       }
@@ -49,22 +51,35 @@ const ActorPage = () => {
         const res = await axios.get(
           `${config.apiUrl}/movies?${
             !isMale ? "cast=" + actorName : "mcast=" + actorName
-          }&sort=release${selectedTags ? "&tags=" + selectedTags : ""}&page=${page}`,
+          }${selectedTags ? "&tags=" + selectedTags : ""}` +
+            (!isRandom ? `&sort=${sort}&page=${page}` : "&random"),
         );
         setMovies(res.data.movies);
-        totalPagesRef.current = res.data.totalPages;
-        totalMoviesRef.current = res.data.totalMovies;
-        setLoaded(true);
+        console.log("res ov: ", res.data.movies[0].overrides);
+
+        setTotalPages(res.data.totalPages);
+        setTotalMovies(res.data.totalMovies);
       } catch (err) {
         console.error("error fetching movies: ", err);
+      } finally {
+        setLoaded(true);
       }
     };
 
     fetchActorData();
     fetchMovies();
-  }, [actorName, page, refetchTrigger, isLoaded, isMale, selectedTags]);
+  }, [
+    actorName,
+    page,
+    refetchTrigger,
+    isLoaded,
+    isMale,
+    selectedTags,
+    sort,
+    isRandom,
+  ]);
 
-  return (
+  return isLoaded && actorData?._id ? (
     <>
       <div className="mb-12 px-[3vw]">
         <div className="mb-4 mt-1 flex gap-2 px-1">
@@ -73,13 +88,24 @@ const ActorPage = () => {
             <Edit />
           </IconButton>
         </div>
-        {actorData.img500 && (
-          <div className="mx-auto max-w-80 md:mx-12">
-            <ActorCard
-              actor={actorData}
-              noLink
-              movieCount={totalMoviesRef.current}
-            />
+        {actorData?.img500 && (
+          <div className="flex flex-row">
+            <div className="mx-auto w-full max-w-80 md:mx-12">
+              <ActorCard actor={actorData} noLink movieCount={totalMovies} />
+            </div>
+            <div className="grid auto-rows-min grid-cols-2 gap-2 text-lg font-semibold">
+              <span className="opacity-75">Years Active</span>
+              {actorData.yearsActive}
+              {actorData.sizes?.bust && (
+                <>
+                  <span className="opacity-75">Sizes</span>
+                  <span>
+                    {actorData.sizes.bust}-{actorData.sizes.waist}-
+                    {actorData.sizes.hips}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
         )}
         <ActorForm
@@ -92,38 +118,44 @@ const ActorPage = () => {
           }}
         />
       </div>
-      {isLoaded ? (
-        <TabContext value={tabVal}>
-          <Box
-            sx={{
-              borderBottom: 1,
-              borderColor: "divider",
-              maxWidth: "1660px",
-              mx: "auto",
-            }}
-          >
-            <TabList onChange={(_e, newVal) => setTabVal(newVal)}>
-              <Tab label="Movies" value="1" />
-              <Tab label="Albums" value="2" />
-            </TabList>
-          </Box>
-          <TabPanel value="1" sx={{ p: 0 }}>
-            <MovieList
-              movies={movies}
-              totalPages={totalPagesRef.current}
-              refetch={refetchMovies}
-            />
-          </TabPanel>
-          <TabPanel value="2" sx={{ p: 0 }}>
-            <Albums model={actorData._id} />
-          </TabPanel>
-        </TabContext>
-      ) : (
-        <div className="grid h-32 w-full place-content-center">
-          <CircularProgress size="4rem" />
-        </div>
-      )}
+      <TabContext value={tabVal}>
+        <Box
+          sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+            maxWidth: "1660px",
+            mx: "auto",
+          }}
+        >
+          <TabList onChange={(_e, newVal) => setTabVal(newVal)}>
+            <Tab label="Movies" value="1" />
+            <Tab label="Albums" value="2" />
+          </TabList>
+        </Box>
+        <TabPanel value="1" sx={{ p: 0 }}>
+          <MovieList
+            movies={movies}
+            totalPages={totalPages}
+            refetch={refetchMovies}
+            actorData={actorData}
+          />
+        </TabPanel>
+        <TabPanel value="2" sx={{ p: 0 }}>
+          {actorData?._id && <Albums model={actorData._id} />}
+        </TabPanel>
+      </TabContext>
     </>
+  ) : isLoaded && !actorData?._id ? (
+    <div className="grid h-96 items-center justify-center">
+      <p className="text-xl opacity-90">
+        Actor <span className="font-semibold capitalize">{actorName}</span> not
+        found.
+      </p>
+    </div>
+  ) : (
+    <div className="grid h-96 w-full place-content-center">
+      <CircularProgress size="4rem" />
+    </div>
   );
 };
 

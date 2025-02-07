@@ -93,6 +93,7 @@ const MovieDialogBase: React.FC<MovieDialogBaseProps> = ({
       open={!open ? false : true}
       onClose={handleClose}
       fullScreen={isMobile}
+      scroll="body"
       PaperProps={{
         component: "form",
         onSubmit: handleSubmit,

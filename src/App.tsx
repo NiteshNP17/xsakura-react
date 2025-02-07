@@ -44,7 +44,6 @@ const App = () => {
         <Route path="/search" Component={pages.SearchPage} />
         <Route path="/series" Component={pages.Series} />
         <Route path="/studio" Component={pages.Studio} />
-        <Route path="/studio/:slug" Component={pages.StudioPage} />
         <Route path="/series/:slug" Component={pages.SeriesPage} />
         <Route path="/albums" Component={pages.Albums} />
         <Route path="/album/:slug" Component={pages.AlbumPage} />

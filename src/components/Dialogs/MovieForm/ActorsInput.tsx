@@ -23,7 +23,7 @@ const ActorsInput = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `${config.apiUrl}/actors?sort=moviecountdesc&list&q=${q}`,
+        `${config.apiUrl}/actors?sort=numMovies&dir=desc&list&q=${q}`,
       );
       const resData = await res.json();
       setOptions(resData.actors);
@@ -45,26 +45,13 @@ const ActorsInput = () => {
 
   return (
     <>
-      <div className="col-span-2 -mt-3 flex h-8 w-full items-center gap-1 overflow-x-scroll">
-        {selectedActorsF.length > 0 ? (
-          <MovieCastList
-            movieCast={selectedActorsF}
-            release={movieState.release?.length > 7 ? movieState.release : ""}
-            setMovieCast={setSelectedActorsF}
-          />
-        ) : (
-          <span className="w-full pt-4 text-center text-lg opacity-50 md:pt-0">
-            Actors
-          </span>
-        )}
-      </div>
       <Autocomplete
         id="f-actor-opts"
         open={open}
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
         loading={loading}
-        options={options}
+        options={options || []}
         multiple
         autoHighlight
         limitTags={1}
@@ -72,8 +59,8 @@ const ActorsInput = () => {
         getOptionLabel={(option) => option.name || ""}
         isOptionEqualToValue={(option, value) => option._id === value._id}
         onChange={(_e, newValue) => {
-          if (newValue && newValue.length > 0) {
-            const lastSelected = newValue[newValue.length - 1];
+          if (newValue && newValue?.length > 0) {
+            const lastSelected = newValue[newValue?.length - 1];
             if (lastSelected.name.startsWith('Add "')) {
               handleAddOption(lastSelected.name.slice(5, -1)); // Remove 'Add "' and '"'
             } else {
@@ -83,7 +70,7 @@ const ActorsInput = () => {
             setSelectedActorsF(newValue);
           }
         }}
-        onInputChange={(_e, val) => val.length > 2 && fetchOptions(val)}
+        onInputChange={(_e, val) => val?.length > 2 && fetchOptions(val)}
         // disableCloseOnSelect // Add this prop
         filterOptions={(options, params) => {
           const val = params.inputValue;
@@ -99,7 +86,7 @@ const ActorsInput = () => {
           const isExisting = options.some(
             (option) => inputValue === option.name,
           );
-          if (inputValue.length > 3 && !isExisting) {
+          if (inputValue?.length > 3 && !isExisting) {
             filtered.push({
               name: `Add "${inputValue}"`,
             } as ActorData);
@@ -118,6 +105,7 @@ const ActorsInput = () => {
             label="Actor(s)"
             variant="outlined"
             placeholder="Select Actresses"
+            sx={{ margin: "-1rem 0" }}
             InputProps={{
               ...params.InputProps,
               endAdornment: (
@@ -133,6 +121,19 @@ const ActorsInput = () => {
         )}
         renderTags={() => <></>}
       />
+      <div className="col-span-2 my-1 flex h-8 w-full flex-row-reverse items-center gap-1 overflow-x-scroll">
+        {selectedActorsF.length > 0 ? (
+          <MovieCastList
+            movieCast={selectedActorsF}
+            release={movieState.release?.length > 7 ? movieState.release : ""}
+            setMovieCast={setSelectedActorsF}
+          />
+        ) : (
+          <span className="w-full pt-4 text-center text-lg opacity-50 md:pt-0">
+            Actors
+          </span>
+        )}
+      </div>
       <ActorQuickAddDialog
         open={openQuickAdd}
         setOpen={setOpenQuickAdd}
