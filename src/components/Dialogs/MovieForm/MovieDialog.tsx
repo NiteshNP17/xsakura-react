@@ -8,6 +8,7 @@ import { formatNames } from "../../../utils/utils";
 import SeriesInput from "./SeriesInput";
 import { SeriesItem } from "../../../utils/customTypes";
 import OverridesInput from "./OverridesInput";
+import TagInput from "./TagInput";
 
 const MovieDialog = () => {
   const { movieState, setMovieState } = useContext(MovieContext);
@@ -19,7 +20,7 @@ const MovieDialog = () => {
         <MoviePreview />
         <CodeTitleInput />
       </div>
-      <div className="-mt-4 grid max-h-[470px] grid-cols-2 items-center gap-x-3 gap-y-0">
+      <div className="grid grid-cols-2 items-center gap-x-3 gap-y-3 sm:max-h-[420px] sm:gap-y-0">
         <TextField
           type="text"
           name="maleCast"
@@ -62,7 +63,8 @@ const MovieDialog = () => {
           variant="outlined"
           autoComplete="off"
         />
-        <TextField
+        <TagInput />
+        {/* <TextField
           type="text"
           name="tags"
           label="Tags"
@@ -79,7 +81,7 @@ const MovieDialog = () => {
           defaultValue={movieState.opt}
           variant="outlined"
           inputProps={{ autoCapitalize: "none", id: "opt-input" }}
-        />
+        /> */}
         <OverridesInput />
         <TextField
           id="title-input"

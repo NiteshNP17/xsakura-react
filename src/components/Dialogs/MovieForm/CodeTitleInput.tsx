@@ -67,7 +67,7 @@ const CodeTitleInput = () => {
   });
 
   return (
-    <div className="grid h-20 grid-cols-2 items-baseline gap-x-3">
+    <div className="mb-5 grid h-20 grid-cols-2 items-baseline gap-x-3 sm:mb-0">
       <TextField
         type="search"
         name="code"

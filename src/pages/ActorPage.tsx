@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
-import ActorCard from "../components/Actors/ActorCard";
+// import ActorCard from "../components/Actors/ActorCard";
 import MovieList from "../components/movies/MovieList";
 import { Box, CircularProgress, IconButton, Tab } from "@mui/material";
 import { ActorData, MovieData } from "../utils/customTypes";
@@ -10,6 +10,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import Albums from "./Albums";
 import ActorForm from "../components/Dialogs/ActorForm";
 import Edit from "@mui/icons-material/Edit";
+import ActorCardLarge from "../components/Actors/ActorCardLarge";
 
 const ActorPage = () => {
   const { name } = useParams<{ name: string }>();
@@ -82,31 +83,33 @@ const ActorPage = () => {
   return isLoaded && actorData?._id ? (
     <>
       <div className="mb-12 px-[3vw]">
-        <div className="mb-4 mt-1 flex gap-2 px-1">
-          <h1 className="text-3xl font-semibold capitalize">{actorName}</h1>
+        <div className="mx-4 mb-2 mt-1 flex gap-2 px-1">
+          {!actorData.img500 && (
+            <h1 className="text-3xl font-semibold capitalize">{actorName}</h1>
+          )}
           <IconButton onClick={() => setOpenEditDialog(true)}>
             <Edit />
           </IconButton>
         </div>
         {actorData?.img500 && (
-          <div className="flex flex-row">
-            <div className="mx-auto w-full max-w-80 md:mx-12">
-              <ActorCard actor={actorData} noLink movieCount={totalMovies} />
-            </div>
-            <div className="grid auto-rows-min grid-cols-2 gap-2 text-lg font-semibold">
-              <span className="opacity-75">Years Active</span>
-              {actorData.yearsActive}
-              {actorData.sizes?.bust && (
-                <>
-                  <span className="opacity-75">Sizes</span>
-                  <span>
-                    {actorData.sizes.bust}-{actorData.sizes.waist}-
-                    {actorData.sizes.hips}
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
+          <ActorCardLarge actor={actorData} movieCount={totalMovies} />
+          // <div className="flex w-full">
+          //   <div className="mx-auto min-w-96 md:mx-12">
+          //   </div>
+          //   <div className="grid auto-rows-min grid-cols-2 gap-2 text-lg font-semibold">
+          //     <span className="opacity-75">Years Active</span>
+          //     {actorData.yearsActive}
+          //     {actorData.sizes?.bust && (
+          //       <>
+          //         <span className="opacity-75">Sizes</span>
+          //         <span>
+          //           {actorData.sizes.bust}-{actorData.sizes.waist}-
+          //           {actorData.sizes.hips}
+          //         </span>
+          //       </>
+          //     )}
+          //   </div>
+          // </div>
         )}
         <ActorForm
           openEditDialog={openEditDialog}

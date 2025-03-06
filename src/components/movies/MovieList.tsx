@@ -13,23 +13,22 @@ import {
   SelectChangeEvent,
   Snackbar,
 } from "@mui/material";
-// import MovieForm from "../Dialogs/MovieForm/MovieForm";
 import MutateMenu from "../Dialogs/MutateMenu";
 import DeleteDialog from "../Dialogs/DeleteDialog";
 import useKeyboardShortcut from "../../utils/useKeyboardShortcut";
 import { ActorData, MovieData, SeriesItem } from "../../utils/customTypes";
 import MovieArticle from "./MovieArticle";
-import TagButtons from "./TagButtons";
 import MovieDialogBase from "../Dialogs/MovieForm/MovieDialogBase";
 import { MovieContext } from "../Dialogs/MovieForm/MovieContext";
 import { ArrowBack, Shuffle } from "@mui/icons-material";
 import CastButtons from "./CastButtons";
+import BatchAddDialog from "../Dialogs/BatchAddDialog";
+import FiltersAC from "./FiltersAC";
 
 interface MovieListProps {
   movies: MovieData[];
   totalPages: number;
   refetch: () => void;
-  hideTags?: boolean;
   actorData?: ActorData;
   actorStats?: ActorData[];
   serieData?: SeriesItem;
@@ -39,7 +38,6 @@ const MovieList: React.FC<MovieListProps> = ({
   movies,
   totalPages,
   refetch,
-  hideTags,
   actorData,
   actorStats,
   serieData,
@@ -47,6 +45,7 @@ const MovieList: React.FC<MovieListProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [movieToEdit, setMovieToEdit] = useState<MovieData>({} as MovieData);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
+  const [openBatchDialog, setOpenBatchDialog] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openSnack, setOpenSnack] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -120,6 +119,17 @@ const MovieList: React.FC<MovieListProps> = ({
         <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
+        <IconButton
+          color="primary"
+          onClick={() => {
+            setMovieToEdit({
+              cast: actorData ? [actorData] : [],
+            } as MovieData);
+            setOpenBatchDialog(true);
+          }}
+        >
+          <AddCircleOutline />
+        </IconButton>
         <div className="ml-auto flex items-center gap-2">
           <ButtonGroup>
             <IconButton onClick={handleRandom}>
@@ -149,8 +159,8 @@ const MovieList: React.FC<MovieListProps> = ({
           </FormControl>
         </div>
       </div>
-      {!hideTags && <TagButtons />}
       {actorStats && <CastButtons castList={actorStats} />}
+      <FiltersAC />
       <MovieContext.Provider
         value={{
           movieState: movieToEdit,
@@ -163,6 +173,11 @@ const MovieList: React.FC<MovieListProps> = ({
           setOpen={setOpenEditDialog}
           refetch={refetch}
           setOpenSnack={setOpenSnack}
+        />
+        <BatchAddDialog
+          openBatchDialog={openBatchDialog}
+          setOpenBatchDialog={setOpenBatchDialog}
+          refetch={refetch}
         />
       </MovieContext.Provider>
       <div className="grid-fit-2 mx-auto mb-12 mt-2 max-w-[1660px] gap-6">

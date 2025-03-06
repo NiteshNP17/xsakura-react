@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { formatHeight } from "../../utils/utils";
-import { Link, useSearchParams } from "react-router-dom";
+import { calculateAge, formatHeight, getRainbowColor } from "../../utils/utils";
+import { Link } from "react-router-dom";
 import { ActorData } from "../../utils/customTypes";
 
 interface ActorCardProps {
@@ -18,11 +18,12 @@ const ActorCard: React.FC<ActorCardProps> = ({
 }) => {
   // const myAge = new Date("1997-11-02T00:00:00Z");
   const dobDate = actor.dob ? new Date(actor.dob) : undefined;
+  const latestRelDate = actor.latestMovieDate
+    ? new Date(actor.latestMovieDate)
+    : undefined;
   const blankImg =
     "https://upload.wikimedia.org/wikipedia/commons/5/53/Blank_woman_placeholder.svg";
   const [showBlank, setShowBlank] = useState<boolean>(false);
-  const [urlParams] = useSearchParams();
-  const sort = urlParams.get("sort");
 
   useEffect(() => {
     if (actor.img500) {
@@ -82,7 +83,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
             {dobDate && (
               <p>
                 <span className="font-semibold opacity-80">
-                  {actor.ageAtLatestRelease}
+                  {calculateAge(dobDate, latestRelDate || new Date())}
                 </span>{" "}
                 <span className="text-sm opacity-65">
                   {actor.dob.toString().slice(2, 7)}
@@ -95,17 +96,28 @@ const ActorCard: React.FC<ActorCardProps> = ({
                 </span>
               </p>
             )}
-            {sort === "active" ? (
-              <p className="font-semibold opacity-80">{actor.yearsActive}</p>
-            ) : (
-              actor.height && (
-                <p>
-                  <span className="font-semibold opacity-80">
-                    {formatHeight(actor.height)}
-                  </span>
-                  <span className="text-sm opacity-50"> {actor.height}</span>
-                </p>
-              )
+            {actor.cup && (
+              <p>
+                <span
+                  className={
+                    getRainbowColor(actor.cup) + " uppercase opacity-95"
+                  }
+                >
+                  {actor.cup}
+                </span>
+                <span className="text-sm opacity-50">
+                  {" "}
+                  {actor.sizes.bust}-{actor.sizes.waist}-{actor.sizes.hips}
+                </span>
+              </p>
+            )}
+            {actor.height && (
+              <p>
+                <span className="font-semibold opacity-80">
+                  {formatHeight(actor.height)}
+                </span>
+                <span className="text-sm opacity-50"> {actor.height}</span>
+              </p>
             )}
           </div>
         </ActorLink>

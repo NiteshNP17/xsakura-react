@@ -6,12 +6,18 @@ export interface MovieData {
   release: string;
   runtime: number;
   tags: string[];
+  tag2: Tag[];
   opt: string[];
   series: SeriesItem;
   overrides: {
     cover: string;
     preview: string;
   };
+}
+
+export interface Tag {
+  _id: string;
+  name: string;
 }
 
 export interface ActorData {
@@ -27,7 +33,8 @@ export interface ActorData {
   };
   numMovies: number;
   yearsActive: number;
-  ageAtLatestRelease: number;
+  latestMovieDate: string;
+  cup: string;
 }
 
 export interface SeriesItem {

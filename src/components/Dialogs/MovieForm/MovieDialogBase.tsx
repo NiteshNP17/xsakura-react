@@ -41,9 +41,11 @@ const MovieDialogBase: React.FC<MovieDialogBaseProps> = ({
     const formData = new FormData(e.target as HTMLFormElement);
     const dataToPost = Object.fromEntries(formData);
     const castArray = movieState.cast.map((actorData) => actorData._id);
+    const tagsArray = movieState.tag2.map((tag) => tag._id);
 
     dataToPost.code = movieState.code;
     dataToPost.cast = JSON.stringify(castArray);
+    dataToPost.tag2 = JSON.stringify(tagsArray);
     dataToPost.series = movieState.series ? movieState.series._id : "";
 
     if (!isToEdit) {

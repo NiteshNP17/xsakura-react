@@ -152,21 +152,31 @@ const ActorForm: React.FC<ActorFormProps> = ({
                   })
                 }
               />
-              <div className="col-span-2 grid">
-                <TextField
-                  type="url"
-                  name="img500"
-                  label="Image URL"
-                  defaultValue={formFields.img500}
-                  onChange={(e) =>
-                    e.target.value.trim().length > 25 &&
-                    setFormFields({
-                      ...formFields,
-                      img500: e.target.value.toLowerCase().trim(),
-                    })
-                  }
-                />
-              </div>
+              <TextField
+                type="url"
+                name="img500"
+                label="Image URL"
+                defaultValue={formFields.img500}
+                onChange={(e) =>
+                  e.target.value.trim().length > 25 &&
+                  setFormFields({
+                    ...formFields,
+                    img500: e.target.value.toLowerCase().trim(),
+                  })
+                }
+              />
+              <TextField
+                type="text"
+                name="cup"
+                label="Cup"
+                defaultValue={formFields.cup}
+                onChange={(e) =>
+                  setFormFields({
+                    ...formFields,
+                    cup: e.target.value.toLowerCase().trim(),
+                  })
+                }
+              />
               <TextField
                 type="number"
                 name="height"

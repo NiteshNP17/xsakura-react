@@ -7,13 +7,14 @@ import PlayCircleOutline from "@mui/icons-material/PlayCircleOutline";
 import axios from "axios";
 import config from "../../../utils/config";
 import { MovieContext } from "./MovieContext";
-import { Alert, Snackbar } from "@mui/material";
+import { Alert, MenuItem, Select, Snackbar } from "@mui/material";
 import useKeyboardShortcut from "../../../utils/useKeyboardShortcut";
 
 const MoviePreview = () => {
   const [isChecked, setIsChecked] = useState(false);
   const { movieState, setMovieState } = useContext(MovieContext);
   const [openSnack, setOpenSnack] = useState(false);
+  const [scrapeSource, setScrapeSource] = useState("jd");
   const isFc2 =
     movieState.code?.startsWith("fc2") || movieState.code?.startsWith("kb");
 
@@ -27,27 +28,35 @@ const MoviePreview = () => {
     e?.preventDefault();
     try {
       const res = await axios.get(
-        `${config.apiUrl}/lookups/scrape${!isChecked && !isFc2 ? "-jt" : ""}?code=${movieState.code}`,
+        `${config.apiUrl}/lookups/scrape${scrapeSource !== "nj" && !isFc2 ? "-" + scrapeSource : ""}?code=${movieState.code}`,
       );
+
+      const mrUrl = `https://fourhoi.com/${movieState.code}-uncensored-leak/preview.mp4`;
       setMovieState({
         ...movieState,
         title: res.data.title,
         release: res.data.relDate,
         runtime: res.data.runtime,
+        tag2:
+          res.data.isMr && !movieState?.tag2?.some((tag) => tag.name === "MR")
+            ? [
+                ...(movieState.tag2 || []), // Use empty array if tag2 is undefined
+                { _id: "67c3f414b4e420283fdcf289", name: "MR" },
+              ]
+            : movieState.tag2 || [],
         overrides: {
-          // ...movieState.overrides,
           cover: `http://javpop.com/img/${movieState.code.split("-")[0]}/${movieState.code}_poster.jpg`,
-          preview: `https://fourhoi.com/${movieState.code}-uncensored-leak/preview.mp4`,
+          preview: res.data.isMr ? mrUrl : "",
         },
       });
-      (document.getElementById("opt-input") as HTMLInputElement).value = "mr";
 
       if (movieState.cast.length === 0) {
         (document.getElementById("f-actor-opts") as HTMLInputElement).focus();
       } else {
-        (document.getElementById("tags-input") as HTMLInputElement).focus();
+        (document.getElementById("f-tags-input") as HTMLInputElement).focus();
       }
     } catch (err) {
+      console.error("scraping error: ", err);
       setOpenSnack(true);
     }
   };
@@ -63,7 +72,7 @@ const MoviePreview = () => {
               isForm
             />
           ) : (
-            <div className="grid aspect-[3/1.98] w-full place-content-center bg-slate-200 text-center text-2xl font-semibold text-slate-400 dark:bg-zinc-600">
+            <div className="grid aspect-[3/1.9] w-full place-content-center bg-slate-200 text-center text-2xl font-semibold text-slate-400 dark:bg-zinc-600">
               ENTER CODE
               <br />
               TO SEE PREVIEW
@@ -83,6 +92,16 @@ const MoviePreview = () => {
           onChange={(e) => setIsChecked(e.target.checked)}
         />
         <span>Trailer</span>
+        <Select
+          variant="standard"
+          value={scrapeSource}
+          onChange={(e) => setScrapeSource(e.target.value)}
+          sx={{ position: "absolute", right: "3rem", px: 1 }}
+        >
+          <MenuItem value="jt">JT</MenuItem>
+          <MenuItem value="jd">JD</MenuItem>
+          <MenuItem value="nj">NJ</MenuItem>
+        </Select>
         <IconButton
           onClick={handleBtnClick}
           sx={{ position: "absolute", right: "0.25rem" }}

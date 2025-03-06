@@ -5,7 +5,6 @@ import { useSearchParams } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { ActorData, MovieData } from "../utils/customTypes";
 import config from "../utils/config";
-// import { Autocomplete, TextField } from "@mui/material";
 
 const Movies = () => {
   const [totalPages, setTotalPages] = useState(1);
@@ -31,13 +30,13 @@ const Movies = () => {
     const fetchMovies = async () => {
       try {
         const res = await axios.get(
-          `${config.apiUrl}/movies?${label ? "label=" + label + "&" : ""}${studio ? "studio=" + studio + "&" : ""}${selectedCast ? "cast=" + selectedCast + "&" : ""}${selectedTags ? "&tags=" + selectedTags + "&" : ""}` +
+          `${config.apiUrl}/movies?${label ? "label=" + label + "&" : ""}${studio ? "studio=" + studio + "&" : ""}${selectedCast ? "cast=" + selectedCast + "&" : ""}${selectedTags ? "tags=" + selectedTags + "&" : ""}` +
             (!isRandom ? `sort=${sort}&page=${page}` : "random"),
         );
 
         console.log(
           "api: ",
-          `${config.apiUrl}/movies?${label ? "label=" + label + "&" : ""}${studio ? "studio=" + studio + "&" : ""}${selectedCast ? "cast=" + selectedCast + "&" : ""}${selectedTags ? "&tags=" + selectedTags + "&" : ""}` +
+          `${config.apiUrl}/movies?${label ? "label=" + label + "&" : ""}${studio ? "studio=" + studio + "&" : ""}${selectedCast ? "cast=" + selectedCast + "&" : ""}${selectedTags ? "tags=" + selectedTags + "&" : ""}` +
             (!isRandom ? `sort=${sort}&page=${page}` : "random"),
         );
 

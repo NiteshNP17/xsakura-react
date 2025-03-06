@@ -6,7 +6,7 @@ import { MovieData } from "../../../utils/customTypes";
 
 const OverridesInput = () => {
   const { movieState, setMovieState } = useContext(MovieContext);
-  const optInput = document.getElementById("opt-input") as HTMLInputElement;
+  // const optInput = document.getElementById("opt-input") as HTMLInputElement;
 
   useEffect(() => {
     setMovieState((prevState: MovieData): MovieData => {
@@ -27,6 +27,7 @@ const OverridesInput = () => {
         options={[
           `http://javpop.com/img/${movieState?.code?.split("-")[0]}/${movieState?.code}_poster.jpg`,
           `https://fourhoi.com/${movieState?.code}/cover-t.jpg`,
+          `https://pics.pornfhd.com/s/digital/video/${movieState?.code?.split("-")[0]}00${movieState?.code?.split("-")[1]}/${movieState?.code?.split("-")[0]}00${movieState?.code?.split("-")[1]}pl.jpg`,
         ]}
         value={movieState.overrides?.cover || ""}
         onChange={(_e, newValue) => {
@@ -69,14 +70,19 @@ const OverridesInput = () => {
             setMovieState({
               ...movieState,
               overrides: { ...movieState.overrides, preview: newValue },
+              tag2: [
+                ...(movieState.tag2 || []),
+                { _id: "67c3f414b4e420283fdcf289", name: "MR" },
+              ],
             });
-            optInput.value = "mr";
           } else {
             setMovieState({
               ...movieState,
               overrides: { ...movieState.overrides, preview: "" },
+              tag2: movieState.tag2.filter(
+                (tag) => tag._id !== "67c3f414b4e420283fdcf289",
+              ),
             });
-            optInput.value = "";
           }
         }}
         renderInput={(params) => (

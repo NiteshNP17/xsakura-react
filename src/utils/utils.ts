@@ -149,6 +149,31 @@ async function movieExists(movieCode: string) {
   }
 }
 
+const getRainbowColor = (letter: string): string => {
+  // Normalize the letter to lowercase
+  const char = letter.toLowerCase();
+
+  // Define the rainbow color mapping
+  const colorMap: { [key: string]: string } = {
+    a: "text-indigo-400 dark:text-indigo-300",
+    b: "text-blue-500 dark:text-blue-300",
+    c: "text-cyan-500",
+    d: "text-emerald-500 dark:text-emerald-400",
+    e: "text-green-500",
+    f: "text-lime-400",
+    g: "text-yellow-400",
+    h: "text-amber-500",
+    i: "text-orange-500",
+    j: "text-orange-600",
+    k: "text-red-500",
+    l: "text-red-600",
+    m: "text-rose-500",
+  };
+
+  // Return the color if the letter exists, otherwise return a default color
+  return colorMap[char] + " font-semibold" || "text-gray-500";
+};
+
 export {
   formatNames,
   formatCode,
@@ -156,4 +181,5 @@ export {
   ageCompare,
   formatHeight,
   movieExists,
+  getRainbowColor,
 };

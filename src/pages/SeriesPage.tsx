@@ -71,7 +71,6 @@ const SeriesPage = () => {
         totalPages={moviesRes.totalPages}
         refetch={refetchMovies}
         serieData={moviesRes.movies[0].series}
-        hideTags
       />
       <SeriesDialog
         open={openSeriesDialog}
