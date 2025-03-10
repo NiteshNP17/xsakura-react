@@ -107,7 +107,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
                 </span>
                 <span className="text-sm hidden md:inline opacity-50">
                   {" "}
-                  {actor.sizes.bust}-{actor.sizes.waist}-{actor.sizes.hips}
+                  {actor.sizes?.bust}-{actor.sizes?.waist}-{actor.sizes?.hips}
                 </span>
               </p>
             )}
