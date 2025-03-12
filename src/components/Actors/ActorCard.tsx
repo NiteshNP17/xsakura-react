@@ -96,8 +96,8 @@ const ActorCard: React.FC<ActorCardProps> = ({
                 </span>
               </p>
             )}
-            {actor.cup && (
-              <p>
+            <p>
+              {actor.cup && (
                 <span
                   className={
                     getRainbowColor(actor.cup) + " uppercase opacity-95"
@@ -105,12 +105,14 @@ const ActorCard: React.FC<ActorCardProps> = ({
                 >
                   {actor.cup}
                 </span>
+              )}
+              {actor.sizes?.bust && (
                 <span className="hidden text-sm opacity-50 md:inline">
                   {" "}
                   {actor.sizes?.bust}-{actor.sizes?.waist}-{actor.sizes?.hips}
                 </span>
-              </p>
-            )}
+              )}
+            </p>
             {actor.height && (
               <p>
                 <span className="font-semibold opacity-80">
