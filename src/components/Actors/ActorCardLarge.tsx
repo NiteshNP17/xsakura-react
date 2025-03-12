@@ -86,10 +86,12 @@ const ActorCardLarge: React.FC<ActorCardLargeProps> = ({
                   </span>
                 </TableCell>
               )}
-              {actor.sizes?.bust && (
+              {actor.sizes?.bust ? (
                 <TableCell>
                   {actor.sizes.bust}-{actor.sizes.waist}-{actor.sizes.hips}
                 </TableCell>
+              ) : (
+                <TableCell> </TableCell>
               )}
             </TableRow>
             {actor.height && (

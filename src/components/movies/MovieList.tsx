@@ -16,7 +16,7 @@ import {
 import MutateMenu from "../Dialogs/MutateMenu";
 import DeleteDialog from "../Dialogs/DeleteDialog";
 import useKeyboardShortcut from "../../utils/useKeyboardShortcut";
-import { ActorData, MovieData, SeriesItem } from "../../utils/customTypes";
+import { ActorData, MovieData, SeriesItem, Tag } from "../../utils/customTypes";
 import MovieArticle from "./MovieArticle";
 import MovieDialogBase from "../Dialogs/MovieForm/MovieDialogBase";
 import { MovieContext } from "../Dialogs/MovieForm/MovieContext";
@@ -83,6 +83,7 @@ const MovieList: React.FC<MovieListProps> = ({
       setMovieToEdit({
         cast: actorData ? [actorData] : [],
         series: serieData,
+        tag2: [] as Tag[],
       } as MovieData);
       setToEdit(false);
       const scrollPos = window.scrollY;

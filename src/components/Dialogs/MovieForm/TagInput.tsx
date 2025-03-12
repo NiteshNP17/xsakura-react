@@ -45,7 +45,7 @@ const TagInput = () => {
       isOptionEqualToValue={(option, value) => option._id === value._id}
       onChange={(_e, newValue) => {
         if (newValue) {
-          setMovieState({ ...movieState, tag2: newValue });
+          setMovieState({ ...movieState, tag2: newValue || [] });
         }
       }}
       renderInput={(params) => (

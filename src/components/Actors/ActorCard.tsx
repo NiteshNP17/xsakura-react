@@ -105,10 +105,12 @@ const ActorCard: React.FC<ActorCardProps> = ({
                 >
                   {actor.cup}
                 </span>
-                <span className="text-sm opacity-50">
-                  {" "}
-                  {actor.sizes.bust}-{actor.sizes.waist}-{actor.sizes.hips}
-                </span>
+                {actor.sizes?.bust && (
+                  <span className="text-sm opacity-50">
+                    {" "}
+                    {actor.sizes.bust}-{actor.sizes.waist}-{actor.sizes.hips}
+                  </span>
+                )}
               </p>
             )}
             {actor.height && (
