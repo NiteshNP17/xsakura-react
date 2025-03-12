@@ -85,7 +85,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
                 <span className="font-semibold opacity-80">
                   {calculateAge(dobDate, latestRelDate || new Date())}
                 </span>{" "}
-                <span className="text-sm opacity-65">
+                <span className="hidden text-sm opacity-65 md:inline">
                   {actor.dob.toString().slice(2, 7)}
                   {/* {dobDate.getDate()}-
                   {dobDate.toLocaleString("default", { month: "short" })}-
@@ -105,12 +105,10 @@ const ActorCard: React.FC<ActorCardProps> = ({
                 >
                   {actor.cup}
                 </span>
-                {actor.sizes?.bust && (
-                  <span className="text-sm opacity-50">
-                    {" "}
-                    {actor.sizes.bust}-{actor.sizes.waist}-{actor.sizes.hips}
-                  </span>
-                )}
+                <span className="hidden text-sm opacity-50 md:inline">
+                  {" "}
+                  {actor.sizes?.bust}-{actor.sizes?.waist}-{actor.sizes?.hips}
+                </span>
               </p>
             )}
             {actor.height && (
@@ -118,7 +116,10 @@ const ActorCard: React.FC<ActorCardProps> = ({
                 <span className="font-semibold opacity-80">
                   {formatHeight(actor.height)}
                 </span>
-                <span className="text-sm opacity-50"> {actor.height}</span>
+                <span className="hidden text-sm opacity-50 md:inline">
+                  {" "}
+                  {actor.height}
+                </span>
               </p>
             )}
           </div>
