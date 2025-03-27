@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import ActorCard from "../components/Actors/ActorCard";
-import ActorForm from "../components/Dialogs/ActorForm";
+import ActorForm from "../components/Dialogs/ActorForm/ActorForm";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MutateMenu from "../components/Dialogs/MutateMenu";

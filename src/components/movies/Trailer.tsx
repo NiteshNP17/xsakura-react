@@ -92,7 +92,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
       }
     };
 
-    if (codeLabel === "rebd" && codeNumInt < 700) {
+    if (codeLabel === "rebd") {
       const dlNum = `dl0${codeNumInt > 873 ? "3" : codeNumInt > 500 ? "2" : "1"}`;
       const rebdBaseSrc = `https://file.rebecca-web.com/media/videos/${dlNum}/rebd_${codeNum}/`;
       const rebdVidSrc = rebdBaseSrc + "movie.mp4";
@@ -128,8 +128,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
   };
 
   return isLoaded ? (
-    (codeLabel === "rebd" && parseInt(codeNum) < 700) ||
-    codeLabel === "kidm" ? (
+    codeLabel === "rebd" || codeLabel === "kidm" ? (
       <video
         src={videoSrc}
         poster={posterSrc}

@@ -1,11 +1,13 @@
 import { Button, Dialog, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import ActorCard from "../Actors/ActorCard";
+import ActorCard from "../../Actors/ActorCard";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
-import config from "../../utils/config";
-import { ActorData } from "../../utils/customTypes";
+import config from "../../../utils/config";
+import { ActorData } from "../../../utils/customTypes";
 import { useLocation, useNavigate } from "react-router-dom";
+import ImgInput from "./ImgInput";
+import FetchActorDataButton from "./FetchActorDataButton";
 
 interface ActorFormProps {
   openEditDialog: boolean;
@@ -34,6 +36,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [formFields, setFormFields] = useState({} as EditData);
+  const [cachedData, setCachedData] = useState({} as EditData);
   const path = useLocation().pathname;
   const navigate = useNavigate();
 
@@ -41,6 +44,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
     // setFormFields({} as ActorData);
     setLoading(false);
     setOpenEditDialog(false);
+    setCachedData({} as EditData);
   };
 
   useEffect(() => {
@@ -143,7 +147,13 @@ const ActorForm: React.FC<ActorFormProps> = ({
                 name="dob"
                 label="Birthdate"
                 autoComplete="off"
-                defaultValue={formFields.dob}
+                value={formFields.dob || ""}
+                onChange={(e) =>
+                  setFormFields({
+                    ...formFields,
+                    dob: e.target.value.trim(),
+                  })
+                }
                 onBlur={(e) =>
                   e.target.value.trim().length > 3 &&
                   setFormFields({
@@ -151,45 +161,65 @@ const ActorForm: React.FC<ActorFormProps> = ({
                     dob: e.target.value.trim(),
                   })
                 }
+                InputProps={{
+                  endAdornment: (
+                    <FetchActorDataButton
+                      type="dob"
+                      formFields={formFields}
+                      setFormFields={setFormFields}
+                      cachedData={cachedData}
+                      setCachedData={setCachedData}
+                    />
+                  ),
+                }}
               />
-              <TextField
-                type="url"
-                name="img500"
-                label="Image URL"
-                defaultValue={formFields.img500}
-                onChange={(e) =>
-                  e.target.value.trim().length > 25 &&
-                  setFormFields({
-                    ...formFields,
-                    img500: e.target.value.toLowerCase().trim(),
-                  })
-                }
-              />
+              <ImgInput values={formFields} setValues={setFormFields} />
               <TextField
                 type="text"
                 name="cup"
                 label="Cup"
-                defaultValue={formFields.cup}
+                value={formFields.cup || ""}
                 onChange={(e) =>
                   setFormFields({
                     ...formFields,
                     cup: e.target.value.toLowerCase().trim(),
                   })
                 }
+                InputProps={{
+                  endAdornment: (
+                    <FetchActorDataButton
+                      type="cup"
+                      formFields={formFields}
+                      setFormFields={setFormFields}
+                      cachedData={cachedData}
+                      setCachedData={setCachedData}
+                    />
+                  ),
+                }}
               />
               <TextField
                 type="number"
                 name="height"
                 label="Height"
                 placeholder="Height in CM"
-                defaultValue={formFields.height}
+                value={formFields.height}
                 onChange={(e) =>
-                  e.target.value.trim().length > 2 &&
                   setFormFields({
                     ...formFields,
                     height: parseInt(e.target.value),
                   })
                 }
+                InputProps={{
+                  endAdornment: (
+                    <FetchActorDataButton
+                      type="height"
+                      formFields={formFields}
+                      setFormFields={setFormFields}
+                      cachedData={cachedData}
+                      setCachedData={setCachedData}
+                    />
+                  ),
+                }}
               />
               <TextField
                 type="text"
@@ -197,14 +227,24 @@ const ActorForm: React.FC<ActorFormProps> = ({
                 label="3 Sizes"
                 placeholder="BB-WW-HH"
                 autoComplete="off"
-                defaultValue={formFields.sizes}
+                value={formFields.sizes}
                 onChange={(e) =>
-                  e.target.value.trim().length > 2 &&
                   setFormFields({
                     ...formFields,
                     sizes: e.target.value,
                   })
                 }
+                InputProps={{
+                  endAdornment: (
+                    <FetchActorDataButton
+                      type="sizes"
+                      formFields={formFields}
+                      setFormFields={setFormFields}
+                      cachedData={cachedData}
+                      setCachedData={setCachedData}
+                    />
+                  ),
+                }}
               />
             </div>
           </div>

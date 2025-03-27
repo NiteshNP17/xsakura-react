@@ -39,16 +39,7 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
           <Link to="/" className="logoText">
             Xsakura
           </Link>
-          <nav>
-            <Button
-              component={Link}
-              to="/"
-              color={path === "/" ? "primary" : "secondary"}
-              size="large"
-              disableRipple
-            >
-              Home
-            </Button>
+          <nav className="overflow-scroll text-nowrap">
             <Button
               component={Link}
               to="/movies?sort=added"
@@ -66,6 +57,15 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
               disableRipple
             >
               Actors
+            </Button>
+            <Button
+              component={Link}
+              to="/studio"
+              color={path.includes("/studio") ? "primary" : "secondary"}
+              size="large"
+              disableRipple
+            >
+              Studios
             </Button>
             <Button
               component={Link}
@@ -87,21 +87,21 @@ const Navbar: React.FC<NavbarProps> = ({ setMode, themeMode }) => {
             </Button>
             <Button
               component={Link}
-              to="/studio"
-              color={path.includes("/studio") ? "primary" : "secondary"}
-              size="large"
-              disableRipple
-            >
-              Studios
-            </Button>
-            <Button
-              component={Link}
               to="/albums"
               color={path.includes("/albums") ? "primary" : "secondary"}
               size="large"
               disableRipple
             >
               Albums
+            </Button>
+            <Button
+              component={Link}
+              to="/"
+              color={path === "/" ? "primary" : "secondary"}
+              size="large"
+              disableRipple
+            >
+              Home
             </Button>
           </nav>
         </>

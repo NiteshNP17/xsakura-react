@@ -150,6 +150,7 @@ async function movieExists(movieCode: string) {
 }
 
 const getRainbowColor = (letter: string): string => {
+  if (!letter) return "font-semibold";
   // Normalize the letter to lowercase
   const char = letter.toLowerCase();
 
@@ -168,6 +169,7 @@ const getRainbowColor = (letter: string): string => {
     k: "text-red-500",
     l: "text-red-600",
     m: "text-rose-500",
+    q: "text-pink-600",
   };
 
   // Return the color if the letter exists, otherwise return a default color

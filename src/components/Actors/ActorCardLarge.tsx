@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { ActorData } from "../../utils/customTypes";
-import { Divider, Table, TableCell, TableRow } from "@mui/material";
+import {
+  Divider,
+  Table,
+  TableCell,
+  TableRow,
+  useMediaQuery,
+} from "@mui/material";
 import { calculateAge, formatHeight, getRainbowColor } from "../../utils/utils";
 
 interface ActorCardLargeProps {
@@ -18,6 +24,7 @@ const ActorCardLarge: React.FC<ActorCardLargeProps> = ({
 
   const [showBlank, setShowBlank] = useState<boolean>(false);
   const tbFontLg = { fontSize: "1.1rem", fontWeight: 600 };
+  const isMobile = useMediaQuery("(max-width:660px)");
 
   useEffect(() => {
     if (actor.img500) {
@@ -69,23 +76,31 @@ const ActorCardLarge: React.FC<ActorCardLargeProps> = ({
               </p>
             </div>*/}
           <Table>
+            {actor.dob && (
+              <TableRow>
+                <TableCell align="right" sx={tbFontLg}>
+                  {calculateAge(
+                    new Date(actor.dob),
+                    new Date(actor.latestMovieDate),
+                  )}
+                </TableCell>
+                <TableCell>
+                  {isMobile
+                    ? actor.dob.toString().slice(2)
+                    : actor.dob.toString()}
+                </TableCell>
+              </TableRow>
+            )}
             <TableRow>
               <TableCell align="right" sx={tbFontLg}>
-                {calculateAge(
-                  new Date(actor.dob),
-                  new Date(actor.latestMovieDate),
-                )}
+                <span
+                  className={
+                    actor.cup ? getRainbowColor(actor.cup) : "" + " text-xl"
+                  }
+                >
+                  {actor.cup || ""}
+                </span>
               </TableCell>
-              <TableCell>{actor.dob.toString()}</TableCell>
-            </TableRow>
-            <TableRow>
-              {actor.cup && (
-                <TableCell align="right" sx={tbFontLg}>
-                  <span className={getRainbowColor(actor.cup) + " text-xl"}>
-                    {actor.cup}
-                  </span>
-                </TableCell>
-              )}
               {actor.sizes?.bust ? (
                 <TableCell>
                   {actor.sizes.bust}-{actor.sizes.waist}-{actor.sizes.hips}

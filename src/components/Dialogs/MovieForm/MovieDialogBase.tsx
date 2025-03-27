@@ -55,7 +55,11 @@ const MovieDialogBase: React.FC<MovieDialogBaseProps> = ({
         refetch();
         setOpenSnack(true);
       } catch (err) {
-        alert("Error adding movie: " + err);
+        if (String(err).endsWith("409")) {
+          alert("Movie already exists!");
+        } else {
+          alert("Error adding movie: " + err);
+        }
       } finally {
         setLoading(false);
       }

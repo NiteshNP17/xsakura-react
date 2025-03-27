@@ -50,7 +50,9 @@ const MoviePage = () => {
         <IconButton color="primary" onClick={() => setOpenPrefixDialog(true)}>
           <AddCircleOutline />
         </IconButton>
-        <h2 className="overflow-x-scroll text-xl">{movieData.title}</h2>
+        <h2 className="overflow-x-scroll text-nowrap text-xl">
+          {movieData.title}
+        </h2>
       </div>
       <div className="grid gap-4 sm:grid-cols-6">
         <div className="col-span-6 sm:col-span-4">

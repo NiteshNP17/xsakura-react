@@ -8,9 +8,11 @@ import { ActorData, MovieData } from "../utils/customTypes";
 import config from "../utils/config";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import Albums from "./Albums";
-import ActorForm from "../components/Dialogs/ActorForm";
+import ActorForm from "../components/Dialogs/ActorForm/ActorForm";
 import Edit from "@mui/icons-material/Edit";
 import ActorCardLarge from "../components/Actors/ActorCardLarge";
+import { Delete } from "@mui/icons-material";
+import DeleteDialog from "../components/Dialogs/DeleteDialog";
 
 const ActorPage = () => {
   const { name } = useParams<{ name: string }>();
@@ -30,6 +32,7 @@ const ActorPage = () => {
   const [tabVal, setTabVal] = useState("1");
   const selectedTags = searchParams.get("tags");
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const isRandom = searchParams.get("random");
 
   const refetchMovies = () => {
@@ -90,6 +93,9 @@ const ActorPage = () => {
           <IconButton onClick={() => setOpenEditDialog(true)}>
             <Edit />
           </IconButton>
+          <IconButton onClick={() => setOpenDeleteDialog(true)}>
+            <Delete color="error" />
+          </IconButton>
         </div>
         {actorData?.img500 && (
           <ActorCardLarge actor={actorData} movieCount={totalMovies} />
@@ -119,6 +125,13 @@ const ActorPage = () => {
             actor: actorData,
             id: Math.random().toString(),
           }}
+        />
+        <DeleteDialog
+          type="actors"
+          deleteId={{ id: actorData.name, uId: Math.random().toString() }}
+          refetch={refetchMovies}
+          open={openDeleteDialog}
+          setOpen={setOpenDeleteDialog}
         />
       </div>
       <TabContext value={tabVal}>

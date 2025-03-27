@@ -6,7 +6,7 @@ import { useState } from "react";
 import config from "../../utils/config";
 
 interface DeleteDialogProps {
-  type: string;
+  type: "actors" | "movies";
   deleteId: { id: string; uId: string };
   open: boolean;
   setOpen: (open: boolean) => void;

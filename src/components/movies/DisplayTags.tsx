@@ -35,12 +35,14 @@ const DisplayTags = ({ tags }: { tags: Tag[] }) => {
         </span>
       )}
       {tagNames?.includes("POV") && (
-        <span className="font-semibold text-red-500">
+        <span className="font-semibold text-red-400">
           <VideoCameraFrontTwoTone color="inherit" />
         </span>
       )}
       {tagNames?.includes("UN") && (
-        <span className="font-black text-rose-500">🍆</span>
+        <span className="font-black text-rose-500">
+          <AutoAwesomeMosaicTwoTone color="inherit" />
+        </span>
       )}
       {tagNames?.includes("Ass Lover") && (
         <span className="text-xs">

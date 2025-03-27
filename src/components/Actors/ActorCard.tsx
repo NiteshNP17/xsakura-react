@@ -97,15 +97,13 @@ const ActorCard: React.FC<ActorCardProps> = ({
               </p>
             )}
             <p>
-              {actor.cup && (
-                <span
-                  className={
-                    getRainbowColor(actor.cup) + " uppercase opacity-95"
-                  }
-                >
-                  {actor.cup}
-                </span>
-              )}
+              <span
+                className={`uppercase opacity-95 ${
+                  actor.cup ? getRainbowColor(actor.cup) : ""
+                }`}
+              >
+                {actor.cup || ""}
+              </span>
               {actor.sizes?.bust && (
                 <span className="hidden text-sm opacity-50 md:inline">
                   {" "}

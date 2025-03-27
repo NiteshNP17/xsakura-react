@@ -17,6 +17,8 @@ const MoviePreview = () => {
   const [scrapeSource, setScrapeSource] = useState("jd");
   const isFc2 =
     movieState.code?.startsWith("fc2") || movieState.code?.startsWith("kb");
+  const codeLabel = movieState.code?.split("-")[0];
+  const scLabels = ["rebd", "oae", "fway", "ss", "ld", "prby", "prbyb"];
 
   useKeyboardShortcut({
     modifier: "alt",
@@ -30,6 +32,13 @@ const MoviePreview = () => {
       const res = await axios.get(
         `${config.apiUrl}/lookups/scrape${scrapeSource !== "nj" && !isFc2 ? "-" + scrapeSource : ""}?code=${movieState.code}`,
       );
+      const isVr = codeLabel.endsWith("vr");
+      let tag2Data = movieState.tag2 || [];
+      if (res.data.isMr)
+        tag2Data = [{ _id: "67c3f414b4e420283fdcf289", name: "MR" }];
+      if (scLabels.includes(codeLabel))
+        tag2Data = [{ _id: "67c3f348b4e420283fdcf283", name: "Softcore" }];
+      if (isVr) tag2Data = [{ _id: "67c3f423b4e420283fdcf28b", name: "VR" }];
 
       const mrUrl = `https://fourhoi.com/${movieState.code}-uncensored-leak/preview.mp4`;
       setMovieState({
@@ -37,15 +46,11 @@ const MoviePreview = () => {
         title: res.data.title,
         release: res.data.relDate,
         runtime: res.data.runtime,
-        tag2:
-          res.data.isMr && !movieState?.tag2?.some((tag) => tag.name === "MR")
-            ? [
-                ...(movieState.tag2 || []), // Use empty array if tag2 is undefined
-                { _id: "67c3f414b4e420283fdcf289", name: "MR" },
-              ]
-            : movieState.tag2 || [],
+        tag2: tag2Data,
         overrides: {
-          cover: `http://javpop.com/img/${movieState.code.split("-")[0]}/${movieState.code}_poster.jpg`,
+          cover: !isVr
+            ? `http://javpop.com/img/${movieState.code.split("-")[0]}/${movieState.code}_poster.jpg`
+            : "",
           preview: res.data.isMr ? mrUrl : "",
         },
       });

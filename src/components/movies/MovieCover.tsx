@@ -30,13 +30,15 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
   let img2show = imgSrc;
   if (overrides?.cover) {
     img2show = overrides?.cover;
-  } else if (isForm || code.startsWith("fc2")) {
-    img2show = `https://fourhoi.com/${code}/cover-t.jpg`;
   } else if (code.includes("vr")) {
     const [codeLabel, codeNum] = code.split("-");
-    const codeNumPadded = codeNum.padStart(5, "0");
+    const codeNumPadded = codeNum && codeNum.padStart(5, "0");
+    const codeFormat = `${codeLabel.startsWith("3ds") ? "1" : ""}${codeLabel}${codeNumPadded}`;
 
-    img2show = `https://pics.pornfhd.com/s/digital/video/${codeLabel}${codeNumPadded}/${codeLabel}${codeNumPadded}pl.jpg`;
+    if (codeNum && codeNum.length > 2)
+      img2show = `https://pics.pornfhd.com/s/digital/video/${codeFormat}/${codeFormat}pl.jpg`;
+  } else if (isForm || code.startsWith("fc2")) {
+    img2show = `https://fourhoi.com/${code}/cover-t.jpg`;
   }
 
   const vidRef = useRef<HTMLVideoElement>(null);
