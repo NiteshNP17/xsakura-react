@@ -51,7 +51,9 @@ const MovieTitleWithSeriesLink = ({ movie }: { movie: MovieData }) => {
 
     titleContent = (
       <span className="capitalize">
-        <span className="font-semibold">{firstWord}</span>
+        <span className="font-semibold text-rose-800 dark:text-rose-200">
+          {firstWord}
+        </span>
         {restOfTitle && " " + restOfTitle}
       </span>
     );

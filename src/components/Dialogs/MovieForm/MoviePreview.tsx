@@ -9,6 +9,7 @@ import config from "../../../utils/config";
 import { MovieContext } from "./MovieContext";
 import { Alert, MenuItem, Select, Snackbar } from "@mui/material";
 import useKeyboardShortcut from "../../../utils/useKeyboardShortcut";
+import { DatasetLinked } from "@mui/icons-material";
 
 const MoviePreview = () => {
   const [isChecked, setIsChecked] = useState(false);
@@ -18,7 +19,18 @@ const MoviePreview = () => {
   const isFc2 =
     movieState.code?.startsWith("fc2") || movieState.code?.startsWith("kb");
   const codeLabel = movieState.code?.split("-")[0];
-  const scLabels = ["rebd", "oae", "fway", "ss", "ld", "prby", "prbyb"];
+  const scLabels = [
+    "rebd",
+    "rebdb",
+    "oae",
+    "fway",
+    "ss",
+    "ld",
+    "prby",
+    "prbyb",
+    "mbdd",
+    "naac",
+  ];
 
   useKeyboardShortcut({
     modifier: "alt",
@@ -32,13 +44,18 @@ const MoviePreview = () => {
       const res = await axios.get(
         `${config.apiUrl}/lookups/scrape${scrapeSource !== "nj" && !isFc2 ? "-" + scrapeSource : ""}?code=${movieState.code}`,
       );
+
       const isVr = codeLabel.endsWith("vr");
       let tag2Data = movieState.tag2 || [];
-      if (res.data.isMr)
-        tag2Data = [{ _id: "67c3f414b4e420283fdcf289", name: "MR" }];
+      if (res.data.tags.includes("mr"))
+        tag2Data.push({ _id: "67c3f414b4e420283fdcf289", name: "MR" });
       if (scLabels.includes(codeLabel))
-        tag2Data = [{ _id: "67c3f348b4e420283fdcf283", name: "Softcore" }];
+        tag2Data.push({ _id: "67c3f348b4e420283fdcf283", name: "Softcore" });
       if (isVr) tag2Data = [{ _id: "67c3f423b4e420283fdcf28b", name: "VR" }];
+      if (res.data.tags.includes("pov"))
+        tag2Data.push({ _id: "67c3f30ab4e420283fdcf27f", name: "POV" });
+      if (res.data.tags.includes("ass"))
+        tag2Data.push({ _id: "67c3f2e2b4e420283fdcf27e", name: "Ass Lover" });
 
       const mrUrl = `https://fourhoi.com/${movieState.code}-uncensored-leak/preview.mp4`;
       setMovieState({
@@ -51,7 +68,7 @@ const MoviePreview = () => {
           cover: !isVr
             ? `http://javpop.com/img/${movieState.code.split("-")[0]}/${movieState.code}_poster.jpg`
             : "",
-          preview: res.data.isMr ? mrUrl : "",
+          preview: res.data.tags.includes("mr") ? mrUrl : "",
         },
       });
 
@@ -90,6 +107,15 @@ const MoviePreview = () => {
         </div>
       )}
       <div className="relative mx-auto flex w-full items-center justify-center gap-1">
+        <IconButton
+          sx={{ position: "absolute", left: "0.25rem" }}
+          component="a"
+          href={`https://www.javdatabase.com/movies/${movieState.code}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <DatasetLinked />
+        </IconButton>
         <span>Preview</span>
         <Switch
           disabled={isFc2}

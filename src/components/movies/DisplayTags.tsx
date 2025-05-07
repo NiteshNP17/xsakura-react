@@ -11,7 +11,7 @@ import { Tag } from "../../utils/customTypes";
 import { Icon } from "@mui/material";
 
 const DisplayTags = ({ tags }: { tags: Tag[] }) => {
-  const tagNames = tags.map((obj) => obj.name);
+  const tagNames = tags.map((obj) => obj && obj.name);
 
   return (
     <div className="absolute left-1 top-1 flex gap-1 rounded-md bg-black bg-opacity-60 px-1.5 align-bottom">

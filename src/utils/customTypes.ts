@@ -35,6 +35,8 @@ export interface ActorData {
   yearsActive: number;
   latestMovieDate: string;
   cup: string;
+  rebdSrc: string;
+  ageAtLatestRel: number;
 }
 
 export interface SeriesItem {

@@ -3,15 +3,16 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 // import ActorCard from "../components/Actors/ActorCard";
 import MovieList from "../components/movies/MovieList";
-import { Box, CircularProgress, IconButton, Tab } from "@mui/material";
+// import { Box, CircularProgress, IconButton, Tab } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
 import { ActorData, MovieData } from "../utils/customTypes";
 import config from "../utils/config";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
-import Albums from "./Albums";
+// import { TabContext, TabList, TabPanel } from "@mui/lab";
+// import Albums from "./Albums";
 import ActorForm from "../components/Dialogs/ActorForm/ActorForm";
 import Edit from "@mui/icons-material/Edit";
 import ActorCardLarge from "../components/Actors/ActorCardLarge";
-import { Delete } from "@mui/icons-material";
+import { DatasetLinked, Delete } from "@mui/icons-material";
 import DeleteDialog from "../components/Dialogs/DeleteDialog";
 
 const ActorPage = () => {
@@ -29,7 +30,7 @@ const ActorPage = () => {
   const [searchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") || "1");
   const sort = searchParams.get("sort") || "release";
-  const [tabVal, setTabVal] = useState("1");
+  // const [tabVal, setTabVal] = useState("1");
   const selectedTags = searchParams.get("tags");
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -83,39 +84,54 @@ const ActorPage = () => {
     isRandom,
   ]);
 
-  return isLoaded && actorData?._id ? (
+  return (isLoaded && actorData?._id) || (isLoaded && isMale) ? (
     <>
       <div className="mb-12 px-[3vw]">
         <div className="mx-4 mb-2 mt-1 flex gap-2 px-1">
-          {!actorData.img500 && (
+          {!actorData?.img500 && (
             <h1 className="text-3xl font-semibold capitalize">{actorName}</h1>
           )}
-          <IconButton onClick={() => setOpenEditDialog(true)}>
-            <Edit />
-          </IconButton>
-          <IconButton onClick={() => setOpenDeleteDialog(true)}>
-            <Delete color="error" />
-          </IconButton>
+          {!isMale && (
+            <>
+              <IconButton onClick={() => setOpenEditDialog(true)}>
+                <Edit />
+              </IconButton>
+              <IconButton onClick={() => setOpenDeleteDialog(true)}>
+                <Delete color="error" />
+              </IconButton>
+              <IconButton
+                component="a"
+                href={`https://www.javdatabase.com/idol/${name}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <DatasetLinked />
+              </IconButton>
+            </>
+          )}
         </div>
         {actorData?.img500 && (
-          <ActorCardLarge actor={actorData} movieCount={totalMovies} />
-          // <div className="flex w-full">
-          //   <div className="mx-auto min-w-96 md:mx-12">
-          //   </div>
-          //   <div className="grid auto-rows-min grid-cols-2 gap-2 text-lg font-semibold">
-          //     <span className="opacity-75">Years Active</span>
-          //     {actorData.yearsActive}
-          //     {actorData.sizes?.bust && (
-          //       <>
-          //         <span className="opacity-75">Sizes</span>
-          //         <span>
-          //           {actorData.sizes.bust}-{actorData.sizes.waist}-
-          //           {actorData.sizes.hips}
-          //         </span>
-          //       </>
-          //     )}
-          //   </div>
-          // </div>
+          <div className="flex overflow-y-visible">
+            <div className="block w-96 min-w-[35%]">
+              <ActorCardLarge actor={actorData} movieCount={totalMovies} />
+            </div>
+            {actorData?.rebdSrc && (
+              <div className="-mx-3 -my-12 hidden overflow-y-visible rounded-lg lg:block">
+                {/* <img
+                src="https://pics.dmm.co.jp/digital/video/fway00059/fway00059jp-8.jpg"
+                alt="big img"
+                className="flex max-h-96 overflow-hidden object-cover"
+              /> */}
+                <video
+                  src={actorData.rebdSrc}
+                  className="aspect-[16/9.1] max-h-[30rem] rounded-lg object-cover"
+                  autoPlay
+                  muted
+                  loop
+                />
+              </div>
+            )}
+          </div>
         )}
         <ActorForm
           openEditDialog={openEditDialog}
@@ -128,13 +144,19 @@ const ActorPage = () => {
         />
         <DeleteDialog
           type="actors"
-          deleteId={{ id: actorData.name, uId: Math.random().toString() }}
+          deleteId={{ id: actorData?.name, uId: Math.random().toString() }}
           refetch={refetchMovies}
           open={openDeleteDialog}
           setOpen={setOpenDeleteDialog}
         />
       </div>
-      <TabContext value={tabVal}>
+      <MovieList
+        movies={movies}
+        totalPages={totalPages}
+        refetch={refetchMovies}
+        actorData={actorData}
+      />
+      {/* <TabContext value={tabVal}>
         <Box
           sx={{
             borderBottom: 1,
@@ -148,18 +170,11 @@ const ActorPage = () => {
             <Tab label="Albums" value="2" />
           </TabList>
         </Box>
-        <TabPanel value="1" sx={{ p: 0 }}>
-          <MovieList
-            movies={movies}
-            totalPages={totalPages}
-            refetch={refetchMovies}
-            actorData={actorData}
-          />
-        </TabPanel>
+        <TabPanel value="1" sx={{ p: 0 }}></TabPanel>
         <TabPanel value="2" sx={{ p: 0 }}>
           {actorData?._id && <Albums model={actorData._id} />}
         </TabPanel>
-      </TabContext>
+      </TabContext> */}
     </>
   ) : isLoaded && !actorData?._id ? (
     <div className="grid h-96 items-center justify-center">

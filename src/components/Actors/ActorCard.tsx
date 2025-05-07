@@ -18,9 +18,6 @@ const ActorCard: React.FC<ActorCardProps> = ({
 }) => {
   // const myAge = new Date("1997-11-02T00:00:00Z");
   const dobDate = actor.dob ? new Date(actor.dob) : undefined;
-  const latestRelDate = actor.latestMovieDate
-    ? new Date(actor.latestMovieDate)
-    : undefined;
   const blankImg =
     "https://upload.wikimedia.org/wikipedia/commons/5/53/Blank_woman_placeholder.svg";
   const [showBlank, setShowBlank] = useState<boolean>(false);
@@ -83,7 +80,12 @@ const ActorCard: React.FC<ActorCardProps> = ({
             {dobDate && (
               <p>
                 <span className="font-semibold opacity-80">
-                  {calculateAge(dobDate, latestRelDate || new Date())}
+                  {actor.ageAtLatestRel || actor.dob
+                    ? calculateAge(
+                        new Date(actor.dob),
+                        new Date(actor.latestMovieDate),
+                      )
+                    : ""}
                 </span>{" "}
                 <span className="hidden text-sm opacity-65 md:inline">
                   {actor.dob.toString().slice(2, 7)}

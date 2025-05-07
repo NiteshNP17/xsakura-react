@@ -1,13 +1,18 @@
 import { Link, useParams } from "react-router-dom";
 import Trailer from "../components/movies/Trailer";
 import { IconButton } from "@mui/material";
-import { AddCircleOutline } from "@mui/icons-material";
+import {
+  AddCircleOutline,
+  DatasetLinked,
+  Face3TwoTone,
+} from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import PrefixDialog from "../components/Dialogs/PrefixDialog";
 import useKeyboardShortcut from "../utils/useKeyboardShortcut";
 import MovieImages from "../components/movies/MovieImages";
 import { MovieData } from "../utils/customTypes";
 import config from "../utils/config";
+import MovieCastList from "../components/movies/MovieCastList";
 
 const MoviePage = () => {
   const { code } = useParams();
@@ -50,6 +55,14 @@ const MoviePage = () => {
         <IconButton color="primary" onClick={() => setOpenPrefixDialog(true)}>
           <AddCircleOutline />
         </IconButton>
+        <IconButton
+          component="a"
+          href={`https://www.javdatabase.com/movies/${code}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <DatasetLinked />
+        </IconButton>
         <h2 className="overflow-x-scroll text-nowrap text-xl">
           {movieData.title}
         </h2>
@@ -64,30 +77,45 @@ const MoviePage = () => {
             )}
           </div>
           <div className="my-6 flex flex-wrap gap-4">
-            <a href={`https://javct.net/v/${code}`} target="_blank">
+            <a
+              href={`https://javct.net/v/${code}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               JavCT
             </a>
-            <a href={`https://njav.tv/en/v/${code}`} target="_blank">
+            <a
+              href={`https://njav.tv/en/v/${code}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               Njav
             </a>
             <a
               href={`https://njav.tv/en/v/${code}-uncensored-leak`}
               target="_blank"
+              rel="noreferrer"
             >
               Njav MR
             </a>
-            <a target="_blank" href={`https://missav.ws/en/${code}`}>
+            <a
+              target="_blank"
+              href={`https://missav.ws/en/${code}`}
+              rel="noreferrer"
+            >
               MissAV
             </a>
             <a
               target="_blank"
               href={`https://missav.ws/en/${code}-uncensored-leak`}
+              rel="noreferrer"
             >
               MissAV MR
             </a>
             <a
               target="_blank"
               href={`https://www4.javhdporn.net/video/${code}`}
+              rel="noreferrer"
             >
               JavHDPorn
             </a>
@@ -99,6 +127,16 @@ const MoviePage = () => {
           </div>
         )}
       </div>
+      {movieData.cast && (
+        <div className="flex">
+          <Face3TwoTone color="primary" />
+          <MovieCastList
+            movieCast={movieData.cast}
+            release={movieData.release}
+            mb
+          />
+        </div>
+      )}
       <PrefixDialog
         label={code?.split("-")[0] || ""}
         open={openPrefixDialog}

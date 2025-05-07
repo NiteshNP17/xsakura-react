@@ -62,6 +62,7 @@ const SortSelect: React.FC<SortSelectProps> = ({ type, setLoaded }) => {
           <MenuItem value={"numMovies"}>Movie Count</MenuItem>
           {/* <MenuItem value={"ageAtLatestRelease"}>Age</MenuItem> */}
           <MenuItem value={"dob"}>DOB</MenuItem>
+          <MenuItem value={"ageAtLatestRel"}>Age</MenuItem>
           <MenuItem value={"height"}>Height</MenuItem>
           {/* <MenuItem value={"yearsActive"}>Active</MenuItem> */}
           <MenuItem value={"cup"}>Cup</MenuItem>

@@ -3,6 +3,7 @@ import TextField from "@mui/material/TextField";
 import { useContext, useEffect } from "react";
 import { MovieContext } from "./MovieContext";
 import { MovieData } from "../../../utils/customTypes";
+import config from "../../../utils/config";
 
 const OverridesInput = () => {
   const { movieState, setMovieState } = useContext(MovieContext);
@@ -20,6 +21,23 @@ const OverridesInput = () => {
     });
   }, [movieState.code, setMovieState]);
 
+  const fhdSrc = async () => {
+    const [codeLabel, codeNum] = movieState.code.split("-");
+    const codeNumPadded = codeNum.padStart(5, "0");
+
+    if (!codeNum) return "!code";
+
+    // Fetch label data from the API
+    const response = await fetch(
+      `${config.apiUrl}/labels/${codeLabel}?codenum=${codeNum}`,
+    );
+    const labelData = await response.json();
+
+    const codeFormat = `${labelData.prefix || ""}${codeLabel}${codeNumPadded}`;
+
+    return `https://pics.pornfhd.com/s/digital/video/${codeFormat}/${codeFormat}pl.jpg`;
+  };
+
   return (
     <>
       <Autocomplete
@@ -27,19 +45,30 @@ const OverridesInput = () => {
         options={[
           `http://javpop.com/img/${movieState?.code?.split("-")[0]}/${movieState?.code}_poster.jpg`,
           `https://fourhoi.com/${movieState?.code}/cover-t.jpg`,
-          `https://pics.pornfhd.com/s/digital/video/${movieState?.code?.split("-")[0]}00${movieState?.code?.split("-")[1]}/${movieState?.code?.split("-")[0]}00${movieState?.code?.split("-")[1]}pl.jpg`,
+          "p-fhd",
+          `https://aisubs.app/static/${movieState?.code?.toUpperCase()}/cover.jpeg`,
         ]}
         value={movieState.overrides?.cover || ""}
         onChange={(_e, newValue) => {
-          newValue
-            ? setMovieState({
+          if (!newValue) {
+            setMovieState({
+              ...movieState,
+              overrides: { ...movieState.overrides, cover: "" },
+            });
+          } else if (newValue === "p-fhd") {
+            // Handle the async function properly
+            fhdSrc().then((url) => {
+              setMovieState({
                 ...movieState,
-                overrides: { ...movieState.overrides, cover: newValue },
-              })
-            : setMovieState({
-                ...movieState,
-                overrides: { ...movieState.overrides, cover: "" },
+                overrides: { ...movieState.overrides, cover: url },
               });
+            });
+          } else {
+            setMovieState({
+              ...movieState,
+              overrides: { ...movieState.overrides, cover: newValue },
+            });
+          }
         }}
         renderInput={(params) => (
           <TextField

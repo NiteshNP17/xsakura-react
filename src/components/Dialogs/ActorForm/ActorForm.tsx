@@ -246,6 +246,19 @@ const ActorForm: React.FC<ActorFormProps> = ({
                   ),
                 }}
               />
+              <TextField
+                type="search"
+                name="rebdSrc"
+                label="Vid Link"
+                autoComplete="off"
+                value={formFields.rebdSrc || ""}
+                onChange={(e) =>
+                  setFormFields({
+                    ...formFields,
+                    rebdSrc: e.target.value,
+                  })
+                }
+              />
             </div>
           </div>
           <div className="col-span-2 ml-auto mt-6 grid grid-cols-2 gap-2 justify-self-end md:mb-0 md:w-[calc(50%-0.75rem)]">

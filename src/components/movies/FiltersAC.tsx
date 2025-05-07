@@ -1,12 +1,17 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
 import config from "../../utils/config";
-import { Face3TwoTone, LocalOfferTwoTone } from "@mui/icons-material";
+import {
+  ExitToApp,
+  Face3TwoTone,
+  LocalOfferTwoTone,
+} from "@mui/icons-material";
 import { Tag } from "../../utils/customTypes";
+import { IconButton } from "@mui/material";
 
 // Define types for our options
 type OptionType = "cast" | "tag";
@@ -26,7 +31,8 @@ interface CastMember {
 const FiltersAC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [options, setOptions] = useState<FilterOption[]>([]);
+  const defOpt: FilterOption[] = [{ id: "Softcore", type: "tag" }];
+  const [options, setOptions] = useState<FilterOption[]>(defOpt); //{ id: "Softcore", type: "tag" }
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Get initial selected options from URL params
@@ -83,7 +89,7 @@ const FiltersAC = () => {
       }
 
       let castOptions: FilterOption[] = [];
-      let tagOptions: FilterOption[] = [];
+      let tagOptions: FilterOption[] = defOpt;
 
       // Process cast response if we got one
       if (castResponse) {
@@ -121,7 +127,7 @@ const FiltersAC = () => {
       setOptions([...castOptions, ...tagOptions]);
     } catch (error) {
       console.error("Error fetching options:", error);
-      setOptions([]);
+      setOptions(defOpt);
     } finally {
       setLoading(false);
     }
@@ -137,7 +143,7 @@ const FiltersAC = () => {
       fetchOptions(value);
     } else {
       // Clear options if input is too short
-      setOptions([]);
+      setOptions(defOpt);
     }
   };
 
@@ -187,7 +193,7 @@ const FiltersAC = () => {
       onOpen={() => {
         setOpen(true);
         // Initialize with empty options when opening
-        setOptions([]);
+        setOptions(defOpt);
       }}
       onClose={() => setOpen(false)}
       options={options}
@@ -200,19 +206,34 @@ const FiltersAC = () => {
       isOptionEqualToValue={(option, value) => option.id === value.id}
       onChange={handleChange}
       onInputChange={handleInputChange}
-      groupBy={(option) => (option.type === "cast" ? "Cast" : "Tags")}
+      // groupBy={(option) => (option.type === "cast" ? "Cast" : "Tags")}
       renderOption={(props, option) => (
         <li {...props}>
           {option.type === "cast" ? (
-            <div className="mr-2">
-              <Face3TwoTone color="primary" />
-            </div>
+            <>
+              <div className="mr-2">
+                <Face3TwoTone color="primary" />
+              </div>
+              <span className="capitalize">{option.id}</span>
+              <IconButton
+                component={Link}
+                to={`/actor/${option.id.toLowerCase().replace(" ", "-")}`}
+                sx={{ ml: 1, p: 0.75 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <ExitToApp />
+              </IconButton>
+            </>
           ) : (
-            <div className="mr-1 text-red-400">
-              <LocalOfferTwoTone color="inherit" />
-            </div>
+            <>
+              <div className="mr-1 text-red-400">
+                <LocalOfferTwoTone color="inherit" />
+              </div>
+              <span className="capitalize">{option.id}</span>
+            </>
           )}
-          <span className="capitalize">{option.id}</span>
         </li>
       )}
       renderInput={(params) => (

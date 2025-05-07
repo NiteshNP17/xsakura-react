@@ -7,7 +7,8 @@ import {
   TableRow,
   useMediaQuery,
 } from "@mui/material";
-import { calculateAge, formatHeight, getRainbowColor } from "../../utils/utils";
+// import { calculateAge, formatHeight, getRainbowColor } from "../../utils/utils";
+import { formatHeight, getRainbowColor } from "../../utils/utils";
 
 interface ActorCardLargeProps {
   actor: ActorData;
@@ -79,10 +80,7 @@ const ActorCardLarge: React.FC<ActorCardLargeProps> = ({
             {actor.dob && (
               <TableRow>
                 <TableCell align="right" sx={tbFontLg}>
-                  {calculateAge(
-                    new Date(actor.dob),
-                    new Date(actor.latestMovieDate),
-                  )}
+                  {actor.ageAtLatestRel || ""}
                 </TableCell>
                 <TableCell>
                   {isMobile

@@ -184,17 +184,19 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
           />
         </video>
       )}
-      <img
-        className={`h-full bg-slate-200 object-cover ${imageDetails.height > imageDetails.width * 1.25 ? "object-top" : "object-right"} dark:bg-zinc-600`}
-        src={img2show}
-        alt={code.toUpperCase()}
-        width="100%"
-        loading="lazy"
-        onError={() => {
-          if (isForm) setImgLoaded(false);
-          else fetchDmmSrc(code);
-        }}
-      />
+      <div className="aspect-[3/2] w-full">
+        <img
+          className={`h-full bg-slate-200 ${imageDetails.height > imageDetails.width * 1.25 ? "object-cover object-top" : imageDetails.width > imageDetails.height * 1.45 ? "object-cover object-right" : "object-fill"} dark:bg-zinc-600`}
+          src={img2show}
+          alt={code.toUpperCase()}
+          width="100%"
+          loading="lazy"
+          onError={() => {
+            if (isForm) setImgLoaded(false);
+            else fetchDmmSrc(code);
+          }}
+        />
+      </div>
     </div>
   ) : (
     <div className="grid aspect-[3/1.9] w-full place-content-center bg-slate-200 text-center text-2xl font-semibold text-slate-400 dark:bg-zinc-600">
