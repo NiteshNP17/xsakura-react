@@ -1,30 +1,19 @@
-import { useEffect, useState } from "react";
-// import { Dialog, ImageList, ImageListItem } from "@mui/material";
 import { LabelData } from "../../utils/customTypes";
-import config from "../../utils/config";
 import PreloadingImage from "../PreloadingImage";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 
-const MovieImages = ({ code }: { code: string }) => {
+const MovieImages = ({
+  code,
+  labelData,
+}: {
+  code: string;
+  labelData: LabelData;
+}) => {
   const [codeLabel, codeNum] = code.split("-");
   const codeSuf = codeLabel === "ibw" ? "z" : "";
   const codeNumPadded = codeNum.padStart(5, "0");
-  const [labelData, setLabelData] = useState<LabelData>({} as LabelData);
   // const [open, setOpen] = useState(false);
   // const [imgToShow, setImgToShow] = useState("");
-
-  useEffect(() => {
-    const getLabelData = async (label: string) => {
-      // Fetch label data from the API
-      const res = await fetch(
-        `${config.apiUrl}/labels/${label}?codenum=${codeNum}`,
-      );
-      const data = await res.json();
-      setLabelData(data);
-    };
-
-    getLabelData(codeLabel);
-  }, [codeLabel, codeNum]);
 
   const getImgSrc = (i: string, sm?: boolean): string => {
     const prestigeLabels = ["chn", "bgn", "gni", "dlv", "wps", "fit"];

@@ -42,7 +42,7 @@ const SerieImage: React.FC<SerieImgProps> = ({ thumbs }) => {
   return (
     <>
       {thumbs.map((code) => (
-        <div className="flex aspect-[21/30]" key={code}>
+        <div className="flex aspect-21/30" key={code}>
           <img src={getImgSrc(code)} alt={code} className="object-cover" />
         </div>
       ))}

@@ -1,25 +1,34 @@
 import { Link, useParams } from "react-router-dom";
 import Trailer from "../components/movies/Trailer";
-import { IconButton } from "@mui/material";
-import {
-  AddCircleOutline,
-  DatasetLinked,
-  Face3TwoTone,
-} from "@mui/icons-material";
+import { Alert, IconButton, Menu, MenuItem, Snackbar } from "@mui/material";
+import { DatasetLinked, Face3TwoTone, MoreVert } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import PrefixDialog from "../components/Dialogs/PrefixDialog";
 import useKeyboardShortcut from "../utils/useKeyboardShortcut";
 import MovieImages from "../components/movies/MovieImages";
-import { MovieData } from "../utils/customTypes";
+import { LabelData, MovieData } from "../utils/customTypes";
 import config from "../utils/config";
 import MovieCastList from "../components/movies/MovieCastList";
+import { MovieContext } from "../components/Dialogs/MovieForm/MovieContext";
+import MovieDialogBase from "../components/Dialogs/MovieForm/MovieDialogBase";
+import LabelsInput from "../components/Dialogs/LabelsInput";
 
 const MoviePage = () => {
   const { code } = useParams();
   const [codeLabel, codeNum] = code ? code.split("-") : ["a", "b"];
   const [openPrefixDialog, setOpenPrefixDialog] = useState(false);
+  const [openLabelDialog, setOpenLabelDialog] = useState(false);
   const [reload, setReload] = useState(false);
   const [movieData, setMovieData] = useState<MovieData>({} as MovieData);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openSnack, setOpenSnack] = useState(false);
+  const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false);
+  const [labelData, setLabelData] = useState<LabelData>({} as LabelData);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const refetchMovies = () => {
+    setRefetchTrigger((prev) => !prev);
+  };
 
   useEffect(() => {
     const getMovieData = async () => {
@@ -27,18 +36,24 @@ const MoviePage = () => {
         const res = await fetch(`${config.apiUrl}/movies/${code}`);
         const resData = await res.json();
         setMovieData(resData);
+
+        const resLabel = await fetch(
+          `${config.apiUrl}/labels/${codeLabel}?codenum=${codeNum}`,
+        );
+        const resLabeldata: LabelData = await resLabel.json();
+        setLabelData(resLabeldata);
       } catch (err) {
         console.error("Error fetching movie data: ", err);
       }
     };
 
     getMovieData();
-  }, [code]);
+  }, [code, refetchTrigger, codeLabel, codeNum]);
 
   useKeyboardShortcut({
     modifier: "alt",
     key: "i",
-    callback: () => setOpenPrefixDialog(true),
+    callback: () => setOpenEditDialog(true),
   });
 
   return (
@@ -52,18 +67,23 @@ const MoviePage = () => {
             -{codeNum}
           </Link>
         </h1>
-        <IconButton color="primary" onClick={() => setOpenPrefixDialog(true)}>
-          <AddCircleOutline />
+        <IconButton
+          color="inherit"
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+          sx={{ py: 0.5, px: 0.25 }}
+        >
+          <MoreVert />
         </IconButton>
         <IconButton
           component="a"
           href={`https://www.javdatabase.com/movies/${code}`}
           target="_blank"
           rel="noopener noreferrer"
+          sx={{ p: 0.75 }}
         >
           <DatasetLinked />
         </IconButton>
-        <h2 className="overflow-x-scroll text-nowrap text-xl">
+        <h2 className="overflow-x-scroll text-xl text-nowrap">
           {movieData.title}
         </h2>
       </div>
@@ -73,16 +93,20 @@ const MoviePage = () => {
             {code?.startsWith("fc2") ? (
               <div>No Trailer</div>
             ) : (
-              <Trailer code={code || ""} reload={reload} />
+              <Trailer
+                code={code || ""}
+                reload={reload}
+                labelData={labelData}
+              />
             )}
           </div>
           <div className="my-6 flex flex-wrap gap-4">
             <a
-              href={`https://javct.net/v/${code}`}
+              href={`https://sextb.net/${code}`}
               target="_blank"
               rel="noreferrer"
             >
-              JavCT
+              SexTB
             </a>
             <a
               href={`https://njav.tv/en/v/${code}`}
@@ -123,7 +147,7 @@ const MoviePage = () => {
         </div>
         {!code?.startsWith("fc2") && (
           <div className="col-span-6 px-3 sm:col-span-2">
-            <MovieImages code={code ? code : ""} />
+            <MovieImages code={code ? code : ""} labelData={labelData} />
           </div>
         )}
       </div>
@@ -137,12 +161,96 @@ const MoviePage = () => {
           />
         </div>
       )}
+      {movieData.series && (
+        <div className="flex capitalize">
+          <p>Series:&nbsp;</p>
+          <Link to={`/series/${movieData.series.slug}`}>
+            {movieData.series.name}
+          </Link>
+        </div>
+      )}
+      {labelData.studio?.name && (
+        <div className="flex">
+          <p>Studio:&nbsp;</p>
+          <Link to={`/movies?studio=${labelData.studio?.slug}&sort=release`}>
+            {labelData.studio?.name}
+          </Link>
+        </div>
+      )}
       <PrefixDialog
         label={code?.split("-")[0] || ""}
         open={openPrefixDialog}
         setOpen={setOpenPrefixDialog}
         reload={() => setReload(!reload)}
       />
+      <LabelsInput
+        open={openLabelDialog}
+        setOpen={setOpenLabelDialog}
+        refetch={refetchMovies}
+        selectedLabel={labelData}
+      />
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+      >
+        <MenuItem
+          onClick={() => {
+            setOpenEditDialog(true);
+            setAnchorEl(null);
+          }}
+        >
+          Edit Movie
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setOpenPrefixDialog(true);
+            setAnchorEl(null);
+          }}
+        >
+          Add Label
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setOpenLabelDialog(true);
+            setAnchorEl(null);
+          }}
+        >
+          Edit Label
+        </MenuItem>
+      </Menu>
+      <MovieContext.Provider
+        value={{
+          movieState: movieData,
+          setMovieState: setMovieData,
+          isToEdit: true,
+        }}
+      >
+        <MovieDialogBase
+          open={openEditDialog}
+          setOpen={setOpenEditDialog}
+          refetch={refetchMovies}
+          setOpenSnack={setOpenSnack}
+        />
+      </MovieContext.Provider>
+      <Snackbar
+        open={openSnack}
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{ bottom: "12px" }}
+        onClose={(_e, reason?) => {
+          if (reason === "clickaway") return;
+          setOpenSnack(false);
+        }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          sx={{ fontSize: "1.1rem", padding: "0.5rem 3.5rem" }}
+        >
+          Movie Updated Successfully!
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

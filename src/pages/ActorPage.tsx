@@ -12,8 +12,10 @@ import config from "../utils/config";
 import ActorForm from "../components/Dialogs/ActorForm/ActorForm";
 import Edit from "@mui/icons-material/Edit";
 import ActorCardLarge from "../components/Actors/ActorCardLarge";
-import { DatasetLinked, Delete } from "@mui/icons-material";
+import { AddCircleOutline, DatasetLinked, Delete } from "@mui/icons-material";
 import DeleteDialog from "../components/Dialogs/DeleteDialog";
+import VideoInf from "../components/Actors/VideoInf";
+import ScrapeActorMoviesDialog from "../components/Dialogs/ActorForm/ScrapeActorMoviesDialog";
 
 const ActorPage = () => {
   const { name } = useParams<{ name: string }>();
@@ -34,7 +36,9 @@ const ActorPage = () => {
   const selectedTags = searchParams.get("tags");
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openScrapeDialog, setOpenScrapeDialog] = useState(false);
   const isRandom = searchParams.get("random");
+  const selectedCast = searchParams.get("cast");
 
   const refetchMovies = () => {
     setRefetchTrigger((prev) => !prev);
@@ -55,7 +59,9 @@ const ActorPage = () => {
       try {
         const res = await axios.get(
           `${config.apiUrl}/movies?${
-            !isMale ? "cast=" + actorName : "mcast=" + actorName
+            !isMale
+              ? `cast=${actorName}${selectedCast ? "," + selectedCast : ""}`
+              : "mcast=" + actorName
           }${selectedTags ? "&tags=" + selectedTags : ""}` +
             (!isRandom ? `&sort=${sort}&page=${page}` : "&random"),
         );
@@ -82,17 +88,23 @@ const ActorPage = () => {
     selectedTags,
     sort,
     isRandom,
+    selectedCast,
   ]);
 
   return (isLoaded && actorData?._id) || (isLoaded && isMale) ? (
     <>
       <div className="mb-12 px-[3vw]">
-        <div className="mx-4 mb-2 mt-1 flex gap-2 px-1">
+        <div className="mx-4 mt-1 mb-2 flex gap-2 px-1">
           {!actorData?.img500 && (
             <h1 className="text-3xl font-semibold capitalize">{actorName}</h1>
           )}
           {!isMale && (
             <>
+              {actorData.jpName && (
+                <p className="my-auto text-2xl font-semibold">
+                  {actorData.jpName}
+                </p>
+              )}
               <IconButton onClick={() => setOpenEditDialog(true)}>
                 <Edit />
               </IconButton>
@@ -107,28 +119,19 @@ const ActorPage = () => {
               >
                 <DatasetLinked />
               </IconButton>
+              <IconButton onClick={() => setOpenScrapeDialog(true)}>
+                <AddCircleOutline color="primary" />
+              </IconButton>
             </>
           )}
         </div>
         {actorData?.img500 && (
           <div className="flex overflow-y-visible">
-            <div className="block w-96 min-w-[35%]">
-              <ActorCardLarge actor={actorData} movieCount={totalMovies} />
-            </div>
-            {actorData?.rebdSrc && (
-              <div className="-mx-3 -my-12 hidden overflow-y-visible rounded-lg lg:block">
-                {/* <img
-                src="https://pics.dmm.co.jp/digital/video/fway00059/fway00059jp-8.jpg"
-                alt="big img"
-                className="flex max-h-96 overflow-hidden object-cover"
-              /> */}
-                <video
-                  src={actorData.rebdSrc}
-                  className="aspect-[16/9.1] max-h-[30rem] rounded-lg object-cover"
-                  autoPlay
-                  muted
-                  loop
-                />
+            {actorData?.rebdSrc ? (
+              <VideoInf actor={actorData} movieCount={totalMovies} />
+            ) : (
+              <div className="block w-96 min-w-[35%]">
+                <ActorCardLarge actor={actorData} movieCount={totalMovies} />
               </div>
             )}
           </div>
@@ -149,6 +152,14 @@ const ActorPage = () => {
           open={openDeleteDialog}
           setOpen={setOpenDeleteDialog}
         />
+        {!isMale && (
+          <ScrapeActorMoviesDialog
+            open={openScrapeDialog}
+            setOpen={setOpenScrapeDialog}
+            actorName={name || "noName :("}
+            actorId={actorData._id}
+          />
+        )}
       </div>
       <MovieList
         movies={movies}

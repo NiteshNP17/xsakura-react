@@ -1,36 +1,36 @@
 import { useState, useEffect, useCallback } from "react";
-import config from "../../utils/config";
+// import config from "../../utils/config";
 import CircularProgress from "@mui/material/CircularProgress";
 import MuxPlayer from "@mux/mux-player-react";
+import { LabelData } from "../../utils/customTypes";
 
 interface TrailerProps {
   code: string;
   posterSm?: boolean;
   reload?: boolean;
   title?: string;
+  labelData: LabelData;
 }
 
-interface PrefixData {
-  prefix: string;
-  imgPre: string;
-  isDmb: boolean;
-  isHq: boolean;
-  isVr: boolean;
-  is3digits: boolean;
-}
-
-const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
+const Trailer: React.FC<TrailerProps> = ({
+  code,
+  posterSm,
+  reload,
+  title,
+  labelData,
+}) => {
   const [codeLabel, codeNum] = code.split("-");
   const codeSuf = codeLabel === "ibw" ? "z" : "";
   const baseUrl = "https://cc3001.dmm.co.jp/litevideo/freepv/";
   const [videoSrc, setVideoSrc] = useState<string>("");
   const [isPaddedUrl, setIsPaddedUrl] = useState<boolean>(false);
-  const [prefixData, setPrefixData] = useState<PrefixData>({} as PrefixData);
+  // const [prefixData, setPrefixData] = useState<PrefixData>({} as PrefixData);
   const [isLoaded, setLoaded] = useState(false);
   const [posterSrc, setPosterSrc] = useState("");
+  const rebdLabels = ["rebd", "naac", "prian"];
 
   const createVideoSrc = useCallback(
-    (num: string, isPadded: boolean, prefixData: PrefixData): string => {
+    (num: string, isPadded: boolean, prefixData: LabelData): string => {
       const longCode = `${prefixData.prefix || ""}${codeLabel}`;
       const codeNumPadded: string =
         "0".repeat(Math.max(0, 5 - codeNum.length)) + codeNum;
@@ -46,18 +46,13 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
   );
 
   useEffect(() => {
+    const rebdLabels = ["rebd", "naac", "prian"];
     const codeNumInt = parseInt(codeNum);
     const getPrefixData = async (): Promise<void> => {
       try {
-        const res = await fetch(
-          `${config.apiUrl}/labels/${codeLabel}?codenum=${codeNum}`,
-        );
-        const data: PrefixData = await res.json();
-        setPrefixData(data);
-
-        const newVideoSrc = !data.isVr
-          ? createVideoSrc(codeNum, false, data)
-          : createVideoSrc(codeNum, true, data);
+        const newVideoSrc = !labelData.isVr
+          ? createVideoSrc(codeNum, false, labelData)
+          : createVideoSrc(codeNum, true, labelData);
         setVideoSrc(newVideoSrc);
 
         // Calculate poster URL
@@ -71,11 +66,11 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
           newPosterSrc = `https://file.rebecca-web.com/media/videos/dl0${dlNum}/rebd_${codeNum}/b02_pc2.jpg`;
           setPosterSrc(newPosterSrc);
         } else {
-          const longCode = `${data.prefix || ""}${codeLabel}`;
+          const longCode = `${labelData.prefix || ""}${codeLabel}`;
           const codeNumPadded: string = codeNum.padStart(5, "0");
-          const imgPaddedLongCode: string = `${data.imgPre || data.prefix || ""}${codeLabel}${codeNumPadded}`;
+          const imgPaddedLongCode: string = `${labelData.imgPre || labelData.prefix || ""}${codeLabel}${codeNumPadded}`;
           newPosterSrc =
-            data.is3digits || codeLabel === "ibw"
+            labelData.is3digits || codeLabel === "ibw"
               ? `https://pics.dmm.co.jp/mono/movie/adult/${longCode}${codeNum}${codeSuf}/${longCode}${codeNum}${codeSuf}p${posterSm ? "s" : "l"}.jpg`
               : `https://pics.dmm.co.jp/digital/video/${imgPaddedLongCode}/${imgPaddedLongCode}p${posterSm ? "s" : "l"}.jpg`;
 
@@ -92,9 +87,9 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
       }
     };
 
-    if (codeLabel === "rebd") {
-      const dlNum = `dl0${codeNumInt > 873 ? "3" : codeNumInt > 500 ? "2" : "1"}`;
-      const rebdBaseSrc = `https://file.rebecca-web.com/media/videos/${dlNum}/rebd_${codeNum}/`;
+    if (rebdLabels.includes(codeLabel)) {
+      const dlNum = `dl0${codeNumInt > 873 && codeNumInt < 889 ? "3" : codeNumInt > 500 && codeNumInt < 874 ? "2" : "1"}`;
+      const rebdBaseSrc = `https://file.rebecca-web.com/media/videos/${dlNum}/${codeLabel}_${codeNum}${codeLabel === "naac" ? "b" : ""}/`;
       const rebdVidSrc = rebdBaseSrc + "movie.mp4";
       const rebdPoster = rebdBaseSrc + "b02_pc2.jpg";
 
@@ -114,11 +109,20 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
     } else {
       getPrefixData();
     }
-  }, [codeLabel, codeNum, codeSuf, createVideoSrc, code, reload, posterSm]);
+  }, [
+    codeLabel,
+    codeNum,
+    codeSuf,
+    createVideoSrc,
+    code,
+    reload,
+    posterSm,
+    labelData,
+  ]);
 
   const handleVideoError = (): void => {
-    if (!isPaddedUrl && prefixData) {
-      const paddedVideoSrc: string = createVideoSrc(codeNum, true, prefixData);
+    if (!isPaddedUrl && labelData) {
+      const paddedVideoSrc: string = createVideoSrc(codeNum, true, labelData);
       setVideoSrc(paddedVideoSrc);
       setIsPaddedUrl(true);
       console.log("Attempting to load padded video URL: ", paddedVideoSrc);
@@ -128,7 +132,7 @@ const Trailer: React.FC<TrailerProps> = ({ code, posterSm, reload, title }) => {
   };
 
   return isLoaded ? (
-    codeLabel === "rebd" || codeLabel === "kidm" ? (
+    rebdLabels.includes(codeLabel) || codeLabel === "kidm" ? (
       <video
         src={videoSrc}
         poster={posterSrc}

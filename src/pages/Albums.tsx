@@ -52,7 +52,7 @@ const Albums = ({ model }: { model?: string }) => {
                 src={album.cover}
                 alt={album.name}
                 width="100%"
-                className="aspect-[3/4] bg-zinc-200 object-cover object-top"
+                className="aspect-3/4 bg-zinc-200 object-cover object-top"
               />
               <p className="mx-auto mb-0.5 mt-1 px-2">
                 {/* <span className="opacity-65">{album.studio}</span> {album.name} */}

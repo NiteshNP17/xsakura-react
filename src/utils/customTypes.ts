@@ -1,4 +1,5 @@
 export interface MovieData {
+  _id: string;
   code: string;
   cast: ActorData[];
   maleCast: string[];
@@ -23,6 +24,7 @@ export interface Tag {
 export interface ActorData {
   _id: string;
   name: string;
+  jpName: string;
   dob: string | Date;
   height?: number;
   img500: string;
@@ -33,6 +35,7 @@ export interface ActorData {
   };
   numMovies: number;
   yearsActive: number;
+  order: number;
   latestMovieDate: string;
   cup: string;
   rebdSrc: string;
@@ -50,6 +53,7 @@ export interface SeriesItem {
 }
 
 export interface LabelData {
+  label: string;
   prefix: string;
   imgPre: string;
   name: string;
@@ -57,6 +61,12 @@ export interface LabelData {
   isHq: boolean;
   isVr: boolean;
   is3digits: boolean;
+  studio: {
+    _id: string;
+    name: string;
+    slug: string;
+  };
+  maxNum: number;
 }
 
 export interface AlbumData {

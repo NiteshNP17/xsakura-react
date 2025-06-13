@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import config from "../utils/config";
 import { SeriesItem } from "../utils/customTypes";
-import { IconButton, Pagination } from "@mui/material";
+import {
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import SeriesDialog from "../components/Dialogs/SeriesDialog";
 import useKeyboardShortcut from "../utils/useKeyboardShortcut";
@@ -20,6 +27,7 @@ const Series = () => {
   const page = parseInt(urlParams.get("p") || "1");
   const [serieToEdit, setSerieToEdit] = useState<SeriesItem>({} as SeriesItem);
   const [totalPages, setTotalPages] = useState(1);
+  const [studio, setStudio] = useState("All");
 
   const handlePageChange = (
     _e: React.ChangeEvent<unknown> | KeyboardEvent | null,
@@ -37,7 +45,9 @@ const Series = () => {
   useEffect(() => {
     const fetchAllSeries = async () => {
       try {
-        const res = await fetch(`${config.apiUrl}/series?page=${page}`);
+        const res = await fetch(
+          `${config.apiUrl}/series?${studio !== "All" ? "studio=" + studio + "&" : ""}page=${page}`,
+        );
         const resData = await res.json();
         setSeriesList(resData.data);
         setTotalPages(resData.totalPages);
@@ -47,7 +57,7 @@ const Series = () => {
     };
 
     fetchAllSeries();
-  }, [reload, page]);
+  }, [reload, page, studio]);
 
   const handleAdd = () => {
     setSerieToEdit({} as SeriesItem);
@@ -65,6 +75,19 @@ const Series = () => {
         <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
+        <FormControl sx={{ ml: "auto", minWidth: 120 }}>
+          <InputLabel>Studio</InputLabel>
+          <Select
+            label="Studio"
+            value={studio}
+            onChange={(e) => setStudio(e.target.value)}
+            size="small"
+          >
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value="Prestige">Prestige</MenuItem>
+            <MenuItem value="Madonna">Madonna</MenuItem>
+          </Select>
+        </FormControl>
       </div>
       <div className="grid-fit-2 gap-4">
         {seriesList.map((series) => (

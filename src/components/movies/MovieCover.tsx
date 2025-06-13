@@ -148,7 +148,7 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
       onMouseEnter={() => handlePointerEnter(code)}
       onTouchStart={() => handlePointerEnter(code)}
       onMouseLeave={() => handlePointerEnter(null)}
-      className="relative flex aspect-[3/1.9] max-w-full items-center justify-center overflow-hidden"
+      className="relative flex aspect-[3/1.9] w-full items-center justify-center overflow-hidden"
     >
       {isForm && noPrev && (
         <div className="absolute rounded-lg bg-red-600 px-2 text-xl font-semibold">
@@ -184,9 +184,10 @@ const MovieCover: React.FC<MovieCoverProps> = ({ code, overrides, isForm }) => {
           />
         </video>
       )}
-      <div className="aspect-[3/2] w-full">
+      <div className="aspect-3/2 w-full">
         <img
-          className={`h-full bg-slate-200 ${imageDetails.height > imageDetails.width * 1.25 ? "object-cover object-top" : imageDetails.width > imageDetails.height * 1.45 ? "object-cover object-right" : "object-fill"} dark:bg-zinc-600`}
+          // className={`h-full bg-slate-200 ${imageDetails.height > imageDetails.width * 1.25 ? "object-cover object-top" : imageDetails.width > imageDetails.height * 1.45 ? "object-cover object-right" : "object-fill"} dark:bg-zinc-600`}
+          className={`h-full bg-slate-200 ${imageDetails.height > imageDetails.width * 1.25 ? "object-cover object-top" : "object-cover object-right"} dark:bg-zinc-600`}
           src={img2show}
           alt={code.toUpperCase()}
           width="100%"

@@ -7,6 +7,16 @@ import config from "../../../utils/config";
 
 const OverridesInput = () => {
   const { movieState, setMovieState } = useContext(MovieContext);
+  const prevOpts = [
+    {
+      label: "MR",
+      value: `https://fourhoi.com/${movieState.code}-uncensored-leak/preview.mp4`,
+    },
+    {
+      label: "Miss",
+      value: `https://fourhoi.com/${movieState.code}/preview.mp4`,
+    },
+  ];
   // const optInput = document.getElementById("opt-input") as HTMLInputElement;
 
   useEffect(() => {
@@ -33,7 +43,7 @@ const OverridesInput = () => {
     );
     const labelData = await response.json();
 
-    const codeFormat = `${labelData.prefix || ""}${codeLabel}${codeNumPadded}`;
+    const codeFormat = `${labelData.imgPre || labelData.prefix || ""}${codeLabel}${codeNumPadded}`;
 
     return `https://pics.pornfhd.com/s/digital/video/${codeFormat}/${codeFormat}pl.jpg`;
   };
@@ -90,20 +100,56 @@ const OverridesInput = () => {
       />
       <Autocomplete
         freeSolo
-        options={[
-          `https://fourhoi.com/${movieState.code}-uncensored-leak/preview.mp4`,
-        ]}
-        value={movieState.overrides?.preview || ""}
+        options={prevOpts}
+        value={
+          movieState.overrides?.preview
+            ? {
+                label: movieState.overrides?.preview,
+                value: movieState.overrides?.preview,
+              }
+            : { label: "", value: "" }
+        }
+        getOptionLabel={(option) => {
+          // Handle both string and object cases
+          if (typeof option === "string") {
+            return option;
+          }
+          return option.label;
+        }}
         onChange={(_e, newValue) => {
           if (newValue) {
-            setMovieState({
-              ...movieState,
-              overrides: { ...movieState.overrides, preview: newValue },
-              tag2: [
-                ...(movieState.tag2 || []),
-                { _id: "67c3f414b4e420283fdcf289", name: "MR" },
-              ],
-            });
+            const isString = typeof newValue === "string";
+            // Handle both string and object cases
+            const newPreviewValue = isString ? newValue : newValue.value;
+
+            // Check if newValue is an object with a label property
+            if (
+              !isString &&
+              newValue.label === "MR" &&
+              !movieState.tag2.some(
+                (tag) => tag.name === "67c3f414b4e420283fdcf289",
+              )
+            ) {
+              setMovieState({
+                ...movieState,
+                overrides: {
+                  ...movieState.overrides,
+                  preview: newPreviewValue,
+                },
+                tag2: [
+                  ...(movieState.tag2 || []),
+                  { _id: "67c3f414b4e420283fdcf289", name: "MR" },
+                ],
+              });
+            } else {
+              setMovieState({
+                ...movieState,
+                overrides: {
+                  ...movieState.overrides,
+                  preview: newPreviewValue,
+                },
+              });
+            }
           } else {
             setMovieState({
               ...movieState,
@@ -121,7 +167,6 @@ const OverridesInput = () => {
             name="preview"
             label="Preview"
             variant="outlined"
-            // sx={{ my: "1rem" }}
             onChange={(e) =>
               setMovieState({
                 ...movieState,

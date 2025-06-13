@@ -47,7 +47,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
             src={actor.img500}
             alt={actor.name}
             width="100%"
-            className="aspect-[3/4] bg-zinc-200 object-cover object-[50%_25%]"
+            className="aspect-3/4 bg-zinc-200 object-cover object-[50%_25%]"
             onError={() => setShowBlank(true)}
           />
         ) : (
@@ -55,11 +55,11 @@ const ActorCard: React.FC<ActorCardProps> = ({
             src={blankImg}
             alt="blank"
             width="100%"
-            className="aspect-[3/4] bg-zinc-200 object-cover"
+            className="aspect-3/4 bg-zinc-200 object-cover"
           />
         )}
         {!showBlank && (
-          <div className="absolute right-1 top-1 aspect-square place-content-center rounded-full bg-gray-800 bg-opacity-50 px-1.5 text-sm">
+          <div className="absolute top-0.5 right-0.5 place-content-center rounded-lg bg-gray-800/50 px-1.5 py-0.5 text-sm">
             <span className="font-semibold text-white">
               {movieCount || actor.numMovies}
             </span>

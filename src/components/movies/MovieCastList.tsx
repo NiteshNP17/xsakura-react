@@ -129,9 +129,9 @@ const MovieCastList: React.FC<MovieCastProps> = ({
         <Fragment key={actor._id}>
           {isDraggingOver === index && !!setMovieCast && (
             <div
-              className={`rounded-full bg-blue-400 px-0.5 text-slate-700 opacity-45`}
+              className={`my-auto h-[80%] rounded-full bg-blue-400 px-0.5 text-slate-700 opacity-55`}
             >
-              &gt;
+              &nbsp;
             </div>
           )}
           <div

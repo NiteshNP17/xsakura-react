@@ -20,7 +20,7 @@ import { ActorData, MovieData, SeriesItem, Tag } from "../../utils/customTypes";
 import MovieArticle from "./MovieArticle";
 import MovieDialogBase from "../Dialogs/MovieForm/MovieDialogBase";
 import { MovieContext } from "../Dialogs/MovieForm/MovieContext";
-import { ArrowBack, Shuffle } from "@mui/icons-material";
+import { ArrowBack, Refresh, Shuffle } from "@mui/icons-material";
 import CastButtons from "./CastButtons";
 import BatchAddDialog from "../Dialogs/BatchAddDialog";
 import FiltersAC from "./FiltersAC";
@@ -131,6 +131,9 @@ const MovieList: React.FC<MovieListProps> = ({
         >
           <AddCircleOutline />
         </IconButton>
+        <IconButton color="inherit" onClick={refetch}>
+          <Refresh />
+        </IconButton>
         <div className="ml-auto flex items-center gap-2">
           <ButtonGroup>
             <IconButton onClick={handleRandom}>
@@ -181,7 +184,7 @@ const MovieList: React.FC<MovieListProps> = ({
           refetch={refetch}
         />
       </MovieContext.Provider>
-      <div className="grid-fit-2 mx-auto mb-12 mt-2 max-w-[1660px] gap-6">
+      <div className="grid-fit-2 mx-auto mt-2 mb-12 max-w-[1660px] gap-6">
         {movies.map((movie) => (
           <MovieArticle
             key={movie.code}

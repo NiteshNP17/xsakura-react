@@ -144,6 +144,19 @@ const ActorForm: React.FC<ActorFormProps> = ({
               />
               <TextField
                 type="text"
+                name="jpName"
+                label="JP Name"
+                autoComplete="off"
+                value={formFields.jpName || ""}
+                onChange={(e) =>
+                  setFormFields({
+                    ...formFields,
+                    jpName: e.target.value.trim(),
+                  })
+                }
+              />
+              <TextField
+                type="text"
                 name="dob"
                 label="Birthdate"
                 autoComplete="off"
@@ -261,7 +274,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
               />
             </div>
           </div>
-          <div className="col-span-2 ml-auto mt-6 grid grid-cols-2 gap-2 justify-self-end md:mb-0 md:w-[calc(50%-0.75rem)]">
+          <div className="col-span-2 mt-6 ml-auto grid grid-cols-2 gap-2 justify-self-end md:mb-0 md:w-[calc(50%-0.75rem)]">
             <Button
               variant="contained"
               color="secondary"

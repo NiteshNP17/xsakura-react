@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react";
 import { ActorData } from "../../utils/customTypes";
-import {
-  Divider,
-  Table,
-  TableCell,
-  TableRow,
-  useMediaQuery,
-} from "@mui/material";
+import { Divider } from "@mui/material";
 // import { calculateAge, formatHeight, getRainbowColor } from "../../utils/utils";
-import { formatHeight, getRainbowColor } from "../../utils/utils";
+import ActorDataTable from "./ActorDataTable";
 
 interface ActorCardLargeProps {
   actor: ActorData;
@@ -24,8 +18,6 @@ const ActorCardLarge: React.FC<ActorCardLargeProps> = ({
     "https://upload.wikimedia.org/wikipedia/commons/5/53/Blank_woman_placeholder.svg";
 
   const [showBlank, setShowBlank] = useState<boolean>(false);
-  const tbFontLg = { fontSize: "1.1rem", fontWeight: 600 };
-  const isMobile = useMediaQuery("(max-width:660px)");
 
   useEffect(() => {
     if (actor.img500) {
@@ -41,7 +33,7 @@ const ActorCardLarge: React.FC<ActorCardLargeProps> = ({
             src={actor.img500}
             alt={actor.name}
             // width="100%"
-            className="aspect-[3/4] rounded-r-lg border-r bg-zinc-200 object-cover object-[50%_25%] shadow-lg dark:border-zinc-600"
+            className="aspect-3/4 rounded-r-lg border-r bg-zinc-200 object-cover object-[50%_25%] shadow-lg dark:border-zinc-600"
             onError={() => setShowBlank(true)}
           />
         ) : (
@@ -49,11 +41,11 @@ const ActorCardLarge: React.FC<ActorCardLargeProps> = ({
             src={blankImg}
             alt="blank"
             // width="100%"
-            className="aspect-[3/4] rounded-r-lg bg-zinc-200 object-cover"
+            className="aspect-3/4 rounded-r-lg bg-zinc-200 object-cover"
           />
         )}
         {!showBlank && (
-          <div className="absolute bottom-1 right-1 aspect-square place-content-center rounded-full bg-zinc-700 px-1.5 text-sm">
+          <div className="absolute right-1 bottom-1 aspect-square place-content-center rounded-full bg-zinc-700 px-1.5 text-sm">
             <span className="font-semibold text-white">
               {movieCount || actor.numMovies}
             </span>
@@ -76,46 +68,7 @@ const ActorCardLarge: React.FC<ActorCardLargeProps> = ({
                 {actor.dob.toString()} 
               </p>
             </div>*/}
-          <Table>
-            {actor.dob && (
-              <TableRow>
-                <TableCell align="right" sx={tbFontLg}>
-                  {actor.ageAtLatestRel || ""}
-                </TableCell>
-                <TableCell>
-                  {isMobile
-                    ? actor.dob.toString().slice(2)
-                    : actor.dob.toString()}
-                </TableCell>
-              </TableRow>
-            )}
-            <TableRow>
-              <TableCell align="right" sx={tbFontLg}>
-                <span
-                  className={
-                    actor.cup ? getRainbowColor(actor.cup) : "" + " text-xl"
-                  }
-                >
-                  {actor.cup || ""}
-                </span>
-              </TableCell>
-              {actor.sizes?.bust ? (
-                <TableCell>
-                  {actor.sizes.bust}-{actor.sizes.waist}-{actor.sizes.hips}
-                </TableCell>
-              ) : (
-                <TableCell> </TableCell>
-              )}
-            </TableRow>
-            {actor.height && (
-              <TableRow>
-                <TableCell align="right" sx={tbFontLg}>
-                  {formatHeight(actor.height)}
-                </TableCell>
-                <TableCell>{actor.height}</TableCell>
-              </TableRow>
-            )}
-          </Table>
+          <ActorDataTable actor={actor} />
         </div>
       </div>
     </div>

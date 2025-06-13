@@ -24,6 +24,7 @@ const SeriesPage = () => {
   const [searchParams] = useSearchParams();
   const page = parseInt(searchParams.get("p") || "1");
   const [openSeriesDialog, setOpenSeriesDialog] = useState(false);
+  const [moviesThumbs, setmoviesThumbs] = useState("");
 
   useEffect(() => {
     const fetchSeriesData = async () => {
@@ -33,6 +34,16 @@ const SeriesPage = () => {
         );
         setMoviesRes(res.data);
         setLoaded(true);
+
+        const moviesThumbsArr = res.data.movies.slice(-3);
+        const arrSorted = moviesThumbsArr.sort((a: MovieData, b: MovieData) => {
+          if (a._id > b._id) {
+            return 1;
+          } else return -1;
+        });
+        setmoviesThumbs(
+          arrSorted.map((movie: MovieData) => movie.code).join(" "),
+        );
       } catch (err) {
         console.error("error fetching series data: ", err);
       }
@@ -48,16 +59,15 @@ const SeriesPage = () => {
 
   return isLoaded ? (
     <>
-      {moviesRes.movies[0].series.thumbs && (
-        <div className="mx-auto max-w-80 text-lg">
-          <SeriesCard
-            series={{
-              ...moviesRes.movies[0].series,
-              movieCount: moviesRes.totalMovies,
-            }}
-          />
-        </div>
-      )}
+      <div className="mx-auto max-w-80 text-lg">
+        <SeriesCard
+          series={{
+            ...moviesRes.movies[0].series,
+            movieCount: moviesRes.totalMovies,
+            thumbs: moviesRes.movies[0].series.thumbs || moviesThumbs,
+          }}
+        />
+      </div>
       <div className="mt-2 flex justify-center gap-2 px-[3vw] text-xl capitalize">
         <span className="opacity-50">Series</span>
         <span>{moviesRes.movies[0].series.name}</span>

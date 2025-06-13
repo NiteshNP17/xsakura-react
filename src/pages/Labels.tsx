@@ -1,18 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import config from "../utils/config";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Pagination,
-  TextField,
-} from "@mui/material";
+import { IconButton, Pagination } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 import { Link, useSearchParams } from "react-router-dom";
+import LabelsInput from "../components/Dialogs/LabelsInput";
 
 interface LabelList {
   label: string;
@@ -23,7 +15,9 @@ interface LabelList {
 const Labels = () => {
   const [dataList, setDataList] = useState<LabelList[]>([]);
   const [open, setOpen] = useState(false);
-  const [selectedLabel, setSelectedLabel] = useState("");
+  const [selectedLabel, setSelectedLabel] = useState<LabelList>(
+    {} as LabelList,
+  );
   const [urlParams, setUrlParams] = useSearchParams();
   const page = parseInt(urlParams.get("p") || "1");
   const [totalPages, setTotalPages] = useState(1);
@@ -60,22 +54,6 @@ const Labels = () => {
     fetchList();
   }, [page, refetchTrigger]);
 
-  const handleSubmit = async () => {
-    try {
-      const nameInput = document.getElementById(
-        "name-input",
-      ) as HTMLInputElement;
-
-      await axios.patch(`${config.apiUrl}/labels/${selectedLabel}`, {
-        name: nameInput?.value,
-      });
-      refetch();
-      setOpen(false);
-    } catch (err) {
-      alert("Failed to update label data: " + err);
-    }
-  };
-
   return (
     <div className="mx-auto max-w-[1660px] px-4">
       <div className="my-4 flex items-center">
@@ -83,7 +61,10 @@ const Labels = () => {
       </div>
       <div className="grid-fit-2 gap-4">
         {dataList.map((label) => (
-          <div className="group items-center text-center align-middle text-lg">
+          <div
+            key={label.label}
+            className="group items-center text-center align-middle text-lg"
+          >
             <Link to={`/movies?label=${label.label}&sort=code`}>
               {label.label.toUpperCase()}{" "}
               {label.name && <span className="opacity-75">{label.name} </span>}
@@ -93,7 +74,7 @@ const Labels = () => {
               <IconButton
                 size="small"
                 onClick={() => {
-                  setSelectedLabel(label.label);
+                  setSelectedLabel(label);
                   setOpen(true);
                 }}
               >
@@ -112,41 +93,12 @@ const Labels = () => {
           onChange={handlePageChange}
         />
       </div>
-      <Dialog
+      <LabelsInput
         open={open}
-        onClose={() => setOpen(false)}
-        PaperProps={{ component: "form", onSubmit: handleSubmit }}
-      >
-        <DialogTitle>Set name for {selectedLabel.toUpperCase()}</DialogTitle>
-        <DialogContent>
-          <TextField
-            id="name-input"
-            type="text"
-            autoComplete="off"
-            label="Name"
-            sx={{ mt: 0.75 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            variant="contained"
-            color="secondary"
-            size="large"
-            onClick={() => setOpen(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            size="large"
-            type="submit"
-            sx={{ px: 4 }}
-          >
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+        setOpen={setOpen}
+        refetch={refetch}
+        selectedLabel={selectedLabel}
+      />
     </div>
   );
 };

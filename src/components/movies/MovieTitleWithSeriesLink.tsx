@@ -31,7 +31,8 @@ const MovieTitleWithSeriesLink = ({ movie }: { movie: MovieData }) => {
           {before && <span className="capitalize">{before}</span>}
           <Link
             to={`/series/${movie.series.slug}`}
-            className="capitalize text-pink-500"
+            className="text-pink-500 capitalize"
+            style={{ color: "pink" }}
           >
             {fullMatch}
           </Link>

@@ -48,6 +48,8 @@ const MovieDialogBase: React.FC<MovieDialogBaseProps> = ({
     dataToPost.tag2 = JSON.stringify(tagsArray);
     dataToPost.series = movieState.series ? movieState.series._id : "";
 
+    console.log("dataToPost: ", dataToPost);
+
     if (!isToEdit) {
       try {
         await axios.post(`${config.apiUrl}/movies`, dataToPost);

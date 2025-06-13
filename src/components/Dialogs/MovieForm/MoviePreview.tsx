@@ -1,5 +1,5 @@
 import MovieCover from "../../movies/MovieCover";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Trailer from "../../movies/Trailer";
 import IconButton from "@mui/material/IconButton";
 import Switch from "@mui/material/Switch";
@@ -10,6 +10,7 @@ import { MovieContext } from "./MovieContext";
 import { Alert, MenuItem, Select, Snackbar } from "@mui/material";
 import useKeyboardShortcut from "../../../utils/useKeyboardShortcut";
 import { DatasetLinked } from "@mui/icons-material";
+import { LabelData } from "../../../utils/customTypes";
 
 const MoviePreview = () => {
   const [isChecked, setIsChecked] = useState(false);
@@ -18,7 +19,7 @@ const MoviePreview = () => {
   const [scrapeSource, setScrapeSource] = useState("jd");
   const isFc2 =
     movieState.code?.startsWith("fc2") || movieState.code?.startsWith("kb");
-  const codeLabel = movieState.code?.split("-")[0];
+  const [codeLabel, codeNum] = movieState.code?.split("-") || ["abc", "001"];
   const scLabels = [
     "rebd",
     "rebdb",
@@ -31,6 +32,7 @@ const MoviePreview = () => {
     "mbdd",
     "naac",
   ];
+  const [labelData, setLabelData] = useState<LabelData>({} as LabelData);
 
   useKeyboardShortcut({
     modifier: "alt",
@@ -49,6 +51,8 @@ const MoviePreview = () => {
       let tag2Data = movieState.tag2 || [];
       if (res.data.tags.includes("mr"))
         tag2Data.push({ _id: "67c3f414b4e420283fdcf289", name: "MR" });
+      if (res.data.tags.includes("en"))
+        tag2Data.push({ _id: "67c3f435b4e420283fdcf28c", name: "EN" });
       if (scLabels.includes(codeLabel))
         tag2Data.push({ _id: "67c3f348b4e420283fdcf283", name: "Softcore" });
       if (isVr) tag2Data = [{ _id: "67c3f423b4e420283fdcf28b", name: "VR" }];
@@ -83,6 +87,21 @@ const MoviePreview = () => {
     }
   };
 
+  useEffect(() => {
+    const getLabelData = async () => {
+      try {
+        const res = await axios.get(
+          `${config.apiUrl}/labels/${codeLabel}?codenum=${codeNum}`,
+        );
+        setLabelData(res.data);
+      } catch (err) {
+        console.error("failed to get label data: ", err);
+      }
+    };
+
+    isChecked && getLabelData();
+  }, [codeLabel, codeNum, isChecked]);
+
   return (
     <>
       {!isChecked ? (
@@ -103,7 +122,12 @@ const MoviePreview = () => {
         </div>
       ) : (
         <div className="mb-2 overflow-hidden rounded-lg md:mb-0">
-          <Trailer code={movieState.code} posterSm title={movieState.title} />
+          <Trailer
+            code={movieState.code}
+            posterSm
+            title={movieState.title}
+            labelData={labelData}
+          />
         </div>
       )}
       <div className="relative mx-auto flex w-full items-center justify-center gap-1">
