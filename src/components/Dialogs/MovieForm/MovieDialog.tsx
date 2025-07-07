@@ -28,7 +28,6 @@ const MovieDialog = () => {
           defaultValue={movieState.maleCast && formatNames(movieState.maleCast)}
           variant="outlined"
           fullWidth
-          // sx={{ maxHeight: "20px" }}
           inputProps={{ autoCapitalize: "words" }}
         />
         <SeriesInput
@@ -64,24 +63,6 @@ const MovieDialog = () => {
           autoComplete="off"
         />
         <TagInput />
-        {/* <TextField
-          type="text"
-          name="tags"
-          label="Tags"
-          defaultValue={movieState.tags && formatNames(movieState.tags)}
-          variant="outlined"
-          inputProps={{ id: "tags-input" }}
-          // fullWidth
-          // sx={{ margin: "1rem 0", gridColumn: "span 2" }}
-        />
-        <TextField
-          type="text"
-          name="opt"
-          label="Opt"
-          defaultValue={movieState.opt}
-          variant="outlined"
-          inputProps={{ autoCapitalize: "none", id: "opt-input" }}
-        /> */}
         <OverridesInput />
         <TextField
           id="title-input"

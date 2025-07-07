@@ -1,5 +1,5 @@
 import { Autocomplete, CircularProgress, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import config from "../../../utils/config";
 import { SeriesItem } from "../../../utils/customTypes";
 import SeriesDialog from "../SeriesDialog";
@@ -16,24 +16,18 @@ const SeriesInput: React.FC<SeriesInputProps> = ({ value, onChange }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const fetchOptions = async () => {
+  const fetchOptions = async (q: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`${config.apiUrl}/series`);
+      const res = await fetch(`${config.apiUrl}/series/list?q=${q}`);
       const resData = await res.json();
-      setOptions(resData.data);
+      setOptions(resData);
     } catch (err) {
       console.error("Error:", err);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (open) {
-      fetchOptions();
-    }
-  }, [open]);
 
   return (
     <>
@@ -54,9 +48,10 @@ const SeriesInput: React.FC<SeriesInputProps> = ({ value, onChange }) => {
             onChange(newValue);
           }
         }}
+        onInputChange={(_e, val) => val?.length > 2 && fetchOptions(val)}
         // onChange={(_, newValue) => onChange(newValue)}
-        getOptionLabel={(option) => option.name}
-        isOptionEqualToValue={(option, value) => option._id === value._id}
+        getOptionLabel={(option) => option.name || ""}
+        isOptionEqualToValue={(option, value) => option?._id === value?._id}
         renderOption={(props, option) => (
           <li {...props}>
             <span className="line-clamp-2 capitalize">{option.name}</span>
@@ -69,7 +64,7 @@ const SeriesInput: React.FC<SeriesInputProps> = ({ value, onChange }) => {
             option.name.toLowerCase().includes(val.toLowerCase()),
           );
 
-          val.length > 2 &&
+          val?.length > 2 &&
             filtered.push({
               name: `Add "${params.inputValue}"`,
             } as SeriesItem);

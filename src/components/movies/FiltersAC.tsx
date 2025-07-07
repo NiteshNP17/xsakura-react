@@ -156,6 +156,15 @@ const FiltersAC = () => {
       return;
     }
 
+    if (
+      lastOption &&
+      lastOption.type === "cast" &&
+      selectedOptions.length < 1
+    ) {
+      goTo(`/actor/${lastOption.id.replace(/ /g, "-")}`);
+      return;
+    }
+
     setSelectedOptions(newValue);
     updateUrlParams(newValue);
   };
@@ -240,6 +249,7 @@ const FiltersAC = () => {
       )}
       renderTags={(value, getTagProps) =>
         value.map((option, index) => (
+          // eslint-disable-next-line react/jsx-key
           <Chip
             // key={`${option.type}-${option.id}`}
             label={option.id}

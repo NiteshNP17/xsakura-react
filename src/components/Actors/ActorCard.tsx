@@ -65,6 +65,11 @@ const ActorCard: React.FC<ActorCardProps> = ({
             </span>
           </div>
         )}
+        {actor.came > 0 && (
+          <div className="absolute top-0.5 left-0.5 place-content-center rounded-lg bg-gray-800/50 px-1.5 py-0.5 text-sm">
+            <span className="font-semibold text-white">{actor.came}</span>
+          </div>
+        )}
       </ActorLink>
       <div className="relative grid px-2.5 py-0.5">
         <div>

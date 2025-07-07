@@ -9,6 +9,7 @@ import {
   MenuItem,
   Pagination,
   Select,
+  SelectChangeEvent,
 } from "@mui/material";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import SeriesDialog from "../components/Dialogs/SeriesDialog";
@@ -27,7 +28,7 @@ const Series = () => {
   const page = parseInt(urlParams.get("p") || "1");
   const [serieToEdit, setSerieToEdit] = useState<SeriesItem>({} as SeriesItem);
   const [totalPages, setTotalPages] = useState(1);
-  const [studio, setStudio] = useState("All");
+  const studio = urlParams.get("studio") || "All";
 
   const handlePageChange = (
     _e: React.ChangeEvent<unknown> | KeyboardEvent | null,
@@ -40,6 +41,22 @@ const Series = () => {
       params.set("p", newPage.toString());
     }
     setUrlParams(params.toString(), { replace: true });
+  };
+
+  // Handle change by updating URL params
+  const handleStudioChange = (e: SelectChangeEvent) => {
+    const newStudio = e.target.value;
+    setUrlParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      if (newStudio === "All") {
+        newParams.delete("p"); // Remove param if "All" is selected
+        newParams.delete("studio"); // Remove param if "All" is selected
+      } else {
+        newParams.delete("p"); // Remove param if "All" is selected
+        newParams.set("studio", newStudio);
+      }
+      return newParams;
+    });
   };
 
   useEffect(() => {
@@ -80,7 +97,7 @@ const Series = () => {
           <Select
             label="Studio"
             value={studio}
-            onChange={(e) => setStudio(e.target.value)}
+            onChange={handleStudioChange}
             size="small"
           >
             <MenuItem value="All">All</MenuItem>

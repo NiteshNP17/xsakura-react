@@ -1,26 +1,25 @@
 import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
-import { ActorData } from "../../../utils/customTypes";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import config from "../../../utils/config";
 import { LoadingButton } from "@mui/lab";
+import { MovieContext } from "./MovieContext";
 
 interface ActorQADProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  selectedActors: ActorData[];
-  setSelectedActors: (selectedActors: ActorData[]) => void;
   actorToAdd: string;
 }
 
 const ActorQuickAddDialog: React.FC<ActorQADProps> = ({
   open,
   setOpen,
-  selectedActors,
-  setSelectedActors,
+  // selectedActors,
+  // setSelectedActors,
   actorToAdd,
 }) => {
   const [loading, setLoading] = useState(false);
+  const { movieState, setMovieState } = useContext(MovieContext);
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -30,7 +29,7 @@ const ActorQuickAddDialog: React.FC<ActorQADProps> = ({
         name: actorToAdd,
       });
       const newActor = res.data;
-      setSelectedActors([...selectedActors, newActor]);
+      setMovieState({ ...movieState, cast: [...movieState.cast, newActor] });
       setOpen(false);
     } catch (err) {
       alert("failed adding actor: " + err);
@@ -54,7 +53,7 @@ const ActorQuickAddDialog: React.FC<ActorQADProps> = ({
       // PaperProps={{ component: "form", onSubmit: handleSubmit }}
     >
       <DialogTitle className="capitalize">
-        Add "<b>{actorToAdd}</b>"?
+        Add &quot;<b>{actorToAdd}</b>&quot;?
       </DialogTitle>
       <DialogActions>
         <Button

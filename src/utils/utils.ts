@@ -1,6 +1,3 @@
-import axios from "axios";
-import config from "./config";
-
 function formatNames(namesArray: string[]) {
   // Capitalize the first letter of each name
   const formattedNames = namesArray.map((name) => {
@@ -137,18 +134,6 @@ function formatHeight(heightCm: number): string {
   return `${feetString}${inchesString}`.trim();
 }
 
-async function movieExists(movieCode: string) {
-  try {
-    const res = await axios.get(
-      `${config.apiUrl}/movies/${movieCode.toLowerCase()}`,
-    );
-    if (res) return true;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    if (err.response.status === 404) return false;
-  }
-}
-
 const getRainbowColor = (letter: string): string => {
   if (!letter) return "font-semibold";
   // Normalize the letter to lowercase
@@ -182,6 +167,5 @@ export {
   calculateAge,
   ageCompare,
   formatHeight,
-  movieExists,
   getRainbowColor,
 };

@@ -70,6 +70,7 @@ const SortSelect: React.FC<SortSelectProps> = ({ type, setLoaded }) => {
           <MenuItem value={"sizes.waist"}>Waist</MenuItem>
           <MenuItem value={"sizes.hips"}>Hips</MenuItem>
           <MenuItem value={"order"}>Custom</MenuItem>
+          <MenuItem value={"came"}>Came</MenuItem>
         </Select>
       </FormControl>
       <Button

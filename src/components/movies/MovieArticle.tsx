@@ -6,6 +6,7 @@ import { IconButton } from "@mui/material";
 import MovieCastList from "./MovieCastList";
 import MovieTitleWithSeriesLink from "./MovieTitleWithSeriesLink";
 import DisplayTags from "./DisplayTags";
+import { WaterDrop } from "@mui/icons-material";
 
 interface MovieArticleProps {
   movie: MovieData;
@@ -27,6 +28,12 @@ const MovieArticle: React.FC<MovieArticleProps> = ({
       <Link to={`/movie/${movie.code}`}>
         <MovieCover code={movie.code} overrides={movie.overrides} />
         <DisplayTags tags={movie.tag2} />
+        {movie.came > 0 && (
+          <div className="absolute top-1 right-1 flex rounded-md bg-black/40 px-1 align-bottom">
+            <WaterDrop />
+            {movie.came}
+          </div>
+        )}
       </Link>
       <div className="flex pl-3">
         <p className="line-clamp-2">

@@ -90,7 +90,7 @@ const ActorForm: React.FC<ActorFormProps> = ({
           formFields,
         );
         if (path.includes("/actor/")) {
-          navigate(`/actor/${res.data.name.replace(" ", "-")}?sort=release`);
+          navigate(`/actor/${res.data.name.replace(/ /g, "-")}?sort=release`);
         }
       }
       console.log("Success!");

@@ -1,7 +1,19 @@
 import { Link, useParams } from "react-router-dom";
 import Trailer from "../components/movies/Trailer";
-import { Alert, IconButton, Menu, MenuItem, Snackbar } from "@mui/material";
-import { DatasetLinked, Face3TwoTone, MoreVert } from "@mui/icons-material";
+import {
+  Alert,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Snackbar,
+} from "@mui/material";
+import {
+  DatasetLinked,
+  Face3TwoTone,
+  MoreVert,
+  WaterDrop,
+} from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import PrefixDialog from "../components/Dialogs/PrefixDialog";
 import useKeyboardShortcut from "../utils/useKeyboardShortcut";
@@ -12,6 +24,7 @@ import MovieCastList from "../components/movies/MovieCastList";
 import { MovieContext } from "../components/Dialogs/MovieForm/MovieContext";
 import MovieDialogBase from "../components/Dialogs/MovieForm/MovieDialogBase";
 import LabelsInput from "../components/Dialogs/LabelsInput";
+import axios from "axios";
 
 const MoviePage = () => {
   const { code } = useParams();
@@ -28,6 +41,21 @@ const MoviePage = () => {
 
   const refetchMovies = () => {
     setRefetchTrigger((prev) => !prev);
+  };
+
+  const handleCame = async () => {
+    try {
+      const res = await axios.post(`${config.apiUrl}/movies/came/${code}`);
+      console.log("came success", res.data.message);
+      refetchMovies();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error(
+        "error liking movie: ",
+        err.message + " ",
+        err.response?.data?.message,
+      );
+    }
   };
 
   useEffect(() => {
@@ -143,6 +171,16 @@ const MoviePage = () => {
             >
               JavHDPorn
             </a>
+            <div className="mr-14 ml-auto">
+              <Button
+                color="inherit"
+                sx={{ fontSize: 18 }}
+                onClick={handleCame}
+              >
+                <WaterDrop color="inherit" />
+                {movieData.came > 0 && <span>{movieData.came}</span>}
+              </Button>
+            </div>
           </div>
         </div>
         {!code?.startsWith("fc2") && (
@@ -224,6 +262,7 @@ const MoviePage = () => {
           movieState: movieData,
           setMovieState: setMovieData,
           isToEdit: true,
+          setToEdit: () => {},
         }}
       >
         <MovieDialogBase

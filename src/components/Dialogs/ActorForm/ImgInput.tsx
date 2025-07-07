@@ -14,8 +14,8 @@ const ImgInput = ({
   setValues: (values: EditData) => void;
 }) => {
   const [open, setOpen] = useState(false);
-  const nameFormatted = values.name.replace(" ", "-");
-  const nameFormatted2 = values.name.replace(" ", "_");
+  const nameFormatted = values.name.replace(/ /g, "-");
+  const nameFormatted2 = values.name.replace(/ /g, "_");
   const options = [
     `https://www.javdatabase.com/idolimages/full/${nameFormatted}.webp`,
     `https://javmodel.com/javdata/uploads/${nameFormatted2}150.jpg`,

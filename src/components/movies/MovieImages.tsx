@@ -33,6 +33,8 @@ const MovieImages = ({
     let dlNum = 1;
     if (codeNumInt < 889 && codeNumInt > 500) {
       dlNum = codeNumInt > 873 ? 3 : 2;
+    } else if (codeNumInt > 951) {
+      dlNum = 2;
     }
     return `https://file.rebecca-web.com/media/videos/dl0${dlNum}/rebd_${codeNum}/b${i.toString().padStart(2, "0")}_pc2.jpg`;
   };

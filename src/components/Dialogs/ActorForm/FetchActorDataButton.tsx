@@ -39,7 +39,7 @@ const FetchActorDataButton: React.FC<FADBProps> = ({
     // Otherwise fetch from API
     try {
       const response = await fetch(
-        `${config.apiUrl}/lookups/scrape-actor-data?actor=${formFields.name.replace(" ", "-")}`,
+        `${config.apiUrl}/lookups/scrape-actor-data?actor=${formFields.name.replace(/ /g, "-")}`,
       );
       const data = await response.json();
 

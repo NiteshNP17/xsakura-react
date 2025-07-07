@@ -88,7 +88,7 @@ const Trailer: React.FC<TrailerProps> = ({
     };
 
     if (rebdLabels.includes(codeLabel)) {
-      const dlNum = `dl0${codeNumInt > 873 && codeNumInt < 889 ? "3" : codeNumInt > 500 && codeNumInt < 874 ? "2" : "1"}`;
+      const dlNum = `dl0${codeNumInt > 873 && codeNumInt < 889 ? "3" : (codeNumInt > 500 && codeNumInt < 874) || codeNumInt > 951 ? "2" : "1"}`;
       const rebdBaseSrc = `https://file.rebecca-web.com/media/videos/${dlNum}/${codeLabel}_${codeNum}${codeLabel === "naac" ? "b" : ""}/`;
       const rebdVidSrc = rebdBaseSrc + "movie.mp4";
       const rebdPoster = rebdBaseSrc + "b02_pc2.jpg";

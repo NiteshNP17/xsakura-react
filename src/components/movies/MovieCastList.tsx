@@ -1,12 +1,12 @@
-import { ReactNode, useState, DragEvent, Fragment } from "react";
+import { ReactNode, useState, DragEvent, Fragment, useContext } from "react";
 import { Link } from "react-router-dom";
 import { calculateAge } from "../../utils/utils";
 import { ActorData } from "../../utils/customTypes";
 import IconButton from "@mui/material/IconButton";
+import { MovieContext } from "../Dialogs/MovieForm/MovieContext";
 
 interface MovieCastProps {
   movieCast: ActorData[];
-  setMovieCast?: React.Dispatch<React.SetStateAction<ActorData[]>>;
   maleCast?: string[];
   release?: string | Date;
   mb?: boolean;
@@ -14,13 +14,13 @@ interface MovieCastProps {
 
 const MovieCastList: React.FC<MovieCastProps> = ({
   movieCast,
-  setMovieCast,
   maleCast,
   release,
   mb,
 }) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState<number | null>(null);
+  const { movieState, setMovieState } = useContext(MovieContext);
 
   const btClasses = {
     txtF: "text-pink-600 dark:text-pink-500",
@@ -28,7 +28,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
     bgNoDb: `bg-zinc-200 dark:bg-zinc-700 ${
       mb ? "hover:bg-zinc-300 dark:hover:bg-zinc-600" : ""
     }`,
-    btBase: `max-h-7 whitespace-nowrap ${setMovieCast ? "pl-2 pr-0.5" : "px-2"} py-0.5 text-sm capitalize transition-colors rounded-full`,
+    btBase: `max-h-7 whitespace-nowrap ${!mb ? "pl-2 pr-0.5" : "px-2"} py-0.5 text-sm capitalize transition-colors rounded-full`,
   };
   const releaseDate = release ? new Date(release) : null;
 
@@ -65,7 +65,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
   // Drag handling functions
   const handleDragStart = (e: DragEvent<HTMLDivElement>, index: number) => {
     // Only enable dragging when we have the setter function
-    if (!setMovieCast) return;
+    if (mb) return;
 
     e.dataTransfer.effectAllowed = "move";
     setDraggedIndex(index);
@@ -105,7 +105,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
   const handleDrop = (e: DragEvent<HTMLDivElement>, dropIndex: number) => {
     e.preventDefault();
 
-    if (draggedIndex === null || !setMovieCast) return;
+    if (draggedIndex === null || mb) return;
 
     // Create a new array with the dragged item moved to the new position
     const newCast = [...movieCast];
@@ -116,7 +116,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
     // Insert at the new position
     newCast.splice(dropIndex, 0, draggedItem);
 
-    setMovieCast(newCast);
+    setMovieState({ ...movieState, cast: newCast });
     setDraggedIndex(null);
     setIsDraggingOver(null);
   };
@@ -127,7 +127,7 @@ const MovieCastList: React.FC<MovieCastProps> = ({
     >
       {movieCast.map((actor, index) => (
         <Fragment key={actor._id}>
-          {isDraggingOver === index && !!setMovieCast && (
+          {isDraggingOver === index && !mb && (
             <div
               className={`my-auto h-[80%] rounded-full bg-blue-400 px-0.5 text-slate-700 opacity-55`}
             >
@@ -136,8 +136,8 @@ const MovieCastList: React.FC<MovieCastProps> = ({
           )}
           <div
             key={actor._id}
-            className={`${btClasses.btBase} ${btClasses.txtF} ${btClasses.bgNoDb} ${draggedIndex === index ? "opacity-40" : ""} ${setMovieCast ? "c3da cursor-grab active:cursor-grabbing" : ""}`}
-            draggable={!!setMovieCast}
+            className={`${btClasses.btBase} ${btClasses.txtF} ${btClasses.bgNoDb} ${draggedIndex === index ? "opacity-40" : ""} ${!mb ? "c3da cursor-grab active:cursor-grabbing" : ""}`}
+            draggable={!mb}
             onDragStart={(e) => handleDragStart(e, index)}
             onDragEnd={handleDragEnd}
             onDragOver={(e) => handleDragOver(e, index)}
@@ -146,11 +146,11 @@ const MovieCastList: React.FC<MovieCastProps> = ({
             onDrop={(e) => handleDrop(e, index)}
           >
             <ActorLink
-              endpoint={actor.name ? actor.name.replace(" ", "-") : "aa"}
+              endpoint={actor.name ? actor.name.replace(/ /g, "-") : "aa"}
             >
               {renderActressName(actor)}
             </ActorLink>
-            {setMovieCast && (
+            {!mb && (
               <IconButton
                 size="small"
                 sx={{
@@ -159,11 +159,17 @@ const MovieCastList: React.FC<MovieCastProps> = ({
                   ml: "0.25rem",
                 }}
                 onClick={() =>
-                  setMovieCast((prevCast: ActorData[]) =>
-                    prevCast.filter(
+                  // setMovieCast((prevCast: ActorData[]) =>
+                  //   prevCast.filter(
+                  //     (castMember) => castMember._id !== actor._id,
+                  //   ),
+                  // )
+                  {
+                    const newCast = movieState.cast.filter(
                       (castMember) => castMember._id !== actor._id,
-                    ),
-                  )
+                    );
+                    setMovieState({ ...movieState, cast: newCast });
+                  }
                 }
               >
                 <span className="dark:text-zinc-400">&times;</span>

@@ -54,6 +54,7 @@ const MovieList: React.FC<MovieListProps> = ({
   const [id, setId] = useState("");
   const [isToEdit, setToEdit] = useState(false);
   const isRandom = searchParams.get("random");
+  const isLocal = process.env.NODE_ENV === "development";
 
   const handlePageChange = (
     _e: React.ChangeEvent<unknown>,
@@ -120,28 +121,34 @@ const MovieList: React.FC<MovieListProps> = ({
         <IconButton color="primary" onClick={handleAdd}>
           <AddCircleOutline />
         </IconButton>
-        <IconButton
-          color="primary"
-          onClick={() => {
-            setMovieToEdit({
-              cast: actorData ? [actorData] : [],
-            } as MovieData);
-            setOpenBatchDialog(true);
-          }}
-        >
-          <AddCircleOutline />
-        </IconButton>
-        <IconButton color="inherit" onClick={refetch}>
-          <Refresh />
-        </IconButton>
+        {isLocal && (
+          <>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                setMovieToEdit({
+                  cast: actorData ? [actorData] : [],
+                } as MovieData);
+                setOpenBatchDialog(true);
+              }}
+            >
+              <AddCircleOutline />
+            </IconButton>
+            <IconButton color="inherit" onClick={refetch}>
+              <Refresh />
+            </IconButton>
+          </>
+        )}
         <div className="ml-auto flex items-center gap-2">
           <ButtonGroup>
             <IconButton onClick={handleRandom}>
               <Shuffle />
             </IconButton>
-            <IconButton onClick={handleRandomBack} disabled={!isRandom}>
-              <ArrowBack />
-            </IconButton>
+            {isRandom && (
+              <IconButton onClick={handleRandomBack} disabled={!isRandom}>
+                <ArrowBack />
+              </IconButton>
+            )}
           </ButtonGroup>
           {/* <FormControl sx={{ ml: "auto" }}> */}
           <FormControl>
@@ -170,6 +177,7 @@ const MovieList: React.FC<MovieListProps> = ({
           movieState: movieToEdit,
           setMovieState: setMovieToEdit,
           isToEdit,
+          setToEdit,
         }}
       >
         <MovieDialogBase

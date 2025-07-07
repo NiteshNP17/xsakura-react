@@ -7,31 +7,27 @@ import PlayCircleOutline from "@mui/icons-material/PlayCircleOutline";
 import axios from "axios";
 import config from "../../../utils/config";
 import { MovieContext } from "./MovieContext";
-import { Alert, MenuItem, Select, Snackbar } from "@mui/material";
+import {
+  Alert,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Snackbar,
+} from "@mui/material";
 import useKeyboardShortcut from "../../../utils/useKeyboardShortcut";
 import { DatasetLinked } from "@mui/icons-material";
-import { LabelData } from "../../../utils/customTypes";
+import { ActorData, LabelData, Tag } from "../../../utils/customTypes";
 
 const MoviePreview = () => {
   const [isChecked, setIsChecked] = useState(false);
   const { movieState, setMovieState } = useContext(MovieContext);
   const [openSnack, setOpenSnack] = useState(false);
-  const [scrapeSource, setScrapeSource] = useState("jd");
+  const [scrapeSource, setScrapeSource] = useState(() => {
+    return localStorage.getItem("scrapeSource") || "jd";
+  });
   const isFc2 =
     movieState.code?.startsWith("fc2") || movieState.code?.startsWith("kb");
   const [codeLabel, codeNum] = movieState.code?.split("-") || ["abc", "001"];
-  const scLabels = [
-    "rebd",
-    "rebdb",
-    "oae",
-    "fway",
-    "ss",
-    "ld",
-    "prby",
-    "prbyb",
-    "mbdd",
-    "naac",
-  ];
   const [labelData, setLabelData] = useState<LabelData>({} as LabelData);
 
   useKeyboardShortcut({
@@ -47,24 +43,48 @@ const MoviePreview = () => {
         `${config.apiUrl}/lookups/scrape${scrapeSource !== "nj" && !isFc2 ? "-" + scrapeSource : ""}?code=${movieState.code}`,
       );
 
-      const isVr = codeLabel.endsWith("vr");
-      let tag2Data = movieState.tag2 || [];
-      if (res.data.tags.includes("mr"))
-        tag2Data.push({ _id: "67c3f414b4e420283fdcf289", name: "MR" });
-      if (res.data.tags.includes("en"))
-        tag2Data.push({ _id: "67c3f435b4e420283fdcf28c", name: "EN" });
-      if (scLabels.includes(codeLabel))
-        tag2Data.push({ _id: "67c3f348b4e420283fdcf283", name: "Softcore" });
-      if (isVr) tag2Data = [{ _id: "67c3f423b4e420283fdcf28b", name: "VR" }];
-      if (res.data.tags.includes("pov"))
-        tag2Data.push({ _id: "67c3f30ab4e420283fdcf27f", name: "POV" });
-      if (res.data.tags.includes("ass"))
-        tag2Data.push({ _id: "67c3f2e2b4e420283fdcf27e", name: "Ass Lover" });
+      const isVr = res.data.tags?.some((tag: Tag) => tag.name === "VR");
+      const tag2Data = res.data.tags || [];
+
+      const actorData: ActorData[] = res.data.cast as ActorData[];
+
+      /*if (movieState.cast?.length === 0) {
+        const shortTitleArr = res.data.title
+          .slice(-20)
+          .toLowerCase()
+          .replace(/['"]/g, "")
+          .trim()
+          .split(" ")
+          .slice(-2);
+
+        const res1 = await axios.get(
+          `${config.apiUrl}/actors/${shortTitleArr.join("%20")}`,
+        );
+        actorData = res1.data[0];
+        if (!actorData?.name) {
+          console.log(
+            `didn't find ${config.apiUrl}/actors/${shortTitleArr.join("%20")}`,
+          );
+
+          const res2 = await axios.get(
+            `${config.apiUrl}/actors/${shortTitleArr.reverse().join("%20")}`,
+          );
+          actorData = res2.data[0];
+        }
+
+        if (!actorData?.name)
+          console.log(
+            `didn't find ${config.apiUrl}/actors/${shortTitleArr.join("%20")}`,
+          );
+
+        console.log("AtorData: ", actorData);
+      }*/
 
       const mrUrl = `https://fourhoi.com/${movieState.code}-uncensored-leak/preview.mp4`;
       setMovieState({
         ...movieState,
         title: res.data.title,
+        cast: actorData.length > 0 ? actorData : [...movieState.cast],
         release: res.data.relDate,
         runtime: res.data.runtime,
         tag2: tag2Data,
@@ -72,11 +92,13 @@ const MoviePreview = () => {
           cover: !isVr
             ? `http://javpop.com/img/${movieState.code.split("-")[0]}/${movieState.code}_poster.jpg`
             : "",
-          preview: res.data.tags.includes("mr") ? mrUrl : "",
+          preview: res.data.tags?.some((tag: Tag) => tag.name === "MR")
+            ? mrUrl
+            : "",
         },
       });
 
-      if (movieState.cast.length === 0) {
+      if (movieState.cast?.length === 0 && !actorData[0]?.name) {
         (document.getElementById("f-actor-opts") as HTMLInputElement).focus();
       } else {
         (document.getElementById("f-tags-input") as HTMLInputElement).focus();
@@ -101,6 +123,12 @@ const MoviePreview = () => {
 
     isChecked && getLabelData();
   }, [codeLabel, codeNum, isChecked]);
+
+  const handleChangeScrapeSrc = (e: SelectChangeEvent) => {
+    const newValue = e.target.value;
+    setScrapeSource(newValue);
+    localStorage.setItem("scrapeSource", newValue);
+  };
 
   return (
     <>
@@ -150,12 +178,12 @@ const MoviePreview = () => {
         <Select
           variant="standard"
           value={scrapeSource}
-          onChange={(e) => setScrapeSource(e.target.value)}
+          onChange={handleChangeScrapeSrc}
           sx={{ position: "absolute", right: "3rem", px: 1 }}
         >
           <MenuItem value="jt">JT</MenuItem>
           <MenuItem value="jd">JD</MenuItem>
-          <MenuItem value="nj">NJ</MenuItem>
+          {/* <MenuItem value="nj">NJ</MenuItem> */}
         </Select>
         <IconButton
           onClick={handleBtnClick}

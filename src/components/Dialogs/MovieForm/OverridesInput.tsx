@@ -48,6 +48,24 @@ const OverridesInput = () => {
     return `https://pics.pornfhd.com/s/digital/video/${codeFormat}/${codeFormat}pl.jpg`;
   };
 
+  const jjSrc = async () => {
+    const [codeLabel, codeNum] = movieState.code.split("-");
+    const codeNumPadded = codeNum.padStart(5, "0");
+    const actorName = movieState.cast[0]?.name.replace(/ /g, "-");
+
+    if (!codeNum) return "!code";
+
+    // Fetch label data from the API
+    const response = await fetch(
+      `${config.apiUrl}/labels/${codeLabel}?codenum=${codeNum}`,
+    );
+    const labelData = await response.json();
+
+    const codeFormat = `${labelData.imgPre || labelData.prefix || ""}${codeLabel}${codeNumPadded}`;
+
+    return `https://j.jjj.cam/fanza/${actorName}/${codeFormat}/${actorName}-0-480.jpg`;
+  };
+
   return (
     <>
       <Autocomplete
@@ -56,7 +74,7 @@ const OverridesInput = () => {
           `http://javpop.com/img/${movieState?.code?.split("-")[0]}/${movieState?.code}_poster.jpg`,
           `https://fourhoi.com/${movieState?.code}/cover-t.jpg`,
           "p-fhd",
-          `https://aisubs.app/static/${movieState?.code?.toUpperCase()}/cover.jpeg`,
+          `JJ`,
         ]}
         value={movieState.overrides?.cover || ""}
         onChange={(_e, newValue) => {
@@ -68,6 +86,14 @@ const OverridesInput = () => {
           } else if (newValue === "p-fhd") {
             // Handle the async function properly
             fhdSrc().then((url) => {
+              setMovieState({
+                ...movieState,
+                overrides: { ...movieState.overrides, cover: url },
+              });
+            });
+          } else if (newValue === "JJ") {
+            // Handle the async function properly
+            jjSrc().then((url) => {
               setMovieState({
                 ...movieState,
                 overrides: { ...movieState.overrides, cover: url },
@@ -126,7 +152,7 @@ const OverridesInput = () => {
             if (
               !isString &&
               newValue.label === "MR" &&
-              !movieState.tag2.some(
+              !movieState.tag2?.some(
                 (tag) => tag.name === "67c3f414b4e420283fdcf289",
               )
             ) {

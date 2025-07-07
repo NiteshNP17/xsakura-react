@@ -6,6 +6,7 @@ export interface MovieData {
   title: string;
   release: string;
   runtime: number;
+  came: number;
   tags: string[];
   tag2: Tag[];
   opt: string[];
@@ -40,6 +41,7 @@ export interface ActorData {
   cup: string;
   rebdSrc: string;
   ageAtLatestRel: number;
+  came: number;
 }
 
 export interface SeriesItem {

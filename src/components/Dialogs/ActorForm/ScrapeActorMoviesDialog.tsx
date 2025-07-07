@@ -119,7 +119,7 @@ const ScrapeActorMoviesDialog: React.FC<ScrapeActorMoviesDialogProps> = ({
       <DialogTitle>
         Batch Add for{" "}
         <span className="font-semibold text-rose-400 capitalize">
-          {actorName.replace("-", " ")}
+          {actorName.replace(/-/g, " ")}
         </span>
       </DialogTitle>
       <Divider />

@@ -1,7 +1,7 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import { ActorData } from "../../../utils/customTypes";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import config from "../../../utils/config";
 import { CircularProgress } from "@mui/material";
 import ActorQuickAddDialog from "./ActorQuickAddDialog";
@@ -15,9 +15,9 @@ const ActorsInput = () => {
   const [openQuickAdd, setOpenQuickAdd] = useState(false);
   const [actorToAdd, setActorToAdd] = useState("");
   const { movieState, setMovieState } = useContext(MovieContext);
-  const [selectedActorsF, setSelectedActorsF] = useState<ActorData[]>(
-    movieState.cast || [],
-  );
+  // const [selectedActorsF, setSelectedActorsF] = useState<ActorData[]>(
+  //   movieState.cast || [],
+  // );
 
   const fetchOptions = async (q: string) => {
     setLoading(true);
@@ -38,11 +38,6 @@ const ActorsInput = () => {
     setOpenQuickAdd(true);
   };
 
-  useEffect(
-    () => setMovieState({ ...movieState, cast: selectedActorsF }),
-    [selectedActorsF, movieState, setMovieState],
-  );
-
   return (
     <>
       <Autocomplete
@@ -55,7 +50,7 @@ const ActorsInput = () => {
         multiple
         autoHighlight
         limitTags={1}
-        value={selectedActorsF}
+        value={movieState.cast}
         getOptionLabel={(option) => option.name || ""}
         isOptionEqualToValue={(option, value) => option._id === value._id}
         onChange={(_e, newValue) => {
@@ -64,10 +59,10 @@ const ActorsInput = () => {
             if (lastSelected.name.startsWith('Add "')) {
               handleAddOption(lastSelected.name.slice(5, -1)); // Remove 'Add "' and '"'
             } else {
-              setSelectedActorsF(newValue);
+              setMovieState({ ...movieState, cast: newValue });
             }
           } else {
-            setSelectedActorsF(newValue);
+            setMovieState({ ...movieState, cast: newValue });
           }
         }}
         onInputChange={(_e, val) => val?.length > 2 && fetchOptions(val)}
@@ -75,7 +70,7 @@ const ActorsInput = () => {
         filterOptions={(options, params) => {
           const val = params.inputValue;
 
-          const filtered = options.sort((a, b) => {
+          const filtered = options?.sort((a, b) => {
             if (a.name.startsWith(val) && !b.name.startsWith(val)) return -1;
             if (!a.name.startsWith(val) && b.name.startsWith(val)) return 1;
             return 0;
@@ -83,10 +78,11 @@ const ActorsInput = () => {
 
           const { inputValue } = params;
           // Suggest the creation of a new value
-          const isExisting = options.some(
-            (option) => inputValue === option.name,
-          );
-          if (inputValue?.length > 3 && !isExisting) {
+          // const isExisting = options?.some(
+          //   (option) => inputValue === option.name,
+          // );
+          // if (inputValue?.length > 3 && !isExisting) {
+          if (inputValue?.length > 3) {
             filtered.push({
               name: `Add "${inputValue}"`,
             } as ActorData);
@@ -122,11 +118,10 @@ const ActorsInput = () => {
         renderTags={() => <></>}
       />
       <div className="col-span-2 my-1 flex h-8 w-full flex-row-reverse items-center gap-1 overflow-x-scroll">
-        {selectedActorsF.length > 0 ? (
+        {movieState.cast?.length > 0 ? (
           <MovieCastList
-            movieCast={selectedActorsF}
+            movieCast={movieState.cast}
             release={movieState.release?.length > 7 ? movieState.release : ""}
-            setMovieCast={setSelectedActorsF}
           />
         ) : (
           <span className="w-full pt-4 text-center text-lg opacity-50 md:pt-0">
@@ -137,8 +132,6 @@ const ActorsInput = () => {
       <ActorQuickAddDialog
         open={openQuickAdd}
         setOpen={setOpenQuickAdd}
-        selectedActors={selectedActorsF}
-        setSelectedActors={setSelectedActorsF}
         actorToAdd={actorToAdd}
       />
     </>
